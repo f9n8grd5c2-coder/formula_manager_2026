@@ -56,7 +56,7 @@
   <div id="app" class="w-full max-w-md min-h-screen flex flex-col bg-f1bg relative shadow-2xl border-x border-f1border/40"></div>
 
   <script>
-    const STORAGE_KEY = 'formula_manager_2026_save_v3';
+    const STORAGE_KEY = 'formula_manager_2026_save_v4';
 
     const INITIAL_TEAMS = [
       { id: 'ferrari', name: 'Scuderia Rossa', short: 'ROS', color: '#e10600', budget: 148.0, aero: 89, pu: 88, chassis: 88, rel: 86, objective: 2, prestige: 94 },
@@ -105,31 +105,32 @@
       { id: 'dru', name: 'Felipe Drugovichi', code: 'DRU', number: 34, ovr: 77, pace: 78, cons: 78, tyreMgmt: 77, age: 25, contract: 1, salary: 1.6, mood: 60 }
     ];
 
+    // Closed realistic SVG loops starting/ending on main straight around (150, 130)
     const CALENDAR_2026 = [
-      { round: 1, name: 'Australia', circuit: 'Albert Park', flag: '🇦🇺', laps: 58, baseLap: 79.5, downforce: 7, topSpeed: 7, tyreDeg: 2, rainChance: 0.20, path: 'M 65,125 C 35,105 45,45 95,38 C 135,32 155,62 195,44 C 240,24 270,58 255,102 C 242,135 190,132 150,132 L 75,132 Z' },
-      { round: 2, name: 'Cina', circuit: 'Shanghai', flag: '🇨🇳', laps: 56, baseLap: 95.0, downforce: 6, topSpeed: 8, tyreDeg: 3, rainChance: 0.15, path: 'M 60,122 C 40,85 75,30 135,34 C 185,37 165,78 215,65 C 255,55 268,98 232,125 C 200,142 175,132 150,132 L 75,132 Z' },
-      { round: 3, name: 'Giappone', circuit: 'Suzuka', flag: '🇯🇵', laps: 53, baseLap: 90.5, downforce: 9, topSpeed: 7, tyreDeg: 3, rainChance: 0.25, path: 'M 75,132 C 115,132 130,92 105,72 C 80,52 125,30 165,45 C 205,60 185,95 235,88 C 268,84 265,126 225,132 L 150,132 Z' },
-      { round: 4, name: 'Bahrain', circuit: 'Sakhir', flag: '🇧🇭', laps: 57, baseLap: 91.2, downforce: 5, topSpeed: 8, tyreDeg: 3, rainChance: 0.02, path: 'M 75,132 L 50,104 L 88,68 L 148,42 L 222,46 L 258,84 L 230,126 L 150,132 Z' },
-      { round: 5, name: 'Arabia Saudita', circuit: 'Jeddah', flag: '🇸🇦', laps: 50, baseLap: 89.8, downforce: 4, topSpeed: 9, tyreDeg: 2, rainChance: 0.02, path: 'M 75,132 C 42,126 42,82 78,66 C 125,46 185,38 242,54 C 268,64 264,116 225,130 L 150,132 Z' },
-      { round: 6, name: 'Miami', circuit: 'Miami Autodrome', flag: '🇺🇸', laps: 57, baseLap: 89.4, downforce: 6, topSpeed: 8, tyreDeg: 2, rainChance: 0.22, path: 'M 75,132 L 45,112 L 52,54 L 135,38 L 245,42 L 258,96 L 210,128 L 150,132 Z' },
-      { round: 7, name: 'Emilia-Romagna', circuit: 'Imola', flag: '🇮🇹', laps: 63, baseLap: 77.2, downforce: 8, topSpeed: 7, tyreDeg: 2, rainChance: 0.20, path: 'M 75,132 C 42,118 48,68 95,52 C 145,35 190,62 238,48 C 265,42 268,96 232,126 L 150,132 Z' },
-      { round: 8, name: 'Monaco', circuit: 'Monte Carlo', flag: '🇲🇨', laps: 78, baseLap: 73.1, downforce: 10, topSpeed: 4, tyreDeg: 1, rainChance: 0.18, path: 'M 75,132 C 42,124 44,82 76,72 C 62,46 105,30 148,42 C 175,50 185,34 228,44 C 264,54 262,116 218,130 L 150,132 Z' },
-      { round: 9, name: 'Spagna', circuit: 'Barcellona', flag: '🇪🇸', laps: 66, baseLap: 75.4, downforce: 8, topSpeed: 7, tyreDeg: 3, rainChance: 0.10, path: 'M 75,132 L 46,108 L 58,48 L 165,38 L 254,52 L 252,112 L 205,130 L 150,132 Z' },
-      { round: 10, name: 'Canada', circuit: 'Montreal', flag: '🇨🇦', laps: 70, baseLap: 74.2, downforce: 5, topSpeed: 9, tyreDeg: 2, rainChance: 0.28, path: 'M 75,132 L 48,105 L 82,46 L 215,44 L 256,82 L 222,128 L 150,132 Z' },
-      { round: 11, name: 'Austria', circuit: 'Red Bull Ring', flag: '🇦🇹', laps: 71, baseLap: 66.8, downforce: 6, topSpeed: 9, tyreDeg: 2, rainChance: 0.25, path: 'M 75,132 L 54,88 L 128,42 L 246,56 L 234,124 L 150,132 Z' },
-      { round: 12, name: 'Gran Bretagna', circuit: 'Silverstone', flag: '🇬🇧', laps: 52, baseLap: 87.9, downforce: 9, topSpeed: 8, tyreDeg: 3, rainChance: 0.35, path: 'M 75,132 C 42,102 65,42 135,38 C 195,35 262,56 254,104 C 248,132 195,132 150,132 Z' },
-      { round: 13, name: 'Belgio', circuit: 'Spa-Francorchamps', flag: '🇧🇪', laps: 44, baseLap: 105.2, downforce: 6, topSpeed: 9, tyreDeg: 3, rainChance: 0.42, path: 'M 75,132 C 42,108 55,55 112,44 C 165,34 195,72 242,52 C 268,42 264,114 218,130 L 150,132 Z' },
-      { round: 14, name: 'Ungheria', circuit: 'Hungaroring', flag: '🇭🇺', laps: 70, baseLap: 78.5, downforce: 9, topSpeed: 5, tyreDeg: 2, rainChance: 0.18, path: 'M 75,132 C 42,118 46,62 98,44 C 155,28 210,66 250,56 C 268,52 262,118 215,130 L 150,132 Z' },
-      { round: 15, name: 'Olanda', circuit: 'Zandvoort', flag: '🇳🇱', laps: 72, baseLap: 72.4, downforce: 9, topSpeed: 6, tyreDeg: 2, rainChance: 0.32, path: 'M 75,132 C 40,115 44,54 105,40 C 168,28 215,74 252,62 C 268,58 260,122 212,130 L 150,132 Z' },
-      { round: 16, name: 'Italia', circuit: 'Monza', flag: '🇮🇹', laps: 53, baseLap: 80.8, downforce: 2, topSpeed: 10, tyreDeg: 2, rainChance: 0.14, path: 'M 75,132 L 45,112 L 55,48 L 245,48 L 256,112 L 210,130 L 150,132 Z' },
-      { round: 17, name: 'Madrid', circuit: 'IFEMA Madrid', flag: '🇪🇸', laps: 57, baseLap: 85.0, downforce: 7, topSpeed: 7, tyreDeg: 2, rainChance: 0.10, path: 'M 75,132 L 46,104 L 78,44 L 185,40 L 254,68 L 236,126 L 150,132 Z' },
-      { round: 18, name: 'Azerbaijan', circuit: 'Baku', flag: '🇦🇿', laps: 51, baseLap: 103.0, downforce: 4, topSpeed: 10, tyreDeg: 1, rainChance: 0.08, path: 'M 75,132 L 46,118 L 48,46 L 168,42 L 175,88 L 254,88 L 252,128 L 150,132 Z' },
-      { round: 19, name: 'Singapore', circuit: 'Marina Bay', flag: '🇸🇬', laps: 62, baseLap: 93.8, downforce: 10, topSpeed: 5, tyreDeg: 2, rainChance: 0.30, path: 'M 75,132 L 44,116 L 48,52 L 122,42 L 135,86 L 215,44 L 256,74 L 234,128 L 150,132 Z' },
-      { round: 20, name: 'Stati Uniti', circuit: 'Austin COTA', flag: '🇺🇸', laps: 56, baseLap: 96.4, downforce: 8, topSpeed: 8, tyreDeg: 3, rainChance: 0.16, path: 'M 75,132 C 42,108 58,46 118,40 C 165,36 182,78 236,56 C 264,46 264,114 220,130 L 150,132 Z' },
-      { round: 21, name: 'Messico', circuit: 'Hermanos Rodriguez', flag: '🇲🇽', laps: 71, baseLap: 78.9, downforce: 8, topSpeed: 8, tyreDeg: 2, rainChance: 0.12, path: 'M 75,132 L 48,108 L 62,48 L 175,42 L 248,64 L 224,128 L 150,132 Z' },
-      { round: 22, name: 'Brasile', circuit: 'Interlagos', flag: '🇧🇷', laps: 71, baseLap: 72.1, downforce: 7, topSpeed: 8, tyreDeg: 2, rainChance: 0.34, path: 'M 75,132 L 46,104 L 96,46 L 228,50 L 252,96 L 208,130 L 150,132 Z' },
-      { round: 23, name: 'Las Vegas', circuit: 'Las Vegas Strip', flag: '🇺🇸', laps: 50, baseLap: 94.6, downforce: 3, topSpeed: 10, tyreDeg: 1, rainChance: 0.05, path: 'M 75,132 L 46,116 L 52,44 L 248,44 L 254,116 L 210,130 L 150,132 Z' },
-      { round: 24, name: 'Qatar', circuit: 'Lusail', flag: '🇶🇦', laps: 57, baseLap: 84.3, downforce: 9, topSpeed: 8, tyreDeg: 3, rainChance: 0.02, path: 'M 75,132 C 42,112 52,46 125,38 C 195,32 258,56 252,106 C 246,132 195,132 150,132 Z' }
+      { round: 1, name: 'Australia', circuit: 'Albert Park', flag: '🇦🇺', laps: 58, baseLap: 79.5, downforce: 7, topSpeed: 7, tyreDeg: 2, rainChance: 0.20, path: 'M 150,130 L 82,130 C 48,130 34,104 52,82 L 84,48 C 102,30 132,36 144,58 L 164,84 C 176,96 196,74 186,52 C 178,34 214,28 242,46 C 268,64 268,104 244,122 C 226,134 192,130 150,130 Z' },
+      { round: 2, name: 'Cina', circuit: 'Shanghai', flag: '🇨🇳', laps: 56, baseLap: 95.0, downforce: 6, topSpeed: 8, tyreDeg: 3, rainChance: 0.15, path: 'M 150,130 L 74,130 C 46,130 38,96 58,72 L 96,42 C 122,24 156,36 152,64 C 148,84 182,92 204,68 L 228,44 C 252,32 270,58 262,94 C 254,124 220,130 150,130 Z' },
+      { round: 3, name: 'Giappone', circuit: 'Suzuka', flag: '🇯🇵', laps: 53, baseLap: 90.5, downforce: 9, topSpeed: 7, tyreDeg: 3, rainChance: 0.25, path: 'M 150,130 L 86,130 C 56,130 48,104 72,90 L 118,74 C 134,68 112,50 86,52 C 62,54 68,28 106,28 C 144,28 158,56 188,68 C 218,80 258,64 264,92 C 270,122 238,130 150,130 Z' },
+      { round: 4, name: 'Bahrain', circuit: 'Sakhir', flag: '🇧🇭', laps: 57, baseLap: 91.2, downforce: 5, topSpeed: 8, tyreDeg: 3, rainChance: 0.02, path: 'M 150,130 L 78,130 L 44,104 L 84,76 L 136,44 L 224,38 L 262,68 L 244,108 L 214,130 Z' },
+      { round: 5, name: 'Arabia Saudita', circuit: 'Jeddah', flag: '🇸🇦', laps: 50, baseLap: 89.8, downforce: 4, topSpeed: 9, tyreDeg: 2, rainChance: 0.02, path: 'M 150,130 L 72,130 C 42,130 38,98 62,80 L 128,46 L 236,38 C 266,42 270,78 248,98 L 218,130 Z' },
+      { round: 6, name: 'Miami', circuit: 'Miami Autodrome', flag: '🇺🇸', laps: 57, baseLap: 89.4, downforce: 6, topSpeed: 8, tyreDeg: 2, rainChance: 0.22, path: 'M 150,130 L 74,130 L 42,108 L 46,56 L 128,36 L 248,38 L 264,74 L 238,104 L 212,130 Z' },
+      { round: 7, name: 'Emilia-Romagna', circuit: 'Imola', flag: '🇮🇹', laps: 63, baseLap: 77.2, downforce: 8, topSpeed: 7, tyreDeg: 2, rainChance: 0.20, path: 'M 150,130 L 76,130 C 44,130 38,96 64,74 L 118,40 C 146,26 172,56 196,62 C 222,68 242,38 262,56 C 276,72 262,116 224,130 Z' },
+      { round: 8, name: 'Monaco', circuit: 'Monte Carlo', flag: '🇲🇨', laps: 78, baseLap: 73.1, downforce: 10, topSpeed: 4, tyreDeg: 1, rainChance: 0.18, path: 'M 150,130 L 74,130 C 44,130 40,94 68,82 L 56,56 C 48,38 78,28 112,38 L 154,52 C 176,58 184,32 222,36 C 258,40 268,78 246,104 L 214,130 Z' },
+      { round: 9, name: 'Spagna', circuit: 'Barcellona', flag: '🇪🇸', laps: 66, baseLap: 75.4, downforce: 8, topSpeed: 7, tyreDeg: 3, rainChance: 0.10, path: 'M 150,130 L 76,130 L 42,106 L 54,48 L 164,34 L 256,48 L 262,92 L 226,118 L 208,130 Z' },
+      { round: 10, name: 'Canada', circuit: 'Montreal', flag: '🇨🇦', laps: 70, baseLap: 74.2, downforce: 5, topSpeed: 9, tyreDeg: 2, rainChance: 0.28, path: 'M 150,130 L 74,130 L 42,104 L 82,42 L 222,40 L 264,76 L 232,114 L 208,130 Z' },
+      { round: 11, name: 'Austria', circuit: 'Red Bull Ring', flag: '🇦🇹', laps: 71, baseLap: 66.8, downforce: 6, topSpeed: 9, tyreDeg: 2, rainChance: 0.25, path: 'M 150,130 L 76,130 L 52,88 L 128,38 L 252,54 L 242,118 L 208,130 Z' },
+      { round: 12, name: 'Gran Bretagna', circuit: 'Silverstone', flag: '🇬🇧', laps: 52, baseLap: 87.9, downforce: 9, topSpeed: 8, tyreDeg: 3, rainChance: 0.35, path: 'M 150,130 L 76,130 C 42,130 42,92 68,72 L 124,36 C 166,24 224,34 256,58 C 272,72 264,114 224,130 Z' },
+      { round: 13, name: 'Belgio', circuit: 'Spa-Francorchamps', flag: '🇧🇪', laps: 44, baseLap: 105.2, downforce: 6, topSpeed: 9, tyreDeg: 3, rainChance: 0.42, path: 'M 150,130 L 74,130 C 42,130 38,94 64,72 L 106,36 C 138,24 166,68 196,64 C 224,60 242,34 262,54 C 274,74 260,118 218,130 Z' },
+      { round: 14, name: 'Ungheria', circuit: 'Hungaroring', flag: '🇭🇺', laps: 70, baseLap: 78.5, downforce: 9, topSpeed: 5, tyreDeg: 2, rainChance: 0.18, path: 'M 150,130 L 74,130 C 42,130 38,94 66,72 L 114,34 C 154,24 188,68 218,64 C 242,60 256,38 266,64 C 274,94 252,124 212,130 Z' },
+      { round: 15, name: 'Olanda', circuit: 'Zandvoort', flag: '🇳🇱', laps: 72, baseLap: 72.4, downforce: 9, topSpeed: 6, tyreDeg: 2, rainChance: 0.32, path: 'M 150,130 L 74,130 C 40,130 38,92 66,70 L 118,34 C 162,24 194,74 224,68 C 246,64 258,42 266,70 C 272,102 248,126 210,130 Z' },
+      { round: 16, name: 'Italia', circuit: 'Monza', flag: '🇮🇹', laps: 53, baseLap: 80.8, downforce: 2, topSpeed: 10, tyreDeg: 2, rainChance: 0.14, path: 'M 150,130 L 74,130 L 42,110 L 52,44 L 248,44 L 260,110 L 222,130 Z' },
+      { round: 17, name: 'Madrid', circuit: 'IFEMA Madrid', flag: '🇪🇸', laps: 57, baseLap: 85.0, downforce: 7, topSpeed: 7, tyreDeg: 2, rainChance: 0.10, path: 'M 150,130 L 76,130 L 42,104 L 78,40 L 188,36 L 258,64 L 244,120 L 210,130 Z' },
+      { round: 18, name: 'Azerbaijan', circuit: 'Baku', flag: '🇦🇿', laps: 51, baseLap: 103.0, downforce: 4, topSpeed: 10, tyreDeg: 1, rainChance: 0.08, path: 'M 150,130 L 74,130 L 44,116 L 46,42 L 168,38 L 174,84 L 256,84 L 254,126 L 214,130 Z' },
+      { round: 19, name: 'Singapore', circuit: 'Marina Bay', flag: '🇸🇬', laps: 62, baseLap: 93.8, downforce: 10, topSpeed: 5, tyreDeg: 2, rainChance: 0.30, path: 'M 150,130 L 74,130 L 42,114 L 46,48 L 122,38 L 134,82 L 216,40 L 260,72 L 240,124 L 210,130 Z' },
+      { round: 20, name: 'Stati Uniti', circuit: 'Austin COTA', flag: '🇺🇸', laps: 56, baseLap: 96.4, downforce: 8, topSpeed: 8, tyreDeg: 3, rainChance: 0.16, path: 'M 150,130 L 74,130 C 42,130 42,92 68,72 L 122,36 C 162,28 186,74 218,64 C 244,56 258,38 266,68 C 272,98 248,124 212,130 Z' },
+      { round: 21, name: 'Messico', circuit: 'Hermanos Rodriguez', flag: '🇲🇽', laps: 71, baseLap: 78.9, downforce: 8, topSpeed: 8, tyreDeg: 2, rainChance: 0.12, path: 'M 150,130 L 74,130 L 44,106 L 62,44 L 178,38 L 252,62 L 232,124 L 208,130 Z' },
+      { round: 22, name: 'Brasile', circuit: 'Interlagos', flag: '🇧🇷', laps: 71, baseLap: 72.1, downforce: 7, topSpeed: 8, tyreDeg: 2, rainChance: 0.34, path: 'M 150,130 L 74,130 L 42,102 L 96,42 L 232,46 L 258,94 L 216,128 L 204,130 Z' },
+      { round: 23, name: 'Las Vegas', circuit: 'Las Vegas Strip', flag: '🇺🇸', laps: 50, baseLap: 94.6, downforce: 3, topSpeed: 10, tyreDeg: 1, rainChance: 0.05, path: 'M 150,130 L 74,130 L 44,114 L 50,40 L 250,40 L 258,114 L 218,130 Z' },
+      { round: 24, name: 'Qatar', circuit: 'Lusail', flag: '🇶🇦', laps: 57, baseLap: 84.3, downforce: 9, topSpeed: 8, tyreDeg: 3, rainChance: 0.02, path: 'M 150,130 L 76,130 C 42,130 42,92 68,72 L 126,34 C 182,24 246,38 262,72 C 272,98 252,126 212,130 Z' }
     ];
 
     const TYRE_COMPOUNDS = {
@@ -184,7 +185,7 @@
         gameState.newsFeed.unshift(`UMORE ${driver.code} (${sign} -> ${next}/100): ${reasonText}`);
       }
     }
-  let gameState = null;
+    let gameState = null;
     let simTimer = null;
     let animFrameId = null;
     let lastAnimTimestamp = 0;
@@ -363,9 +364,47 @@
       renderApp();
     }
 
-    function buildCircuitSvgMarkup(track, dotsHtml, heightClass = 'h-40') {
+    function getPitLaneCoord(car) {
+      const m = car.pitAnim?.mode;
+      const t = Math.min(1, car.pitAnim?.t || 0);
+      if (m === 'pit_in') {
+        return {
+          x: 224 + (150 - 224) * t,
+          y: 130 + (157 - 130) * t
+        };
+      }
+      if (m === 'pit_out') {
+        return {
+          x: 150 + (76 - 150) * t,
+          y: 157 + (130 - 157) * t
+        };
+      }
+      return null;
+    }
+
+    function syncTrackCarPositions(svgElementId = 'fm-circuit-svg') {
+      const svg = document.getElementById(svgElementId);
+      const pathEl = svg?.querySelector('#active-track-path');
+      if (!svg || !pathEl || typeof pathEl.getTotalLength !== 'function') return;
+
+      const totalLen = pathEl.getTotalLength();
+      if (!totalLen) return;
+
+      const dots = svg.querySelectorAll('[data-track-progress]');
+      dots.forEach(dot => {
+        const mode = dot.getAttribute('data-pit-mode') || 'none';
+        if (mode === 'pit_in' || mode === 'pit_out') return;
+        const p = parseFloat(dot.getAttribute('data-track-progress') || '0');
+        const normalized = ((p % 1) + 1) % 1;
+        const pt = pathEl.getPointAtLength(normalized * totalLen);
+        dot.setAttribute('cx', pt.x.toFixed(1));
+        dot.setAttribute('cy', pt.y.toFixed(1));
+      });
+    }
+
+    function buildCircuitSvgMarkup(track, dotsHtml, heightClass = 'h-44', svgId = 'fm-circuit-svg') {
       return `
-        <svg viewBox="0 0 300 176" class="w-full ${heightClass} bg-[#080c11] rounded-xl border border-f1border/80 overflow-hidden">
+        <svg id="${svgId}" viewBox="0 0 300 178" class="w-full ${heightClass} bg-[#080c11] rounded-xl border border-f1border/80 overflow-hidden">
           <defs>
             <pattern id="checkered" width="4" height="4" patternUnits="userSpaceOnUse">
               <rect width="2" height="2" fill="#ffffff"/>
@@ -374,33 +413,37 @@
               <rect x="0" y="2" width="2" height="2" fill="#111111"/>
             </pattern>
             <linearGradient id="pitLaneGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
-              <stop offset="50%" stop-color="#f59e0b" stop-opacity="0.55"/>
-              <stop offset="100%" stop-color="#34d399" stop-opacity="0.35"/>
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.45"/>
+              <stop offset="50%" stop-color="#f59e0b" stop-opacity="0.7"/>
+              <stop offset="100%" stop-color="#34d399" stop-opacity="0.45"/>
             </linearGradient>
           </defs>
 
-          <line x1="0" y1="88" x2="300" y2="88" stroke="#1e293b" stroke-width="0.5" stroke-dasharray="2 6"/>
-          <line x1="150" y1="0" x2="150" y2="176" stroke="#1e293b" stroke-width="0.5" stroke-dasharray="2 6"/>
-          <text x="10" y="14" fill="#64748b" font-size="7.5" font-weight="800" font-family="Inter, sans-serif">${track.flag} ${track.circuit.toUpperCase()}</text>
-          <text x="290" y="14" text-anchor="end" fill="#475569" font-size="7" font-weight="700">S1 • S2 • S3</text>
+          <line x1="0" y1="89" x2="300" y2="89" stroke="#1e293b" stroke-width="0.5" stroke-dasharray="2 6"/>
+          <line x1="150" y1="0" x2="150" y2="178" stroke="#1e293b" stroke-width="0.5" stroke-dasharray="2 6"/>
+          <text x="10" y="14" fill="#94a3b8" font-size="7.5" font-weight="800" font-family="Inter, sans-serif">${track.flag} ${track.circuit.toUpperCase()}</text>
+          <text x="290" y="14" text-anchor="end" fill="#64748b" font-size="7" font-weight="700">S1 • S2 • S3</text>
 
-          <path d="M 224,132 L 204,155 L 96,155 L 76,132" fill="none" stroke="#0f172a" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M 224,132 L 204,155 L 96,155 L 76,132" fill="none" stroke="url(#pitLaneGrad)" stroke-width="2" stroke-dasharray="3 2"/>
-          <rect x="141" y="150.5" width="18" height="8.5" rx="2" fill="#f59e0b" fill-opacity="0.25" stroke="#f59e0b" stroke-width="1"/>
-          <text x="212" y="166" fill="#38bdf8" font-size="6" font-weight="800">PIT IN</text>
-          <text x="142" y="168" fill="#fbbf24" font-size="6.5" font-weight="800">BOX</text>
-          <text x="64" y="166" fill="#34d399" font-size="6" font-weight="800">PIT OUT</text>
+          <!-- PIT LANE ASPHALT & LANE GUIDE -->
+          <path d="M 224,130 L 204,157 L 96,157 L 76,130" fill="none" stroke="#0f172a" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M 224,130 L 204,157 L 96,157 L 76,130" fill="none" stroke="url(#pitLaneGrad)" stroke-width="2" stroke-dasharray="3 2"/>
+          <rect x="141" y="152.5" width="18" height="8.5" rx="2" fill="#f59e0b" fill-opacity="0.25" stroke="#f59e0b" stroke-width="1"/>
+          <text x="214" y="168" fill="#38bdf8" font-size="6" font-weight="800">PIT IN</text>
+          <text x="142" y="170" fill="#fbbf24" font-size="6.5" font-weight="800">BOX</text>
+          <text x="64" y="168" fill="#34d399" font-size="6" font-weight="800">PIT OUT</text>
 
-          <path id="active-track-path" d="${track.path}" fill="none" stroke="#64748b" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="${track.path}" fill="none" stroke="#ef4444" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 7" opacity="0.55"/>
-          <path d="${track.path}" fill="none" stroke="#161d27" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="${track.path}" fill="none" stroke="#94a3b8" stroke-width="0.9" stroke-dasharray="5 5" opacity="0.45"/>
+          <!-- MAIN TRACK OUTER BOUNDARY, KERBS & ASPHALT -->
+          <path id="active-track-path" d="${track.path}" fill="none" stroke="#64748b" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="${track.path}" fill="none" stroke="#ef4444" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 7" opacity="0.55"/>
+          <path d="${track.path}" fill="none" stroke="#18202c" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="${track.path}" fill="none" stroke="#cbd5e1" stroke-width="0.9" stroke-dasharray="5 5" opacity="0.45"/>
 
-          <rect x="147" y="125.5" width="6" height="13" fill="url(#checkered)" stroke="#ffffff" stroke-width="0.7"/>
-          <polygon points="150,122 147,125 153,125" fill="#f8fafc"/>
-          <text x="150" y="119" text-anchor="middle" fill="#f8fafc" font-size="6" font-weight="800">START/FINISH</text>
+          <!-- START / FINISH LINE -->
+          <rect x="147" y="123.5" width="6" height="13" fill="url(#checkered)" stroke="#ffffff" stroke-width="0.7"/>
+          <polygon points="150,120 147,123 153,123" fill="#f8fafc"/>
+          <text x="150" y="117" text-anchor="middle" fill="#f8fafc" font-size="6" font-weight="800">START/FINISH</text>
 
+          <!-- CARS LAYER -->
           <g id="svg-cars-layer">
             ${dotsHtml}
           </g>
@@ -887,7 +930,6 @@
       const step = q.speed * 4;
       q.timeLeft = Math.max(0, q.timeLeft - step);
 
-      // AI sends cars out at strategic windows
       q.entries.forEach(entry => {
         if (entry.eliminated || entry.isUser) return;
         if (entry.status === 'BOX' && entry.aiRunsLeft > 0) {
@@ -994,10 +1036,7 @@
 
       const dotsHtml = activeEntries.filter(e => e.status !== 'BOX').map(e => {
         const t = getTeam(e.teamId);
-        const angle = (e.progress || 0) * Math.PI * 2;
-        const cx = 150 + Math.cos(angle) * 85;
-        const cy = 85 + Math.sin(angle) * 42;
-        return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${e.isUser ? 4.8 : 3.4}" fill="${t.color}" stroke="${e.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2"/>`;
+        return `<circle cx="150" cy="130" r="${e.isUser ? 5 : 3.5}" fill="${t.color}" stroke="${e.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2" data-track-progress="${(e.progress || 0).toFixed(4)}"/>`;
       }).join('');
 
       return `
@@ -1017,7 +1056,7 @@
             </div>
           </div>
 
-          ${buildCircuitSvgMarkup(track, dotsHtml, 'h-32')}
+          ${buildCircuitSvgMarkup(track, dotsHtml, 'h-36', 'fm-quali-svg')}
 
           <div class="space-y-2">
             ${userEntries.map(u => {
@@ -1305,13 +1344,14 @@
           color: team.color,
           isUser: entry.isUser,
           pos: idx + 1,
-          totalTime: idx * 0.35,
+          totalTime: idx * 0.45,
           lastLapTime: track.baseLap,
           tyre: startComp,
           tyreWear: 0,
           fuel: 100,
           paceMode: planForCar?.initialPace || 'balanced',
           ersMode: 'balanced',
+          teamOrder: 'free',
           pitRequested: false,
           nextTyre: firstPlannedTyre,
           plannedStops: planForCar ? {
@@ -1325,7 +1365,7 @@
           dnfReason: '',
           confBonus: entry.confBonus || 0.6,
           plan: entry.plan || 'race',
-          progressOnLap: Math.max(0.01, 0.99 - idx * 0.016),
+          progressOnLap: Math.max(0.01, (0.99 - idx * 0.018 + 1) % 1),
           pitAnim: { mode: 'none', t: 0 }
         };
       });
@@ -1336,6 +1376,10 @@
         totalLaps: track.laps,
         speed: 1,
         lapFraction: 0,
+        teamOrders: {
+          noOvertake: false,
+          swapDone: false
+        },
         weather: startWeather,
         trackWater: startWeather === 'dry' ? 0 : 40,
         safetyCar: 'NONE',
@@ -1375,6 +1419,61 @@
       renderApp();
     }
 
+    function toggleNoOvertakeOrder() {
+      const race = gameState.weekend?.race;
+      if (!race) return;
+      race.teamOrders = race.teamOrders || { noOvertake: false, swapDone: false };
+      race.teamOrders.noOvertake = !race.teamOrders.noOvertake;
+      const stateLabel = race.teamOrders.noOvertake ? 'ATTIVO: Evita sorpassi tra compagni' : 'DISATTIVATO: Piloti liberi di lottare';
+      race.radioLog.unshift(`Giro ${race.lap}: 📋 Ordine di scuderia — ${stateLabel}`);
+      showToast(stateLabel, 'info');
+      saveGame();
+      renderApp();
+    }
+
+    function executeTeammateSwap() {
+      const race = gameState.weekend?.race;
+      if (!race) return;
+      const uCars = race.cars.filter(c => c.isUser && !c.dnf).sort((a, b) => a.pos - b.pos);
+      if (uCars.length < 2) {
+        showToast('Servono entrambi i piloti in gara per lo scambio.', 'danger');
+        return;
+      }
+      const ahead = uCars[0];
+      const behind = uCars[1];
+      const gap = behind.totalTime - ahead.totalTime;
+      if (gap > 6.5) {
+        showToast(`Troppo distacco (${gap.toFixed(1)}s) per uno scambio pulito in sicurezza.`, 'danger');
+        return;
+      }
+      const tempTime = ahead.totalTime;
+      ahead.totalTime = behind.totalTime + 0.25;
+      behind.totalTime = tempTime;
+
+      const activeCars = race.cars.filter(c => !c.dnf).sort((a, b) => a.totalTime - b.totalTime);
+      const dnfCars = race.cars.filter(c => c.dnf);
+      race.cars = [...activeCars, ...dnfCars];
+      race.cars.forEach((c, i) => { c.pos = i + 1; });
+
+      race.radioLog.unshift(`Giro ${race.lap}: 🔄 Scambio posizioni completato: ${behind.code} passa davanti a ${ahead.code}.`);
+      showToast(`Scambio effettuato: ${behind.code} ora davanti a ${ahead.code}!`, 'success');
+      saveGame();
+      renderApp();
+    }
+
+    function quickStrategySwitch(driverId, tyreCode, paceMode) {
+      const car = gameState.weekend?.race?.cars.find(c => c.driverId === driverId);
+      if (!car || car.dnf) return;
+      car.paceMode = paceMode;
+      car.pitRequested = true;
+      car.nextTyre = tyreCode;
+      race = gameState.weekend.race;
+      race.radioLog.unshift(`Giro ${race.lap}: ⚡ Cambio strategia ${car.code} -> Gomme ${TYRE_COMPOUNDS[tyreCode].name} e ritmo ${paceMode === 'push' ? 'Attacco' : paceMode === 'conserve' ? 'Conservativo' : 'Bilanciato'}.`);
+      showToast(`Strategia aggiornata per ${car.code}!`, 'info');
+      saveGame();
+      renderApp();
+    }
+
     function simulateRaceLap() {
       const race = gameState.weekend?.race;
       if (!race || gameState.weekend.phase !== 'race') return;
@@ -1386,7 +1485,6 @@
       const track = CALENDAR_2026[gameState.round - 1];
       const degMult = gameState.rules?.extraDegMultiplier || 1.0;
 
-      // 1. Dynamic Weather & Track Water
       if (Math.random() < track.rainChance * 0.06) {
         race.weather = race.weather === 'dry' ? 'light_rain' : (Math.random() > 0.5 ? 'heavy_rain' : 'dry');
         race.radioLog.unshift(`Giro ${race.lap}: 🌧️ Cambio meteo sul circuito: ${race.weather === 'dry' ? 'Asciutto' : race.weather === 'light_rain' ? 'Pioggia leggera' : 'Pioggia forte'}!`);
@@ -1395,7 +1493,6 @@
       else if (race.weather === 'light_rain') race.trackWater = Math.min(75, race.trackWater + 9);
       else race.trackWater = Math.max(0, race.trackWater - 11);
 
-      // 2. Safety Car / VSC
       if (race.scLapsRemaining > 0) {
         race.scLapsRemaining -= 1;
         if (race.scLapsRemaining === 0) {
@@ -1408,7 +1505,6 @@
         race.radioLog.unshift(`Giro ${race.lap}: ⚠️ ${race.safetyCar === 'SC' ? 'SAFETY CAR IN PISTA' : 'VIRTUAL SAFETY CAR'}!`);
       }
 
-      // 3. Simulate Each Car
       let doubleStackCounter = 0;
 
       race.cars.forEach(car => {
@@ -1518,6 +1614,21 @@
       });
 
       const activeCars = race.cars.filter(c => !c.dnf).sort((a, b) => a.totalTime - b.totalTime);
+
+      // Apply "No Overtake" team order between user teammates if close
+      if (race.teamOrders?.noOvertake) {
+        const uActive = activeCars.filter(c => c.isUser);
+        if (uActive.length === 2) {
+          const [firstU, secondU] = uActive;
+          const idx1 = activeCars.findIndex(c => c.driverId === firstU.driverId);
+          const idx2 = activeCars.findIndex(c => c.driverId === secondU.driverId);
+          if (idx2 < idx1 && secondU.totalTime < firstU.totalTime) {
+            secondU.totalTime = Number((firstU.totalTime + 0.35).toFixed(2));
+            activeCars.sort((a, b) => a.totalTime - b.totalTime);
+          }
+        }
+      }
+
       const dnfCars = race.cars.filter(c => c.dnf);
       const ordered = [...activeCars, ...dnfCars];
       ordered.forEach((c, idx) => { c.pos = idx + 1; });
@@ -1625,44 +1736,34 @@
       renderApp();
     }
 
-    function getPitLaneCoord(car) {
-      const m = car.pitAnim?.mode;
-      const t = Math.min(1, car.pitAnim?.t || 0);
-      if (m === 'pit_in') {
-        const x = 224 + (150 - 224) * t;
-        const y = 132 + (155 - 132) * t;
-        return { x, y };
+    function computeCarVisualProgress(car, leaderCar, baseLap, lapFraction) {
+      if (!leaderCar || car.driverId === leaderCar.driverId) {
+        return (((car.progressOnLap || 0) + lapFraction) % 1 + 1) % 1;
       }
-      if (m === 'pit_out') {
-        const x = 150 + (76 - 150) * t;
-        const y = 155 + (132 - 155) * t;
-        return { x, y };
-      }
-      return null;
+      const gapSeconds = Math.max(0, (car.totalTime || 0) - (leaderCar.totalTime || 0));
+      // Visual gap scaling so 1s-12s gaps are clearly spaced around the circuit
+      const visualLapLag = Math.min(0.62, (gapSeconds / Math.max(60, baseLap)) * 2.4);
+      const leaderProg = (((leaderCar.progressOnLap || 0) + lapFraction) % 1 + 1) % 1;
+      return (((leaderProg - visualLapLag) % 1) + 1) % 1;
     }
 
     function renderRaceView() {
       const race = gameState.weekend.race;
       const track = CALENDAR_2026[gameState.round - 1];
       const stints = getEstimatedStints(track, gameState.rules);
-      const leaderTime = race.cars[0]?.totalTime || 0;
+      const leaderCar = race.cars.find(c => !c.dnf) || race.cars[0];
+      const leaderTime = leaderCar?.totalTime || 0;
       const userCars = race.cars.filter(c => c.isUser);
+      const noOvertakeActive = Boolean(race.teamOrders?.noOvertake);
 
       const dotsHtml = race.cars.map(c => {
         if (c.dnf) return '';
         const pitCoord = getPitLaneCoord(c);
-        let cx = 150;
-        let cy = 132;
-        if (pitCoord) {
-          cx = pitCoord.x;
-          cy = pitCoord.y;
-        } else {
-          const p = (c.progressOnLap || 0) % 1;
-          const angle = p * Math.PI * 2;
-          cx = 150 + Math.cos(angle) * 88;
-          cy = 88 + Math.sin(angle) * 44;
-        }
-        return `<circle id="car-dot-${c.driverId}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${c.isUser ? 4.8 : 3.3}" fill="${c.color}" stroke="${c.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2"/>`;
+        const visProg = computeCarVisualProgress(c, leaderCar, track.baseLap, race.lapFraction || 0);
+        const pitMode = c.pitAnim?.mode || 'none';
+        const cx = pitCoord ? pitCoord.x.toFixed(1) : '150';
+        const cy = pitCoord ? pitCoord.y.toFixed(1) : '130';
+        return `<circle id="car-dot-${c.driverId}" cx="${cx}" cy="${cy}" r="${c.isUser ? 5 : 3.4}" fill="${c.color}" stroke="${c.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2" data-track-progress="${visProg.toFixed(4)}" data-pit-mode="${pitMode}"/>`;
       }).join('');
 
       return `
@@ -1684,7 +1785,20 @@
             </div>
           </div>
 
-          ${buildCircuitSvgMarkup(track, dotsHtml, 'h-40')}
+          ${buildCircuitSvgMarkup(track, dotsHtml, 'h-44', 'fm-race-svg')}
+
+          <!-- TEAM ORDERS BAR -->
+          <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-2">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300">📋 Ordini di Scuderia</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="toggleNoOvertakeOrder()" class="py-2 px-2.5 rounded-xl text-[11px] font-bold border transition ${noOvertakeActive ? 'bg-amber-500 text-slate-950 border-amber-300' : 'bg-f1bg text-slate-300 border-f1border'}">
+                ${noOvertakeActive ? '🔒 No Sorpassi: ATTIVO' : '🔓 Evita Sorpassi'}
+              </button>
+              <button onclick="executeTeammateSwap()" class="py-2 px-2.5 rounded-xl text-[11px] font-bold bg-f1bg hover:bg-slate-800 text-sky-300 border border-f1border transition">
+                🔄 Scambia Posizioni
+              </button>
+            </div>
+          </div>
 
           <div class="space-y-2.5">
             ${userCars.map(car => {
@@ -1732,6 +1846,13 @@
                         }).join('')}
                       </div>
                     </div>
+
+                    <div class="flex items-center justify-between gap-1 pt-1 border-t border-f1border/50 text-[10px]">
+                      <span class="text-slate-400 font-semibold">Cambio Strategia:</span>
+                      <button onclick="quickStrategySwitch('${car.driverId}', 'M', 'balanced')" class="px-2 py-0.5 rounded bg-f1bg border border-f1border text-amber-300 font-bold">M + Neutro</button>
+                      <button onclick="quickStrategySwitch('${car.driverId}', 'H', 'conserve')" class="px-2 py-0.5 rounded bg-f1bg border border-f1border text-slate-200 font-bold">H + Lungo</button>
+                      <button onclick="quickStrategySwitch('${car.driverId}', 'S', 'push')" class="px-2 py-0.5 rounded bg-f1bg border border-f1border text-red-300 font-bold">S + Attacco</button>
+                    </div>
                   `}
                 </div>
               `;
@@ -1767,6 +1888,8 @@
       const race = gameState?.weekend?.race;
       if (!race || gameState.weekend.phase !== 'race') return;
 
+      const track = CALENDAR_2026[gameState.round - 1];
+      syncTrackCarPositions('fm-race-svg');
       lastAnimTimestamp = performance.now();
 
       const animateStep = (now) => {
@@ -1775,7 +1898,9 @@
 
         const r = gameState?.weekend?.race;
         if (r && r.speed > 0 && gameState.weekend.phase === 'race') {
+          const leaderCar = r.cars.find(c => !c.dnf) || r.cars[0];
           r.lapFraction = Math.min(0.99, (r.lapFraction || 0) + dt * r.speed * 0.24);
+
           r.cars.forEach(c => {
             if (c.dnf) return;
             c.progressOnLap = ((c.progressOnLap || 0) + dt * r.speed * 0.24) % 1;
@@ -1787,19 +1912,23 @@
                 c.pitAnim = { mode: 'none', t: 0 };
               }
             }
+
             const dot = document.getElementById(`car-dot-${c.driverId}`);
             if (dot) {
               const pitCoord = getPitLaneCoord(c);
               if (pitCoord) {
+                dot.setAttribute('data-pit-mode', c.pitAnim.mode);
                 dot.setAttribute('cx', pitCoord.x.toFixed(1));
                 dot.setAttribute('cy', pitCoord.y.toFixed(1));
               } else {
-                const angle = c.progressOnLap * Math.PI * 2;
-                dot.setAttribute('cx', (150 + Math.cos(angle) * 88).toFixed(1));
-                dot.setAttribute('cy', (88 + Math.sin(angle) * 44).toFixed(1));
+                dot.setAttribute('data-pit-mode', 'none');
+                const visProg = computeCarVisualProgress(c, leaderCar, track.baseLap, r.lapFraction || 0);
+                dot.setAttribute('data-track-progress', visProg.toFixed(4));
               }
             }
           });
+
+          syncTrackCarPositions('fm-race-svg');
         }
         animFrameId = requestAnimationFrame(animateStep);
       };
@@ -2189,6 +2318,7 @@
 
       if (gameState.activeTab === 'weekend' && gameState.weekend.phase === 'quali') {
         stopAllLoops();
+        syncTrackCarPositions('fm-quali-svg');
         const q = gameState.weekend.quali;
         const ms = q.speed > 0 ? Math.max(250, 1000 / q.speed) : 1000;
         simTimer = setInterval(() => {
