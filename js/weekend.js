@@ -41,10 +41,45 @@ function initWeekendState(roundNum, userTeamId, drivers) {
     sprintQuali: null,
     sprintRace: null,
     quali: null,
-    preRaceStrategy: null,
+    preRaceStrategy: createDefaultPreRaceStrategy(track),
     race: null,
     results: null
   };
+}
+
+function createDefaultPreRaceStrategy(track) {
+  const laps = track.laps || 56;
+  const p1 = Math.max(8, Math.round(laps * 0.34));
+  const p2 = Math.max(p1 + 10, Math.round(laps * 0.68));
+  return {
+    d1: {
+      stints: 2,
+      startTyre: 'M',
+      pit1Lap: Math.round(laps * 0.44),
+      pit1Tyre: 'H',
+      pit2Lap: p2,
+      pit2Tyre: 'M',
+      push: 'balanced'
+    },
+    d2: {
+      stints: 2,
+      startTyre: 'H',
+      pit1Lap: Math.round(laps * 0.54),
+      pit1Tyre: 'M',
+      pit2Lap: p2,
+      pit2Tyre: 'S',
+      push: 'balanced'
+    }
+  };
+}
+
+function ensurePreRaceStrategy(track) {
+  const w = gameState.weekend;
+  if (!w) return createDefaultPreRaceStrategy(track);
+  if (!w.preRaceStrategy || !w.preRaceStrategy.d1 || typeof w.preRaceStrategy.d1.stints !== 'number') {
+    w.preRaceStrategy = createDefaultPreRaceStrategy(track);
+  }
+  return w.preRaceStrategy;
 }
 
 function getDriverTargetSetup(weekend, slotKey) {
@@ -73,32 +108,10 @@ function setFpActiveSlot(slot) {
   renderApp();
 }
 
-function setFpPlan(plan) {
-  const w = gameState.weekend;
-  if (!w || w.phase !== 'fp') return;
-  const slot = w.fp.activeSlot || 'd1';
-  if (w.fp[slot]) {
-    w.fp[slot].plan = plan;
-    saveGame();
-    renderApp();
-  }
-}
-
-function runFpStint() {
-  const w = gameState.weekend;
-  if (!w || w.phase !== 'fp') return;
-  const slot = w.fp.activeSlot || 'd1';
-  const setup = w.fp[slot];
-  const uDrivers = getUserDrivers();
-  const drv = slot === 'd1' ? uDrivers[0] : uDrivers[1];
+function evaluateSingleDriverFpRun(w, slotKey, drv) {
+  const setup = w.fp[slotKey];
   if (!setup || !drv) return;
-
-  if ((w.fp.runsLeftInSession ?? 0) <= 0) {
-    showToast('Run esauriti in questa sessione: passa alla sessione successiva!', 'info');
-    return;
-  }
-
-  const target = getDriverTargetSetup(w, slot);
+  const target = getDriverTargetSetup(w, slotKey);
   const diffWing = setup.wing - target.wing;
   const diffSusp = setup.susp - target.susp;
   const diffBrake = setup.brake - target.brake;
@@ -110,7 +123,6 @@ function runFpStint() {
   setup.confidence = Math.min(100, setup.confidence + gain);
   setup.fpRunsDone = (setup.fpRunsDone || 0) + 1;
   setup.lastError = totalErr;
-  w.fp.runsLeftInSession = Math.max(0, w.fp.runsLeftInSession - 1);
 
   const hints = [];
   if (Math.abs(diffWing) >= 2) hints.push(diffWing > 0 ? 'ala troppo carica' : 'ala troppo scarica');
@@ -121,8 +133,24 @@ function runFpStint() {
 
   setup.feedback = hints.length
     ? `${drv.code}: feeling ${setup.confidence}% — segnalato: ${hints.slice(0, 2).join(' e ')}.`
-    : `${drv.code}: assetto quasi perfetto (${setup.confidence}% feeling)!`;
+    : `${drv.code}: assetto ottimale (${setup.confidence}% feeling)!`;
+}
 
+function runFpStint() {
+  const w = gameState.weekend;
+  if (!w || w.phase !== 'fp') return;
+  const uDrivers = getUserDrivers();
+
+  if ((w.fp.runsLeftInSession ?? 0) <= 0) {
+    showToast('Run esauriti in questa sessione: passa alla sessione successiva!', 'info');
+    return;
+  }
+
+  if (uDrivers[0] && w.fp.d1) evaluateSingleDriverFpRun(w, 'd1', uDrivers[0]);
+  if (uDrivers[1] && w.fp.d2) evaluateSingleDriverFpRun(w, 'd2', uDrivers[1]);
+
+  w.fp.runsLeftInSession = Math.max(0, w.fp.runsLeftInSession - 1);
+  showToast('Run completato per entrambi i piloti: feedback aggiornati!', 'success');
   saveGame();
   renderApp();
 }
@@ -135,9 +163,12 @@ function advanceFpSession() {
     w.fp.session += 1;
     w.fp.runsLeftInSession = 3;
     showToast(`Passati a FP${w.fp.session}!`, 'info');
+  } else if (w.hasSprint) {
+    w.phase = 'sprint_quali';
+    showToast('Venerdi sera: Qualifiche Sprint!', 'info');
   } else {
-    w.phase = w.hasSprint ? 'sprint_quali' : 'quali';
-    showToast(w.hasSprint ? 'Venerdi sera: Qualifiche Sprint!' : 'Sabato: Qualifiche GP!', 'info');
+    initLiveQualifyingSession();
+    showToast('Sabato: Qualifiche ufficiali Q1!', 'info');
   }
   saveGame();
   renderApp();
@@ -206,46 +237,401 @@ function simulateSprintWeekendSequence() {
     return { ...e, pos, pts };
   });
   w.sprintRace = { classification: sprintRows, isWet };
-  w.phase = 'quali';
-  showToast('Qualifiche Sprint e Gara Sprint completate! Ora Qualifiche GP.', 'success');
+  initLiveQualifyingSession();
+  showToast('Sprint completata! Ora Qualifiche ufficiali Q1!', 'success');
   saveGame();
   renderApp();
 }
 
-function simulateQualifying() {
+// =========================================================
+// QUALIFICHE REALI Q1 / Q2 / Q3 CON PUNTINI FLUIDI E BOX
+// =========================================================
+const QUALI_STAGES = [
+  { stage: 1, label: 'Q1', durationSec: 18 * 60, advanceCount: 16 },
+  { stage: 2, label: 'Q2', durationSec: 15 * 60, advanceCount: 10 },
+  { stage: 3, label: 'Q3', durationSec: 12 * 60, advanceCount: 10 }
+];
+
+function initLiveQualifyingSession() {
   const w = gameState.weekend;
   const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
   const isWet = Math.random() < track.rainChance;
-  const grid = buildGridFromQuali(track, isWet);
-  w.quali = { grid, isWet, poleLap: grid[0]?.bestLap || track.baseLap };
-  w.phase = 'strategy';
-  generatePostSessionPress('quali', { gridOrder: grid });
-  showToast(`Qualifiche completate! Pole: ${grid[0]?.name} (${formatLapTime(grid[0]?.bestLap)})`, 'success');
+  const defaultTyre = isWet ? 'I' : 'S';
+
+  const participants = gameState.drivers.filter(d => d.teamId).map((d, idx) => {
+    const tm = getTeam(d.teamId);
+    const isUser = tm.id === gameState.userTeamId;
+    return {
+      driverId: d.id,
+      name: d.name,
+      code: d.code,
+      teamId: tm.id,
+      teamName: tm.name,
+      teamColor: tm.color,
+      isUser,
+      eliminatedIn: null,
+      finalGridPos: null,
+      tyre: defaultTyre,
+      risk: 'balanced',
+      status: 'pit', // 'pit' | 'outlap' | 'hotlap' | 'inlap'
+      trackProgress: 0,
+      pitProgress: 0.2 + ((idx % 11) * 0.06),
+      lapStartTime: 0,
+      expectedLapSec: track.baseLap,
+      bestLapSec: 999,
+      lastErrorNote: '',
+      runsDone: 0,
+      nextAiReleaseSec: 40 + idx * 28
+    };
+  });
+
+  w.quali = {
+    stageIndex: 0,
+    stageLabel: 'Q1',
+    timeLeftSec: QUALI_STAGES[0].durationSec,
+    isWet,
+    speed: 2,
+    paused: false,
+    stageFinished: false,
+    allFinished: false,
+    participants,
+    events: [`Via al Q1 (${track.name}) — 18 minuti sul cronometro!`]
+  };
+  w.phase = 'quali';
+  startSessionAnimationLoop();
+}
+
+function setQualiSpeed(spd) {
+  const q = gameState.weekend?.quali;
+  if (!q) return;
+  if (spd === 0) {
+    q.paused = true;
+  } else {
+    q.paused = false;
+    q.speed = spd;
+  }
   saveGame();
   renderApp();
 }
 
+function setQualiDriverChoice(driverId, field, value) {
+  const q = gameState.weekend?.quali;
+  if (!q) return;
+  const p = q.participants.find(x => x.driverId === driverId);
+  if (!p) return;
+  p[field] = value;
+  saveGame();
+  renderApp();
+}
+
+function sendQualiDriverOut(driverId) {
+  const q = gameState.weekend?.quali;
+  const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
+  if (!q || q.stageFinished) return;
+  const p = q.participants.find(x => x.driverId === driverId);
+  if (!p || p.eliminatedIn) return;
+  if (p.status !== 'pit') {
+    showToast(`${p.code} è già in pista (${p.status})!`, 'info');
+    return;
+  }
+  p.status = 'outlap';
+  p.pitProgress = 0.85;
+  p.trackProgress = 0.0;
+  p.expectedLapSec = track.baseLap + 6.5;
+  p.lastErrorNote = '';
+  q.events.unshift(`BOX ${p.code}: esce in pista con gomme ${p.tyre} (rischio ${p.risk}).`);
+  saveGame();
+  renderApp();
+}
+
+function abortQualiDriverToPit(driverId) {
+  const q = gameState.weekend?.quali;
+  if (!q) return;
+  const p = q.participants.find(x => x.driverId === driverId);
+  if (!p || p.status === 'pit') return;
+  p.status = 'pit';
+  p.trackProgress = 0;
+  p.pitProgress = 0.45;
+  q.events.unshift(`BOX ${p.code}: rientra anticipatamente ai box.`);
+  saveGame();
+  renderApp();
+}
+
+function computeQualiHotLapResult(p, track, isWet) {
+  const w = gameState.weekend;
+  const drv = gameState.drivers.find(d => d.id === p.driverId);
+  const tm = getTeam(p.teamId);
+  const uDrivers = getUserDrivers();
+  let conf = 65;
+  if (p.driverId === uDrivers[0]?.id) conf = w.fp?.d1?.confidence ?? 55;
+  if (p.driverId === uDrivers[1]?.id) conf = w.fp?.d2?.confidence ?? 55;
+
+  const comp = TYRE_COMPOUNDS[p.tyre] || TYRE_COMPOUNDS.S;
+  const weatherMismatchPen = (isWet && comp.wet === 0) ? 9.5 : ((!isWet && comp.wet > 0) ? 5.5 : 0);
+
+  const riskCfg = {
+    safe: { paceGain: 0.35, errorChance: 0.03 },
+    balanced: { paceGain: 0.0, errorChance: 0.11 },
+    push: { paceGain: -0.48, errorChance: 0.26 }
+  }[p.risk || 'balanced'];
+
+  const traitMod = drv?.trait === 'attacker' ? -0.05 : (drv?.trait === 'hothead' ? 0.07 : 0);
+  const errorRoll = Math.random();
+  let errorPenalty = 0;
+  let errorMsg = '';
+
+  if (errorRoll < (riskCfg.errorChance + traitMod)) {
+    if (Math.random() < 0.25 && p.risk === 'push') {
+      errorPenalty = 4.2;
+      errorMsg = '⚠️ Testacoda/Lungo! Giro rovinato';
+    } else {
+      errorPenalty = 0.85 + Math.random() * 0.9;
+      errorMsg = '⚠️ Bloccaggio/Track limits (+' + errorPenalty.toFixed(2) + 's)';
+    }
+  }
+
+  const score = computeCarPaceScore(drv, tm, track, conf, isWet);
+  const rawLap = track.baseLap - (score - 82) * 0.14 + (comp.paceBonus * 0.65) + riskCfg.paceGain + weatherMismatchPen + errorPenalty + (Math.random() * 0.28 - 0.14);
+  return {
+    lapSec: Math.max(58.0, Number(rawLap.toFixed(3))),
+    errorMsg
+  };
+}
+
+function tickLiveQualifying(dtSec) {
+  const w = gameState?.weekend;
+  const q = w?.quali;
+  if (!q || q.paused || q.stageFinished || q.allFinished) return;
+
+  const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
+  const simDelta = dtSec * (q.speed || 1) * 9.5;
+  q.timeLeftSec = Math.max(0, q.timeLeftSec - simDelta);
+
+  const activeList = q.participants.filter(p => !p.eliminatedIn);
+  const stageObj = QUALI_STAGES[q.stageIndex];
+  const elapsedInStage = stageObj.durationSec - q.timeLeftSec;
+
+  activeList.forEach((p, idx) => {
+    if (!p.isUser && p.status === 'pit' && q.timeLeftSec > 130 && elapsedInStage >= p.nextAiReleaseSec && p.runsDone < 2) {
+      p.tyre = q.isWet ? 'I' : 'S';
+      p.risk = q.timeLeftSec < 320 ? 'push' : 'balanced';
+      p.status = 'outlap';
+      p.pitProgress = 0.85;
+      p.trackProgress = 0;
+      p.expectedLapSec = track.baseLap + 6.0;
+      p.nextAiReleaseSec = elapsedInStage + 420 + (idx % 5) * 20;
+    }
+
+    if (p.status === 'outlap' || p.status === 'hotlap' || p.status === 'inlap') {
+      const lapDuration = Math.max(55, p.expectedLapSec || track.baseLap);
+      p.trackProgress += simDelta / lapDuration;
+
+      if (p.trackProgress >= 1.0) {
+        p.trackProgress -= 1.0;
+        if (p.status === 'outlap') {
+          p.status = 'hotlap';
+          p.expectedLapSec = track.baseLap;
+          if (p.isUser) q.events.unshift(`⏱️ ${p.code} lancia il giro veloce (${p.tyre} • ${p.risk})!`);
+        } else if (p.status === 'hotlap') {
+          const res = computeQualiHotLapResult(p, track, q.isWet);
+          p.runsDone += 1;
+          p.lastErrorNote = res.errorMsg;
+          if (res.lapSec < p.bestLapSec) {
+            p.bestLapSec = res.lapSec;
+          }
+          if (res.errorMsg) {
+            q.events.unshift(`${p.code}: ${formatLapTime(res.lapSec)} — ${res.errorMsg}`);
+          } else if (p.isUser || res.lapSec <= getSortedQualiActive(q)[0]?.bestLapSec) {
+            q.events.unshift(`⚡ ${p.code} chiude in ${formatLapTime(res.lapSec)} (${p.tyre})`);
+          }
+          p.status = 'inlap';
+          p.expectedLapSec = track.baseLap + 8.0;
+        } else if (p.status === 'inlap') {
+          p.status = 'pit';
+          p.trackProgress = 0;
+          p.pitProgress = 0.25 + ((idx % 10) * 0.05);
+          if (p.isUser) q.events.unshift(`BOX ${p.code}: rientrato in pit-lane.`);
+        }
+      }
+    }
+  });
+
+  if (q.timeLeftSec <= 0) {
+    finishCurrentQualiStage();
+  }
+}
+
+function getSortedQualiActive(q) {
+  return q.participants
+    .filter(p => !p.eliminatedIn)
+    .sort((a, b) => a.bestLapSec - b.bestLapSec);
+}
+
+function skipToEndOfCurrentQualiStage() {
+  const q = gameState.weekend?.quali;
+  const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
+  if (!q || q.stageFinished) return;
+
+  q.participants.filter(p => !p.eliminatedIn).forEach(p => {
+    if (p.bestLapSec >= 900 || p.status !== 'pit') {
+      if (!p.isUser) {
+        p.tyre = q.isWet ? 'I' : 'S';
+        p.risk = 'push';
+      }
+      const res = computeQualiHotLapResult(p, track, q.isWet);
+      if (res.lapSec < p.bestLapSec) p.bestLapSec = res.lapSec;
+      p.lastErrorNote = res.errorMsg;
+    }
+    p.status = 'pit';
+    p.trackProgress = 0;
+  });
+
+  q.timeLeftSec = 0;
+  finishCurrentQualiStage();
+  saveGame();
+  renderApp();
+}
+
+function finishCurrentQualiStage() {
+  const q = gameState.weekend?.quali;
+  if (!q || q.stageFinished) return;
+  const stageObj = QUALI_STAGES[q.stageIndex];
+  const sortedActive = getSortedQualiActive(q);
+
+  sortedActive.forEach((p, idx) => {
+    p.status = 'pit';
+    p.trackProgress = 0;
+    if (idx >= stageObj.advanceCount) {
+      p.eliminatedIn = stageObj.label;
+      p.finalGridPos = idx + 1;
+    }
+  });
+
+  q.stageFinished = true;
+  q.paused = true;
+
+  if (q.stageIndex >= QUALI_STAGES.length - 1) {
+    sortedActive.forEach((p, idx) => {
+      p.finalGridPos = idx + 1;
+    });
+    const fullGrid = [...q.participants]
+      .sort((a, b) => (a.finalGridPos || 99) - (b.finalGridPos || 99))
+      .map((p, idx) => ({
+        gridPos: idx + 1,
+        driverId: p.driverId,
+        name: p.name,
+        code: p.code,
+        teamId: p.teamId,
+        teamName: p.teamName,
+        teamColor: p.teamColor,
+        isUser: p.isUser,
+        bestLap: p.bestLapSec < 900 ? p.bestLapSec : (CALENDAR_2026[gameState.round - 1]?.baseLap || 85) + 3.0
+      }));
+    q.grid = fullGrid;
+    q.poleLap = fullGrid[0]?.bestLap;
+    q.allFinished = true;
+    generatePostSessionPress('quali', { gridOrder: fullGrid });
+    q.events.unshift(`🏁 Fine Q3! Pole Position per ${fullGrid[0]?.name} (${formatLapTime(fullGrid[0]?.bestLap)}).`);
+  } else {
+    q.events.unshift(`🏁 Fine ${stageObj.label}! Eliminati i piloti dalla P${stageObj.advanceCount + 1} in giù.`);
+  }
+}
+
+function advanceToNextQualiStage() {
+  const q = gameState.weekend?.quali;
+  if (!q) return;
+  if (q.allFinished) {
+    const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
+    ensurePreRaceStrategy(track);
+    gameState.weekend.phase = 'strategy';
+    saveGame();
+    renderApp();
+    return;
+  }
+
+  q.stageIndex += 1;
+  const nextStage = QUALI_STAGES[q.stageIndex];
+  q.stageLabel = nextStage.label;
+  q.timeLeftSec = nextStage.durationSec;
+  q.stageFinished = false;
+  q.paused = false;
+
+  q.participants.filter(p => !p.eliminatedIn).forEach((p, idx) => {
+    p.bestLapSec = 999;
+    p.status = 'pit';
+    p.trackProgress = 0;
+    p.runsDone = 0;
+    p.lastErrorNote = '';
+    p.nextAiReleaseSec = 35 + idx * 25;
+  });
+
+  q.events.unshift(`🟢 Semaforo verde per ${nextStage.label} (${Math.round(nextStage.durationSec / 60)} min)!`);
+  saveGame();
+  renderApp();
+}
+
+// =========================================================
+// STRATEGIA PRE-GARA & IN GARA (1, 2 O 3 STINT)
+// =========================================================
 function setPreRaceChoice(slotKey, field, val) {
   const w = gameState.weekend;
+  const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
   if (!w) return;
-  w.preRaceStrategy = w.preRaceStrategy || {
-    d1: { tyre: 'M', push: 'balanced', pitLap: Math.round((CALENDAR_2026[gameState.round - 1]?.laps || 56) * 0.45) },
-    d2: { tyre: 'H', push: 'balanced', pitLap: Math.round((CALENDAR_2026[gameState.round - 1]?.laps || 56) * 0.52) }
-  };
-  w.preRaceStrategy[slotKey][field] = field === 'pitLap' ? Number(val) : val;
+  const strat = ensurePreRaceStrategy(track);
+  const st = strat[slotKey];
+  if (!st) return;
+
+  if (field === 'stints' || field === 'pit1Lap' || field === 'pit2Lap') {
+    st[field] = Number(val);
+  } else {
+    st[field] = val;
+  }
+
+  if (st.pit2Lap <= st.pit1Lap + 5) {
+    st.pit2Lap = Math.min(track.laps - 3, st.pit1Lap + 8);
+  }
+
+  // Se siamo in pausa strategica durante la gara, aggiorna in tempo reale la monoposto
+  if (w.race && w.race.cars) {
+    const uDrivers = getUserDrivers();
+    const targetDrv = slotKey === 'd1' ? uDrivers[0] : uDrivers[1];
+    const car = w.race.cars.find(c => c.driverId === targetDrv?.id);
+    if (car && !car.retired) {
+      car.plannedStops = st.stints - 1;
+      car.pit1Lap = st.pit1Lap;
+      car.pit1Tyre = st.pit1Tyre;
+      car.pit2Lap = st.pit2Lap;
+      car.pit2Tyre = st.pit2Tyre;
+      car.pushMode = st.push;
+    }
+  }
+
   saveGame();
   renderApp();
 }
 
+function toggleLiveRaceStrategyModal(openState) {
+  const race = gameState.weekend?.race;
+  const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
+  if (!race) return;
+  ensurePreRaceStrategy(track);
+  race.strategyOpen = openState;
+  if (openState) {
+    race.paused = true;
+  }
+  saveGame();
+  renderApp();
+}
+
+// =========================================================
+// MOTORE GARA FLUIDO (PUNTINI, DISTACCHI REALI, x1/x2/x4/x8)
+// =========================================================
 function startLiveRace() {
   const w = gameState.weekend;
   const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
   const uDrivers = getUserDrivers();
   const baseGrid = w.quali?.grid || buildGridFromQuali(track, false);
-  const strat = w.preRaceStrategy || {
-    d1: { tyre: 'M', push: 'balanced', pitLap: Math.round(track.laps * 0.45) },
-    d2: { tyre: 'H', push: 'balanced', pitLap: Math.round(track.laps * 0.52) }
-  };
+  const strat = ensurePreRaceStrategy(track);
 
   const cars = baseGrid.map((g, idx) => {
     const drv = gameState.drivers.find(d => d.id === g.driverId);
@@ -253,9 +639,17 @@ function startLiveRace() {
     const isD1 = drv?.id === uDrivers[0]?.id;
     const isD2 = drv?.id === uDrivers[1]?.id;
     const myStrat = isD1 ? strat.d1 : (isD2 ? strat.d2 : null);
-    const initTyre = myStrat ? myStrat.tyre : (idx % 2 === 0 ? 'M' : 'H');
-    const pitLap = myStrat ? myStrat.pitLap : Math.round(track.laps * (0.42 + (idx % 5) * 0.04));
+
+    const aiTwoStops = track.tyreDeg === 3 && (idx % 3 === 0);
+    const initTyre = myStrat ? myStrat.startTyre : (idx % 2 === 0 ? 'M' : 'H');
+    const pit1Lap = myStrat ? myStrat.pit1Lap : Math.round(track.laps * (aiTwoStops ? 0.33 : 0.46 + (idx % 4) * 0.03));
+    const pit1Tyre = myStrat ? myStrat.pit1Tyre : (initTyre === 'H' ? 'M' : 'H');
+    const pit2Lap = myStrat ? myStrat.pit2Lap : Math.round(track.laps * 0.67);
+    const pit2Tyre = myStrat ? myStrat.pit2Tyre : 'M';
+    const plannedStops = myStrat ? (myStrat.stints - 1) : (aiTwoStops ? 2 : 1);
     const pushMode = myStrat ? myStrat.push : 'balanced';
+
+    const startOffsetLap = -idx * 0.0045;
     return {
       driverId: drv.id,
       name: drv.name,
@@ -267,16 +661,25 @@ function startLiveRace() {
       gridPos: g.gridPos,
       pos: g.gridPos,
       lap: 0,
-      progress: 0,
-      totalTime: idx * 0.25,
+      lapProgress: Math.max(0, 1 + startOffsetLap),
+      distanceLaps: startOffsetLap,
+      totalTime: idx * 0.35,
+      gapToLeader: idx * 0.35,
       tyre: initTyre,
       tyreWear: 0,
       pitStops: 0,
-      pitLap,
+      plannedStops,
+      pit1Lap,
+      pit1Tyre,
+      pit2Lap,
+      pit2Tyre,
+      inPit: false,
+      pitTimer: 0,
       pushMode,
       retired: false,
       lastLapSec: g.bestLap,
-      bestLapSec: g.bestLap
+      bestLapSec: g.bestLap,
+      currentLapDuration: g.bestLap + 2.5
     };
   });
 
@@ -284,12 +687,31 @@ function startLiveRace() {
     totalLaps: track.laps,
     currentLap: 0,
     finished: false,
+    paused: false,
+    strategyOpen: false,
+    speed: 2,
+    safetyCar: false,
+    scLapsLeft: 0,
     weather: w.quali?.isWet ? 'Pioggia' : 'Asciutto',
     isWet: !!w.quali?.isWet,
     cars,
-    events: [`Via al GP ${track.name} (${track.laps} giri)!`]
+    events: [`🚦 Semafori verdi! Parte il GP ${track.name} (${track.laps} giri)!`]
   };
   w.phase = 'race';
+  startSessionAnimationLoop();
+  saveGame();
+  renderApp();
+}
+
+function setLiveRaceSpeed(spd) {
+  const race = gameState.weekend?.race;
+  if (!race) return;
+  if (spd === 0) {
+    race.paused = true;
+  } else {
+    race.paused = false;
+    race.speed = spd;
+  }
   saveGame();
   renderApp();
 }
@@ -304,91 +726,160 @@ function setLiveCarPush(driverId, mode) {
 }
 
 function pitUserCarNow(driverId, compound = 'H') {
-  const car = gameState.weekend?.race?.cars?.find(c => c.driverId === driverId);
-  if (!car || car.retired) return;
-  car.tyre = compound;
-  car.tyreWear = 0;
-  car.pitStops = (car.pitStops || 0) + 1;
-  car.totalTime += 21.5;
-  gameState.weekend.race.events.unshift(`BOX ${car.code}: sosta anticipata per gomme ${compound}!`);
+  const race = gameState.weekend?.race;
+  const car = race?.cars?.find(c => c.driverId === driverId);
+  if (!car || car.retired || car.inPit) return;
+  car.forcePitCompound = compound;
+  race.events.unshift(`📻 BOX ${car.code}: ordine di rientro a fine giro per montare ${compound}!`);
   saveGame();
   renderApp();
 }
 
-function stepRaceOneLap() {
-  const w = gameState.weekend;
-  const race = w?.race;
-  if (!race || race.finished) return;
-  const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
-  const nextLap = race.currentLap + 1;
-  race.currentLap = nextLap;
+function computeDynamicLapDuration(car, track, race) {
+  const drv = gameState.drivers.find(d => d.id === car.driverId);
+  const tm = getTeam(car.teamId);
+  const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
+  const pushFactor = car.pushMode === 'push' ? -0.55 : (car.pushMode === 'conserve' ? 0.45 : 0.0);
+  const wearPenalty = Math.max(0, (car.tyreWear - 45) * 0.048);
+  const wetMismatch = (race.isWet && comp.wet === 0) ? 7.5 : ((!race.isWet && comp.wet > 0) ? 4.8 : 0);
+  const paceScore = computeCarPaceScore(drv, tm, track, 65, race.isWet);
+  const scFactor = race.safetyCar ? 1.24 : 1.0;
 
-  if (!race.isWet && Math.random() < (track.rainChance * 0.04)) {
-    race.isWet = true;
-    race.weather = 'Pioggia';
-    race.events.unshift(`Giro ${nextLap}: inizia a piovere sul tracciato!`);
-  }
+  const baseSec = Math.max(58.0, track.baseLap - (paceScore - 82) * 0.13 + comp.paceBonus + pushFactor + wearPenalty + wetMismatch + (Math.random() * 0.28 - 0.14));
+  return Number((baseSec * scFactor).toFixed(3));
+}
+
+function tickLiveRace(dtSec) {
+  const w = gameState?.weekend;
+  const race = w?.race;
+  if (!race || race.paused || race.finished) return;
+
+  const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
+  const simSec = dtSec * (race.speed || 1) * 6.5;
 
   const degTrackMult = track.tyreDeg === 3 ? 1.24 : (track.tyreDeg === 2 ? 1.0 : 0.84);
   const ruleDegMult = gameState.rules?.extraDegMultiplier || 1.0;
 
   race.cars.forEach(car => {
     if (car.retired) return;
-    const drv = gameState.drivers.find(d => d.id === car.driverId);
-    const tm = getTeam(car.teamId);
-    const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
 
-    const relRisk = Math.max(0.001, (100 - (tm?.rel || 82)) * 0.00055);
-    if (Math.random() < relRisk) {
-      car.retired = true;
-      race.events.unshift(`Giro ${nextLap}: RITIRO per ${car.name} (${tm.short})!`);
+    if (car.inPit) {
+      car.pitTimer -= simSec;
+      car.totalTime += simSec;
+      if (car.pitTimer <= 0) {
+        car.inPit = false;
+        car.tyre = car.nextPitCompound || 'H';
+        car.tyreWear = 0;
+        car.pitStops += 1;
+        car.nextPitCompound = null;
+        car.currentLapDuration = computeDynamicLapDuration(car, track, race);
+        race.events.unshift(`🔧 BOX ${car.code}: sosta completata, riparte su ${car.tyre}!`);
+      }
       return;
     }
 
-    if (race.isWet && comp.wet === 0 && nextLap > 2) {
-      car.tyre = 'I';
-      car.tyreWear = 0;
-      car.pitStops += 1;
-      car.totalTime += 21.0;
-      race.events.unshift(`Giro ${nextLap}: ${car.code} monta Intermedie.`);
-    } else if (!race.isWet && comp.wet > 0 && nextLap > 3) {
-      car.tyre = 'M';
-      car.tyreWear = 0;
-      car.pitStops += 1;
-      car.totalTime += 21.0;
-      race.events.unshift(`Giro ${nextLap}: ${car.code} torna su Slick Medium.`);
-    } else if (nextLap === car.pitLap && car.pitStops === 0 && nextLap < track.laps - 2) {
-      car.tyre = car.tyre === 'S' ? 'M' : (car.tyre === 'M' ? 'H' : 'M');
-      car.tyreWear = 0;
-      car.pitStops += 1;
-      car.totalTime += 21.5;
-      race.events.unshift(`Giro ${nextLap}: pit-stop per ${car.code} (${car.tyre}).`);
+    const lapDur = Math.max(55.0, car.currentLapDuration || track.baseLap);
+    const deltaLaps = simSec / lapDur;
+    car.distanceLaps += deltaLaps;
+    car.totalTime += simSec;
+
+    const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
+    const wearPerLap = comp.degRate * degTrackMult * ruleDegMult * (car.pushMode === 'push' ? 1.26 : (car.pushMode === 'conserve' ? 0.78 : 1.0)) * (race.safetyCar ? 0.45 : 1.0);
+    car.tyreWear = Math.min(100, Number((car.tyreWear + wearPerLap * deltaLaps).toFixed(1)));
+
+    const completedLapNow = Math.max(0, Math.floor(car.distanceLaps));
+    if (completedLapNow > car.lap) {
+      car.lap = completedLapNow;
+      car.lastLapSec = lapDur;
+      if (car.lap >= 1 && car.lastLapSec < car.bestLapSec) {
+        car.bestLapSec = car.lastLapSec;
+      }
+
+      // Affidabilità
+      const tm = getTeam(car.teamId);
+      const relRisk = Math.max(0.0008, (100 - (tm?.rel || 82)) * 0.00048);
+      if (car.lap > 2 && Math.random() < relRisk) {
+        car.retired = true;
+        race.events.unshift(`💥 Giro ${car.lap}: RITIRO per ${car.name} (${tm.short})!`);
+        if (!race.safetyCar && Math.random() < 0.42 && car.lap < track.laps - 4) {
+          race.safetyCar = true;
+          race.scLapsLeft = 3;
+          race.events.unshift(`🟡 SAFETY CAR in pista al giro ${car.lap}!`);
+        }
+        return;
+      }
+
+      // Controllo Pit-Stop
+      let shouldPit = false;
+      let targetCompound = 'H';
+
+      if (car.forcePitCompound) {
+        shouldPit = true;
+        targetCompound = car.forcePitCompound;
+        car.forcePitCompound = null;
+      } else if (race.isWet && comp.wet === 0 && car.lap >= 2) {
+        shouldPit = true;
+        targetCompound = 'I';
+      } else if (!race.isWet && comp.wet > 0 && car.lap >= 3) {
+        shouldPit = true;
+        targetCompound = 'M';
+      } else if (car.lap < track.laps - 2) {
+        if (car.pitStops === 0 && car.plannedStops >= 1 && car.lap >= car.pit1Lap) {
+          shouldPit = true;
+          targetCompound = car.pit1Tyre || 'H';
+        } else if (car.pitStops === 1 && car.plannedStops >= 2 && car.lap >= car.pit2Lap) {
+          shouldPit = true;
+          targetCompound = car.pit2Tyre || 'M';
+        }
+      }
+
+      if (shouldPit) {
+        car.inPit = true;
+        car.pitTimer = 21.5;
+        car.nextPitCompound = targetCompound;
+      } else {
+        car.currentLapDuration = computeDynamicLapDuration(car, track, race);
+      }
     }
-
-    const pushFactor = car.pushMode === 'push' ? -0.55 : (car.pushMode === 'conserve' ? 0.45 : 0.0);
-    const wearRate = comp.degRate * degTrackMult * ruleDegMult * (car.pushMode === 'push' ? 1.28 : (car.pushMode === 'conserve' ? 0.78 : 1.0));
-    car.tyreWear = Math.min(100, Number((car.tyreWear + wearRate).toFixed(1)));
-    const wearPenalty = Math.max(0, (car.tyreWear - 45) * 0.045);
-
-    const paceScore = computeCarPaceScore(drv, tm, track, 65, race.isWet);
-    const lapSec = Math.max(58.0, track.baseLap - (paceScore - 82) * 0.13 + comp.paceBonus + pushFactor + wearPenalty + (Math.random() * 0.55 - 0.25));
-    car.lastLapSec = Number(lapSec.toFixed(3));
-    if (car.lastLapSec < car.bestLapSec) car.bestLapSec = car.lastLapSec;
-    car.totalTime = Number((car.totalTime + car.lastLapSec).toFixed(3));
-    car.lap = nextLap;
   });
 
-  const active = race.cars.filter(c => !c.retired).sort((a, b) => b.lap - a.lap || a.totalTime - b.totalTime);
+  // Aggiorna posizioni e distacchi reali dal leader
+  const active = race.cars.filter(c => !c.retired).sort((a, b) => b.distanceLaps - a.distanceLaps);
   const retired = race.cars.filter(c => c.retired);
-  [...active, ...retired].forEach((c, idx) => { c.pos = idx + 1; });
+  const leader = active[0];
+  const leaderLap = leader ? leader.lap : race.currentLap;
 
-  if (nextLap >= track.laps) {
-    finalizeRaceResults();
-    return;
+  if (leaderLap > race.currentLap) {
+    race.currentLap = leaderLap;
+    if (race.safetyCar) {
+      race.scLapsLeft -= 1;
+      if (race.scLapsLeft <= 0) {
+        race.safetyCar = false;
+        race.events.unshift(`🟢 Safety Car rientra ai box al giro ${race.currentLap}: si riparte!`);
+      }
+    } else if (!race.isWet && Math.random() < track.rainChance * 0.035 && race.currentLap > 3) {
+      race.isWet = true;
+      race.weather = 'Pioggia';
+      race.events.unshift(`🌧️ Giro ${race.currentLap}: inizia a piovere sul tracciato!`);
+    }
   }
 
-  saveGame();
-  renderApp();
+  active.forEach((c, idx) => {
+    c.pos = idx + 1;
+    if (idx === 0 || !leader) {
+      c.gapToLeader = 0;
+    } else {
+      const lapDiff = Math.max(0, leader.distanceLaps - c.distanceLaps);
+      c.gapToLeader = Number((lapDiff * (leader.currentLapDuration || track.baseLap)).toFixed(2));
+    }
+  });
+  retired.forEach((c, idx) => {
+    c.pos = active.length + idx + 1;
+  });
+
+  if (leader && leader.lap >= track.laps) {
+    finalizeRaceResults();
+  }
 }
 
 function finalizeRaceResults() {
@@ -400,6 +891,7 @@ function finalizeRaceResults() {
   const pointsTable = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 
   race.finished = true;
+  race.paused = true;
   const ordered = [...race.cars].sort((a, b) => {
     if (a.retired && !b.retired) return 1;
     if (!a.retired && b.retired) return -1;
@@ -519,4 +1011,39 @@ function applyEndOfSeasonPrizesAndReset() {
   } else {
     showToast('Ciclo di 7 stagioni completato! Puoi avviare una nuova carriera dal tasto Reset.', 'info');
   }
+}
+
+// =========================================================
+// LOOP ANIMAZIONE FLUIDO (60 FPS) PER QUALIFICHE E GARA
+// =========================================================
+function startSessionAnimationLoop() {
+  if (animFrameId) return;
+  lastAnimTimestamp = performance.now();
+  let lastRenderTime = 0;
+
+  const step = (now) => {
+    const dtSec = Math.min(0.1, (now - lastAnimTimestamp) / 1000);
+    lastAnimTimestamp = now;
+
+    if (gameState && gameState.activeTab === 'weekend' && gameState.weekend) {
+      const w = gameState.weekend;
+      if (w.phase === 'quali' && w.quali && !w.quali.paused && !w.quali.stageFinished) {
+        tickLiveQualifying(dtSec);
+        if (now - lastRenderTime > 90) {
+          lastRenderTime = now;
+          renderApp();
+        }
+      } else if (w.phase === 'race' && w.race && !w.race.paused && !w.race.finished) {
+        tickLiveRace(dtSec);
+        if (now - lastRenderTime > 90) {
+          lastRenderTime = now;
+          renderApp();
+        }
+      }
+    }
+
+    animFrameId = requestAnimationFrame(step);
+  };
+
+  animFrameId = requestAnimationFrame(step);
 }
