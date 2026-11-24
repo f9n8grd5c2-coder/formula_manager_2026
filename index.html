@@ -56,7 +56,7 @@
   <div id="app" class="w-full max-w-md min-h-screen flex flex-col bg-f1bg relative shadow-2xl border-x border-f1border/40"></div>
 
   <script>
-    const STORAGE_KEY = 'formula_manager_2026_save_v5';
+    const STORAGE_KEY = 'formula_manager_2026_save_v6';
 
     const INITIAL_TEAMS = [
       { id: 'ferrari', name: 'Scuderia Rossa', short: 'ROS', color: '#e10600', budget: 148.0, aero: 89, pu: 88, chassis: 88, rel: 86, objective: 2, prestige: 94 },
@@ -943,7 +943,6 @@
 
       const activeCarsOnTrack = q.entries.filter(e => !e.eliminated && e.status !== 'BOX').length;
 
-      // Dynamic track grip: rubber build-up when cars run, drops slightly if rain arrives
       const currentGrip = q.trackGrip ?? (q.weather === 'wet' ? 54 : 68);
       const gripGain = activeCarsOnTrack * 0.035 * (q.weather === 'wet' ? 0.35 : 1.0);
       const weatherGripDelta = q.weather === 'wet' ? -0.06 : 0.01;
@@ -1328,6 +1327,8 @@
 
       const userDrivers = getUserDrivers();
       const startWeather = Math.random() < track.rainChance * 0.45 ? 'light_rain' : 'dry';
+      const initialWater = startWeather === 'dry' ? 4 : 42;
+      const initialThreat = Math.min(95, Math.round(track.rainChance * 100 + (startWeather === 'dry' ? 12 : 35)));
 
       const cars = gridOrder.map((entry, idx) => {
         const driver = gameState.drivers.find(d => d.id === entry.driverId);
@@ -1384,18 +1385,19 @@
         totalLaps: track.laps,
         speed: 1,
         lapFraction: 0,
-        activeDriverIdx: 0,
-        teamOrders: {
-          noOvertake: false,
-          swapDone: false
-        },
+        activePanel: 'pitwall',
         weather: startWeather,
-        trackWater: startWeather === 'dry' ? 4 : 42,
-        rainThreat: Math.min(95, Math.round(track.rainChance * 100 + (startWeather === 'dry' ? 12 : 35))),
+        weatherTrend: initialThreat > 55 ? 'Peggioramento' : 'Stabile',
+        trackWater: initialWater,
+        rainThreat: initialThreat,
         safetyCar: 'NONE',
         scLapsRemaining: 0,
         fastestLap: { driverId: null, code: '-', time: 999 },
         radioLog: [`G1/${track.laps}: Semaforo verde a ${track.name}! Ritmo 1x calmo per gestire meteo e pit.`],
+        teamOrders: {
+          noOvertake: false,
+          swapDone: false
+        },
         cars
       };
 
@@ -1410,9 +1412,9 @@
       renderApp();
     }
 
-    function selectRaceDriverSlot(idx) {
+    function setRacePanel(panelId) {
       if (!gameState.weekend?.race) return;
-      gameState.weekend.race.activeDriverIdx = idx;
+      gameState.weekend.race.activePanel = panelId;
       saveGame();
       renderApp();
     }
@@ -1502,6 +1504,7 @@
       const track = CALENDAR_2026[gameState.round - 1];
       const degMult = gameState.rules?.extraDegMultiplier || 1.0;
 
+      const prevWater = race.trackWater ?? 0;
       if (Math.random() < track.rainChance * 0.055) {
         const prevW = race.weather;
         race.weather = race.weather === 'dry' ? 'light_rain' : (Math.random() > 0.5 ? 'heavy_rain' : 'dry');
@@ -1510,13 +1513,20 @@
           race.radioLog.unshift(`G${race.lap}: Meteo -> ${wLabel}!`);
         }
       }
-      if (race.weather === 'heavy_rain') race.trackWater = Math.min(100, race.trackWater + 18);
-      else if (race.weather === 'light_rain') race.trackWater = Math.min(75, race.trackWater + 9);
-      else race.trackWater = Math.max(0, race.trackWater - 11);
+      if (race.weather === 'heavy_rain') race.trackWater = Math.min(100, (race.trackWater ?? 0) + 18);
+      else if (race.weather === 'light_rain') race.trackWater = Math.min(75, (race.trackWater ?? 0) + 9);
+      else race.trackWater = Math.max(0, (race.trackWater ?? 0) - 11);
 
       race.rainThreat = Math.max(5, Math.min(98, Math.round(
         track.rainChance * 100 + race.trackWater * 0.55 + (Math.random() - 0.5) * 14
       )));
+      if (race.trackWater > prevWater + 2 || race.rainThreat >= 65) {
+        race.weatherTrend = 'In peggioramento';
+      } else if (race.trackWater < prevWater - 2 && race.weather === 'dry') {
+        race.weatherTrend = 'In asciugatura';
+      } else {
+        race.weatherTrend = 'Stabile';
+      }
 
       if (race.scLapsRemaining > 0) {
         race.scLapsRemaining -= 1;
@@ -1773,19 +1783,22 @@
     function renderRaceView() {
       const race = gameState.weekend.race;
       const track = CALENDAR_2026[gameState.round - 1];
+      const stints = getEstimatedStints(track, gameState.rules);
       const leaderCar = race.cars.find(c => !c.dnf) || race.cars[0];
       const leaderTime = leaderCar?.totalTime || 0;
-      const userCars = race.cars.filter(c => c.isUser);
-      const activeIdx = Math.min(Math.max(0, race.activeDriverIdx || 0), Math.max(0, userCars.length - 1));
-      const selCar = userCars[activeIdx] || userCars[0];
-      const selDriver = selCar ? gameState.drivers.find(d => d.id === selCar.driverId) : null;
-      const selMood = selDriver ? getMoodMeta(selDriver.mood) : getMoodMeta(65);
-      const noOvertakeActive = Boolean(race.teamOrders?.noOvertake);
 
+      // Locked order of user's two drivers (Driver 1 first, Driver 2 second — never swaps slots)
+      const userDriversOrdered = getUserDrivers();
+      const lockedUserCars = userDriversOrdered
+        .map(ud => race.cars.find(c => c.driverId === ud.id))
+        .filter(Boolean);
+
+      const activePanel = race.activePanel || 'pitwall';
       const weatherIcon = race.weather === 'dry' ? '☀️ Asciutto' : race.weather === 'light_rain' ? '🌦️ Pioggia' : '🌧️ Diluvio';
       const scBadge = race.safetyCar === 'NONE'
         ? '<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">🟢 VERDE</span>'
         : `<span class="px-1.5 py-0.5 rounded bg-amber-500/25 text-amber-300 font-extrabold">⚠️ ${race.safetyCar}</span>`;
+      const noOvertakeActive = Boolean(race.teamOrders?.noOvertake);
 
       const dotsHtml = race.cars.map(c => {
         if (c.dnf) return '';
@@ -1797,77 +1810,96 @@
         return `<circle id="car-dot-${c.driverId}" cx="${cx}" cy="${cy}" r="${c.isUser ? 5 : 3.3}" fill="${c.color}" stroke="${c.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2" data-track-progress="${visProg.toFixed(4)}" data-pit-mode="${pitMode}"/>`;
       }).join('');
 
-      return `
-        <div class="p-2.5 space-y-2">
-          <!-- COMPACT TELEMETRY & WEATHER BAR -->
-          <div class="bg-f1card border border-f1border rounded-xl px-2.5 py-2 flex items-center justify-between gap-1.5">
-            <div class="text-[11px] font-mono-num leading-tight">
-              <div class="font-extrabold text-white">G${Math.min(race.lap, race.totalLaps)}/${race.totalLaps} ${scBadge}</div>
-              <div class="text-[10px] text-slate-300 mt-0.5">${weatherIcon} • Rischio ${race.rainThreat ?? 15}% • Acqua ${Math.round(race.trackWater ?? 0)}%</div>
-            </div>
-            <div class="flex gap-1 shrink-0">
-              ${[0, 1, 2, 4].map(s => `
-                <button onclick="setRaceSpeed(${s})" class="px-2 py-1 rounded-lg text-[10px] font-mono-num font-bold ${race.speed === s ? 'bg-f1red text-white' : 'bg-f1bg text-slate-400 border border-f1border'}">
-                  ${s === 0 ? '⏸' : s + 'x'}
-                </button>
-              `).join('')}
+      const panels = [
+        { id: 'pitwall', label: '🎛️ Muretto' },
+        { id: 'track', label: '🗺️ Pista & 22' },
+        { id: 'weather', label: '☁️ Meteo' },
+        { id: 'radio', label: '📡 Radio' }
+      ];
+
+      let panelBodyHtml = '';
+
+      if (activePanel === 'pitwall') {
+        const u0 = lockedUserCars[0];
+        const u1 = lockedUserCars[1];
+        const mateGap = (u0 && u1 && !u0.dnf && !u1.dnf)
+          ? `${Math.abs(u1.totalTime - u0.totalTime).toFixed(1)}s`
+          : '--';
+
+        panelBodyHtml = `
+          <div class="bg-f1card border border-f1border rounded-xl px-2.5 py-1.5 flex items-center justify-between text-[10px] font-mono-num">
+            <span class="text-slate-400">Ordini Scuderia:</span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-300">Gap Compagni: <strong class="text-white">${mateGap}</strong></span>
+              <button onclick="toggleNoOvertakeOrder()" class="px-2 py-0.5 rounded font-bold border ${noOvertakeActive ? 'bg-amber-500 text-slate-950 border-amber-300' : 'bg-f1bg text-slate-300 border-f1border'}">
+                ${noOvertakeActive ? '🔒 No Sorpassi' : '🔓 Libero'}
+              </button>
+              <button onclick="executeTeammateSwap()" class="px-2 py-0.5 rounded font-bold bg-f1bg text-sky-300 border border-f1border">
+                🔄 Scambio
+              </button>
             </div>
           </div>
 
-          <!-- CIRCUIT + LIVE NEWS STRIP -->
-          <div class="space-y-1.5">
-            ${buildCircuitSvgMarkup(track, dotsHtml, 'h-32', 'fm-race-svg')}
-            <div class="bg-f1card/90 border border-f1border/80 rounded-xl px-2.5 py-1.5 text-[11px] text-amber-200 truncate font-medium">
-              📡 ${race.radioLog[0] || 'In attesa di notizie dal muretto...'}
-            </div>
+          <div class="space-y-2">
+            ${lockedUserCars.map((car, slotIdx) => {
+              const drv = gameState.drivers.find(d => d.id === car.driverId);
+              const mood = getMoodMeta(drv?.mood ?? 65);
+              const tc = TYRE_COMPOUNDS[car.tyre];
+              const gapLeader = car.pos === 1 ? 'LEADER' : (car.dnf ? 'DNF' : `+${Math.max(0.1, car.totalTime - leaderTime).toFixed(1)}s`);
+              const wearColor = car.tyreWear > 65 ? 'text-red-400' : car.tyreWear > 45 ? 'text-amber-300' : 'text-emerald-400';
+
+              return `
+                <div class="bg-f1card border border-f1border rounded-xl p-2.5 space-y-2">
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                      <span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 mr-1">P${slotIdx + 1}</span>
+                      <span class="font-mono-num font-black text-xs text-amber-300">P${car.pos}</span>
+                      <span class="text-xs font-extrabold text-white ml-1">${car.code}</span>
+                      <span class="text-[10px] font-mono-num text-slate-400 ml-1">${gapLeader}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[10px] font-mono-num shrink-0">
+                      <span class="${mood.color}">${mood.emoji}${drv?.mood ?? 65}</span>
+                      <span class="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black" style="background:${tc.color}; color:${tc.text}">${tc.short}</span>
+                      <span class="${wearColor} font-bold">${Math.round(car.tyreWear)}%</span>
+                    </div>
+                  </div>
+
+                  ${car.dnf ? `
+                    <div class="text-[11px] text-red-400 font-bold bg-red-950/40 px-2.5 py-1.5 rounded-lg border border-red-500/30">Ritirato: ${car.dnfReason}</div>
+                  ` : `
+                    <div class="grid grid-cols-3 gap-1">
+                      ${[
+                        { id: 'conserve', lbl: '🐢 Lungo' },
+                        { id: 'balanced', lbl: '⚖️ Neutro' },
+                        { id: 'push', lbl: '🔥 Attacco' }
+                      ].map(pm => `
+                        <button onclick="setCarMode('${car.driverId}', 'pace', '${pm.id}')" class="py-1 rounded-lg text-[10px] font-bold border ${car.paceMode === pm.id ? 'bg-sky-600 border-sky-400 text-white' : 'bg-f1bg border-f1border text-slate-400'}">${pm.lbl}</button>
+                      `).join('')}
+                    </div>
+
+                    <div class="flex items-center justify-between gap-1">
+                      <span class="text-[10px] font-bold text-slate-400">${car.pitRequested ? '⏳ BOX:' : 'PIT:'}</span>
+                      <div class="flex gap-1">
+                        ${['S', 'M', 'H', 'I', 'W'].map(tk => {
+                          const cObj = TYRE_COMPOUNDS[tk];
+                          const isQueued = car.pitRequested && car.nextTyre === tk;
+                          return `<button onclick="requestPitStop('${car.driverId}', '${tk}')" class="w-6 h-6 rounded-full text-[10px] font-black border ${isQueued ? 'border-white scale-110' : 'border-transparent opacity-85'}" style="background:${cObj.color}; color:${cObj.text}">${cObj.short}</button>`;
+                        }).join('')}
+                      </div>
+                      <button onclick="quickStrategySwitch('${car.driverId}', 'M', 'balanced')" class="px-1.5 py-1 rounded bg-f1bg border border-f1border text-[9px] text-amber-300 font-bold">M+Neutro</button>
+                      <button onclick="quickStrategySwitch('${car.driverId}', 'H', 'conserve')" class="px-1.5 py-1 rounded bg-f1bg border border-f1border text-[9px] text-slate-200 font-bold">H+Lungo</button>
+                    </div>
+                  `}
+                </div>
+              `;
+            }).join('')}
           </div>
-
-          <!-- DRIVER SWITCHER + COMPACT STRATEGY & TEAM ORDERS -->
-          ${selCar ? `
-            <div class="bg-f1card border border-f1border rounded-xl p-2.5 space-y-2">
-              <div class="flex items-center justify-between gap-1.5">
-                <div class="flex gap-1 flex-1">
-                  ${userCars.map((uc, idx) => `
-                    <button onclick="selectRaceDriverSlot(${idx})" class="flex-1 py-1 px-2 rounded-lg text-[11px] font-extrabold border truncate ${idx === activeIdx ? 'bg-slate-800 border-white text-white' : 'bg-f1bg border-f1border text-slate-400'}">
-                      P${uc.pos} ${uc.code} (${TYRE_COMPOUNDS[uc.tyre].short} ${Math.round(uc.tyreWear)}%)
-                    </button>
-                  `).join('')}
-                </div>
-                <span class="text-[10px] font-mono-num px-1.5 py-1 rounded border ${selMood.bg} ${selMood.color}">${selMood.emoji}${selDriver?.mood ?? 65}</span>
-              </div>
-
-              <div class="grid grid-cols-3 gap-1">
-                ${[
-                  { id: 'conserve', lbl: '🐢 Lungo' },
-                  { id: 'balanced', lbl: '⚖️ Neutro' },
-                  { id: 'push', lbl: '🔥 Attacco' }
-                ].map(pm => `
-                  <button onclick="setCarMode('${selCar.driverId}', 'pace', '${pm.id}')" class="py-1 rounded-lg text-[10px] font-bold border ${selCar.paceMode === pm.id ? 'bg-sky-600 border-sky-400 text-white' : 'bg-f1bg border-f1border text-slate-400'}">${pm.lbl}</button>
-                `).join('')}
-              </div>
-
-              <div class="flex items-center justify-between gap-1">
-                <span class="text-[10px] font-bold text-slate-400">${selCar.pitRequested ? '⏳ BOX:' : 'PIT:'}</span>
-                <div class="flex gap-1">
-                  ${['S', 'M', 'H', 'I', 'W'].map(tk => {
-                    const cObj = TYRE_COMPOUNDS[tk];
-                    const isQueued = selCar.pitRequested && selCar.nextTyre === tk;
-                    return `<button onclick="requestPitStop('${selCar.driverId}', '${tk}')" class="w-6 h-6 rounded-full text-[10px] font-black border ${isQueued ? 'border-white scale-110' : 'border-transparent opacity-85'}" style="background:${cObj.color}; color:${cObj.text}">${cObj.short}</button>`;
-                  }).join('')}
-                </div>
-                <button onclick="toggleNoOvertakeOrder()" class="px-2 py-1 rounded-lg text-[10px] font-bold border ${noOvertakeActive ? 'bg-amber-500 text-slate-950 border-amber-300' : 'bg-f1bg text-slate-300 border-f1border'}">
-                  ${noOvertakeActive ? '🔒 No Sorpassi' : '🔓 Ordini'}
-                </button>
-                <button onclick="executeTeammateSwap()" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-f1bg text-sky-300 border border-f1border">
-                  🔄 Scambio
-                </button>
-              </div>
-            </div>
-          ` : ''}
-
-          <!-- COMPACT LIVE TIMING & GAPS -->
-          <div class="bg-f1card border border-f1border rounded-xl p-2 max-h-36 overflow-y-auto no-scrollbar space-y-1">
-            ${race.cars.slice(0, 10).map((c, idx) => {
+        `;
+      } else if (activePanel === 'track') {
+        panelBodyHtml = `
+          ${buildCircuitSvgMarkup(track, dotsHtml, 'h-32', 'fm-race-svg')}
+          <div class="bg-f1card border border-f1border rounded-xl p-2 max-h-56 overflow-y-auto no-scrollbar space-y-1">
+            ${race.cars.map((c, idx) => {
               const gap = idx === 0 ? 'LEADER' : (c.dnf ? 'DNF' : `+${Math.max(0.1, c.totalTime - leaderTime).toFixed(1)}s`);
               const lapStr = c.dnf ? '--.-' : `${c.lastLapTime.toFixed(1)}s`;
               return `
@@ -1886,6 +1918,76 @@
               `;
             }).join('')}
           </div>
+        `;
+      } else if (activePanel === 'weather') {
+        const recTyre = race.trackWater >= 65 ? 'Full Wet (W)' : race.trackWater >= 25 ? 'Intermedia (I)' : 'Asciutto Slick (S/M/H)';
+        panelBodyHtml = `
+          <div class="bg-f1card border border-f1border rounded-xl p-3 space-y-2.5 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Condizioni Attuali</span>
+              <span class="font-extrabold text-white">${weatherIcon}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Tendenza Meteo</span>
+              <span class="font-bold text-amber-300">${race.weatherTrend || 'Stabile'}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Probabilità Pioggia / Acqua</span>
+              <span class="font-mono-num font-bold text-sky-300">${race.rainThreat ?? 15}% • ${Math.round(race.trackWater ?? 0)}%</span>
+            </div>
+            <div class="flex items-center justify-between border-t border-f1border/60 pt-2">
+              <span class="text-slate-400">Finestra Gomme Consigliata</span>
+              <span class="font-extrabold text-emerald-400">${recTyre}</span>
+            </div>
+            <div class="flex items-center justify-between text-[11px] font-mono-num bg-f1bg p-2 rounded-lg border border-f1border/60">
+              <span class="text-red-400 font-bold">S: ${stints.S}g</span>
+              <span class="text-amber-300 font-bold">M: ${stints.M}g</span>
+              <span class="text-slate-200 font-bold">H: ${stints.H}g</span>
+            </div>
+          </div>
+        `;
+      } else {
+        panelBodyHtml = `
+          <div class="bg-f1card border border-f1border rounded-xl p-2.5 max-h-60 overflow-y-auto no-scrollbar space-y-1.5">
+            ${race.radioLog.slice(0, 14).map(line => `
+              <div class="text-[11px] text-slate-200 bg-f1bg px-2.5 py-1.5 rounded-lg border border-f1border/50 leading-snug">${line}</div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      return `
+        <div class="p-2.5 space-y-2">
+          <!-- ALWAYS-VISIBLE RACE & WEATHER STRIP -->
+          <div class="bg-f1card border border-f1border rounded-xl px-2.5 py-2 flex items-center justify-between gap-1.5">
+            <div class="text-[11px] font-mono-num leading-tight min-w-0">
+              <div class="font-extrabold text-white">G${Math.min(race.lap, race.totalLaps)}/${race.totalLaps} ${scBadge} <span class="text-[10px] text-purple-300 ml-1">FL ${race.fastestLap.code}</span></div>
+              <div class="text-[10px] text-slate-300 truncate mt-0.5">${weatherIcon} • ${race.weatherTrend || 'Stabile'} • Pioggia ${race.rainThreat ?? 15}%</div>
+            </div>
+            <div class="flex gap-1 shrink-0">
+              ${[0, 1, 2, 4].map(s => `
+                <button onclick="setRaceSpeed(${s})" class="px-2 py-1 rounded-lg text-[10px] font-mono-num font-bold ${race.speed === s ? 'bg-f1red text-white' : 'bg-f1bg text-slate-400 border border-f1border'}">
+                  ${s === 0 ? '⏸' : s + 'x'}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- LATEST RADIO TICKER -->
+          <div class="bg-f1card/90 border border-f1border/80 rounded-lg px-2.5 py-1 text-[10px] text-amber-200 truncate">
+            📡 ${race.radioLog[0] || 'Gara in corso...'}
+          </div>
+
+          <!-- 4 DEDICATED RACE PANELS -->
+          <div class="grid grid-cols-4 gap-1 bg-f1card p-1 rounded-xl border border-f1border">
+            ${panels.map(p => `
+              <button onclick="setRacePanel('${p.id}')" class="py-1.5 px-1 rounded-lg text-[10px] font-extrabold truncate transition ${activePanel === p.id ? 'bg-f1red text-white' : 'text-slate-400 hover:text-slate-200'}">
+                ${p.label}
+              </button>
+            `).join('')}
+          </div>
+
+          ${panelBodyHtml}
         </div>
       `;
     }
@@ -1906,15 +2008,14 @@
         const r = gameState?.weekend?.race;
         if (r && r.speed > 0 && gameState.weekend.phase === 'race') {
           const leaderCar = r.cars.find(c => !c.dnf) || r.cars[0];
-          // Slower normal speed (1x) so strategy/weather/SC decisions are relaxed
-          const paceFactor = r.speed * 0.14;
+          const paceFactor = r.speed * 0.12;
           r.lapFraction = Math.min(0.99, (r.lapFraction || 0) + dt * paceFactor);
 
           r.cars.forEach(c => {
             if (c.dnf) return;
             c.progressOnLap = ((c.progressOnLap || 0) + dt * paceFactor) % 1;
             if (c.pitAnim && c.pitAnim.mode !== 'none') {
-              c.pitAnim.t += dt * r.speed * 0.55;
+              c.pitAnim.t += dt * r.speed * 0.5;
               if (c.pitAnim.mode === 'pit_in' && c.pitAnim.t >= 1) {
                 c.pitAnim = { mode: 'pit_out', t: 0 };
               } else if (c.pitAnim.mode === 'pit_out' && c.pitAnim.t >= 1) {
@@ -1943,8 +2044,8 @@
       };
       animFrameId = requestAnimationFrame(animateStep);
 
-      // 1x = 5200ms per lap so the player has plenty of time to decide
-      const intervalMs = race.speed > 0 ? Math.max(600, 5200 / race.speed) : 5200;
+      // Slower 1x normal pace (5800ms per lap) for thoughtful strategic decisions
+      const intervalMs = race.speed > 0 ? Math.max(700, 5800 / race.speed) : 5800;
       simTimer = setInterval(() => {
         if (gameState?.weekend?.race && gameState.weekend.race.speed > 0 && gameState.weekend.phase === 'race') {
           simulateRaceLap();
