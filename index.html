@@ -59,438 +59,443 @@
     const STORAGE_KEY = 'formula_manager_2026_save_v9';
     const BASE_CAREER_YEARS = 7;
 
+    const BUDGET_CAP_2026 = 200.0;
+
+    const FOM_PRIZE_POOL = [135.0, 122.0, 112.0, 102.0, 94.0, 86.0, 79.0, 73.0, 68.0, 64.0, 60.0];
+
     const SPONSOR_OPTIONS = [
       {
         id: 'apex_tech',
-        name: 'Apex Telemetry',
-        tagline: 'Equilibrio tra quota fissa, compenso a GP e bonus risultati',
-        upfront: 8.0,
-        perRace: 1.4,
-        podiumBonus: 2.5,
-        winBonus: 4.5,
-        pointsBonus: 0.6
+        name: 'Apex Global Tech',
+        tagline: 'Contratto bilanciato: buona firma iniziale, rata costante e premi a punti',
+        upfront: 18.0,
+        perRace: 2.2,
+        podiumBonus: 3.5,
+        winBonus: 6.0,
+        pointsBonus: 0.9
       },
       {
         id: 'solaris_bank',
-        name: 'Solaris Global Bank',
-        tagline: 'Alta liquidita iniziale e compenso regolare a ogni GP',
-        upfront: 14.0,
-        perRace: 1.8,
-        podiumBonus: 1.5,
-        winBonus: 3.0,
-        pointsBonus: 0.4
+        name: 'Solaris Private Bank',
+        tagline: 'Massima liquidita garantita subito e a ogni GP (ideale per coprire il Budget Cap)',
+        upfront: 30.0,
+        perRace: 2.8,
+        podiumBonus: 2.0,
+        winBonus: 4.0,
+        pointsBonus: 0.5
       },
       {
         id: 'veloce_fuel',
-        name: 'Veloce Racing Fuel',
-        tagline: 'Compenso base piu contenuto, ma ricchi premi su punti, podi e vittorie',
-        upfront: 5.0,
-        perRace: 1.0,
-        podiumBonus: 4.0,
-        winBonus: 7.0,
-        pointsBonus: 1.0
+        name: 'Veloce Energy & Fuel',
+        tagline: 'Fisso piu basso, ma premi altissimi su punti, podi e vittorie (da Top Team)',
+        upfront: 12.0,
+        perRace: 1.6,
+        podiumBonus: 5.5,
+        winBonus: 9.5,
+        pointsBonus: 1.4
       }
     ];
 
     const INITIAL_TEAMS = [
-      { id: 'ferrari', name: 'Scuderia Rossa', short: 'ROS', color: '#e10600', budget: 148.0, aero: 89, pu: 88, chassis: 88, rel: 86, objective: 2, prestige: 94, dna: 'balanced', hierarchy: 'equal', fanPassion: 96, tpName: 'F. Vasseurini' },
-      { id: 'redbull', name: 'Toro Alato Racing', short: 'TAR', color: '#1e41ff', budget: 150.0, aero: 91, pu: 90, chassis: 89, rel: 88, objective: 1, prestige: 95, dna: 'downforce', hierarchy: '1st_2nd', fanPassion: 85, tpName: 'C. Hornerino' },
-      { id: 'mclaren', name: 'Papaia Racing', short: 'PAP', color: '#ff8000', budget: 146.0, aero: 90, pu: 89, chassis: 89, rel: 87, objective: 2, prestige: 91, dna: 'balanced', hierarchy: 'equal', fanPassion: 88, tpName: 'A. Stellone' },
-      { id: 'mercedes', name: 'Argento GP', short: 'ARG', color: '#00d2be', budget: 147.0, aero: 87, pu: 90, chassis: 88, rel: 89, objective: 3, prestige: 93, dna: 'topSpeed', hierarchy: '1st_2nd', fanPassion: 86, tpName: 'T. Wolffini' },
-      { id: 'aston', name: 'Verde Britannico', short: 'VER', color: '#006f62', budget: 132.0, aero: 84, pu: 86, chassis: 84, rel: 84, objective: 5, prestige: 80, dna: 'downforce', hierarchy: '1st_2nd', fanPassion: 74, tpName: 'M. Kracko' },
-      { id: 'alpine', name: 'Blu Alpino F1', short: 'ALP', color: '#ff69b4', budget: 124.0, aero: 80, pu: 82, chassis: 81, rel: 80, objective: 7, prestige: 75, dna: 'topSpeed', hierarchy: '1st_2nd', fanPassion: 72, tpName: 'O. Oakesi' },
-      { id: 'williams', name: 'Grove Azzurra', short: 'GRO', color: '#005aff', budget: 120.0, aero: 79, pu: 85, chassis: 79, rel: 81, objective: 7, prestige: 77, dna: 'topSpeed', hierarchy: '1st_2nd', fanPassion: 79, tpName: 'J. Vowlesi' },
-      { id: 'vcarb', name: 'Faenza Toro', short: 'FAE', color: '#2b4562', budget: 112.0, aero: 78, pu: 84, chassis: 78, rel: 82, objective: 8, prestige: 70, dna: 'balanced', hierarchy: 'equal', fanPassion: 66, tpName: 'L. Mekkiesi' },
-      { id: 'haas', name: 'Stella Americana', short: 'AME', color: '#b6babd', budget: 105.0, aero: 76, pu: 83, chassis: 76, rel: 79, objective: 9, prestige: 66, dna: 'balanced', hierarchy: 'equal', fanPassion: 64, tpName: 'A. Komatsui' },
-      { id: 'audi', name: 'Quattro Anelli Audi', short: 'AUD', color: '#c0c0c0', budget: 138.0, aero: 82, pu: 81, chassis: 83, rel: 80, objective: 6, prestige: 84, dna: 'balanced', hierarchy: '1st_2nd', fanPassion: 82, tpName: 'M. Binottini' },
-      { id: 'cadillac', name: 'Stella Cadillac', short: 'CAD', color: '#eab308', budget: 128.0, aero: 77, pu: 79, chassis: 78, rel: 77, objective: 8, prestige: 76, dna: 'topSpeed', hierarchy: 'equal', fanPassion: 77, tpName: 'G. Lowdoni' }
+      { id: 'ferrari', name: 'Scuderia Rossa', short: 'ROS', color: '#e10600', budget: 226.0, aero: 89, pu: 88, chassis: 88, rel: 86, objective: 2, prestige: 94, dna: 'balanced', hierarchy: 'equal', fanPassion: 96, tpName: 'F. Vasseurini' },
+      { id: 'redbull', name: 'Toro Alato Racing', short: 'TAR', color: '#1e41ff', budget: 228.0, aero: 91, pu: 90, chassis: 89, rel: 88, objective: 1, prestige: 95, dna: 'downforce', hierarchy: '1st_2nd', fanPassion: 85, tpName: 'C. Hornerino' },
+      { id: 'mclaren', name: 'Papaia Racing', short: 'PAP', color: '#ff8000', budget: 218.0, aero: 90, pu: 89, chassis: 89, rel: 87, objective: 2, prestige: 91, dna: 'balanced', hierarchy: 'equal', fanPassion: 88, tpName: 'A. Stellone' },
+      { id: 'mercedes', name: 'Argento GP', short: 'ARG', color: '#00d2be', budget: 222.0, aero: 87, pu: 90, chassis: 88, rel: 89, objective: 3, prestige: 93, dna: 'topSpeed', hierarchy: '1st_2nd', fanPassion: 86, tpName: 'T. Wolffini' },
+      { id: 'aston', name: 'Verde Britannico', short: 'VER', color: '#006f62', budget: 192.0, aero: 84, pu: 86, chassis: 84, rel: 84, objective: 5, prestige: 80, dna: 'downforce', hierarchy: '1st_2nd', fanPassion: 74, tpName: 'M. Kracko' },
+      { id: 'audi', name: 'Quattro Anelli Audi', short: 'AUD', color: '#c0c0c0', budget: 188.0, aero: 82, pu: 81, chassis: 83, rel: 80, objective: 6, prestige: 84, dna: 'balanced', hierarchy: '1st_2nd', fanPassion: 82, tpName: 'M. Binottini' },
+      { id: 'williams', name: 'Grove Azzurra', short: 'GRO', color: '#005aff', budget: 172.0, aero: 79, pu: 85, chassis: 79, rel: 81, objective: 7, prestige: 77, dna: 'topSpeed', hierarchy: '1st_2nd', fanPassion: 79, tpName: 'J. Vowlesi' },
+      { id: 'alpine', name: 'Blu Alpino F1', short: 'ALP', color: '#ff69b4', budget: 170.0, aero: 80, pu: 82, chassis: 81, rel: 80, objective: 7, prestige: 75, dna: 'topSpeed', hierarchy: '1st_2nd', fanPassion: 72, tpName: 'O. Oakesi' },
+      { id: 'cadillac', name: 'Stella Cadillac', short: 'CAD', color: '#eab308', budget: 168.0, aero: 77, pu: 79, chassis: 78, rel: 77, objective: 8, prestige: 76, dna: 'topSpeed', hierarchy: 'equal', fanPassion: 77, tpName: 'G. Lowdoni' },
+      { id: 'vcarb', name: 'Faenza Toro', short: 'FAE', color: '#2b4562', budget: 154.0, aero: 78, pu: 84, chassis: 78, rel: 82, objective: 8, prestige: 70, dna: 'balanced', hierarchy: 'equal', fanPassion: 66, tpName: 'L. Mekkiesi' },
+      { id: 'haas', name: 'Stella Americana', short: 'AME', color: '#b6babd', budget: 148.0, aero: 76, pu: 83, chassis: 76, rel: 79, objective: 9, prestige: 66, dna: 'balanced', hierarchy: 'equal', fanPassion: 64, tpName: 'A. Komatsui' }
     ];
 
-    const DRIVER_TRAITS = {
-      attacker: { id: 'attacker', label: 'Attaccante', icon: '⚔️', desc: 'Feroce nei duelli e sul giro secco, ma piu esigente sulle gomme.' },
-      team_player: { id: 'team_player', label: 'Uomo Squadra', icon: '🤝', desc: 'Accetta piu facilmente i ruoli e collabora agli ordini del muretto.' },
-      tactician: { id: 'tactician', label: 'Tattico', icon: '🧠', desc: 'Lettura pulita del degrado e costanza sul passo gara.' },
-      hothead: { id: 'hothead', label: 'Testa Calda', icon: '🔥', desc: 'Scintille alte in rivalita e reazioni forti se declassato o superato.' },
-      wet_ace: { id: 'wet_ace', label: 'Mago del Bagno', icon: '🌧️', desc: 'Sensibilita superiore su asfalto umido o bagnato.' }
-    };
-
-    const INITIAL_DRIVERS = [
-      { id: 'lec', name: 'Carletto Leclaire', code: 'LEC', number: 16, teamId: 'ferrari', role: 'co_lead', ovr: 91, potential: 94, pace: 92, cons: 89, tyreMgmt: 88, age: 28, contract: 2, salary: 24.0, mood: 68, fatigue: 15, trainingBoost: 0, trait: 'attacker', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
-      { id: 'ham', name: 'Luigi Amilton', code: 'HAM', number: 44, teamId: 'ferrari', role: 'co_lead', ovr: 90, potential: 91, pace: 89, cons: 91, tyreMgmt: 92, age: 41, contract: 1, salary: 28.0, mood: 70, fatigue: 20, trainingBoost: 0, trait: 'tactician', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
-      { id: 'ver', name: 'Massimo Verstappo', code: 'VER', number: 1, teamId: 'redbull', role: 'lead', ovr: 95, potential: 97, pace: 96, cons: 94, tyreMgmt: 93, age: 28, contract: 3, salary: 32.0, mood: 74, fatigue: 15, trainingBoost: 0, trait: 'attacker', preferredDna: 'downforce', acceptsSupport: false, transferRequest: false },
-      { id: 'law', name: 'Liamos Lavson', code: 'LAW', number: 30, teamId: 'redbull', role: 'support', ovr: 82, potential: 88, pace: 83, cons: 81, tyreMgmt: 80, age: 24, contract: 1, salary: 4.5, mood: 64, fatigue: 15, trainingBoost: 0, trait: 'hothead', preferredDna: 'downforce', acceptsSupport: true, transferRequest: false },
-      { id: 'nor', name: 'Lando Norri', code: 'NOR', number: 4, teamId: 'mclaren', role: 'co_lead', ovr: 91, potential: 95, pace: 92, cons: 90, tyreMgmt: 89, age: 26, contract: 2, salary: 20.0, mood: 72, fatigue: 15, trainingBoost: 0, trait: 'tactician', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
-      { id: 'pia', name: 'Oscar Piastrello', code: 'PIA', number: 81, teamId: 'mclaren', role: 'co_lead', ovr: 88, potential: 94, pace: 89, cons: 88, tyreMgmt: 87, age: 25, contract: 2, salary: 12.0, mood: 67, fatigue: 15, trainingBoost: 0, trait: 'tactician', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
-      { id: 'rus', name: 'Giorgio Russi', code: 'RUS', number: 63, teamId: 'mercedes', role: 'lead', ovr: 89, potential: 92, pace: 90, cons: 89, tyreMgmt: 87, age: 28, contract: 1, salary: 16.0, mood: 66, fatigue: 15, trainingBoost: 0, trait: 'tactician', preferredDna: 'topSpeed', acceptsSupport: false, transferRequest: false },
-      { id: 'ant', name: 'Kimi Antonelli', code: 'ANT', number: 12, teamId: 'mercedes', role: 'support', ovr: 83, potential: 93, pace: 85, cons: 81, tyreMgmt: 82, age: 19, contract: 2, salary: 5.0, mood: 69, fatigue: 12, trainingBoost: 0, trait: 'attacker', preferredDna: 'topSpeed', acceptsSupport: true, transferRequest: false },
-      { id: 'alo', name: 'Fernando Alonsino', code: 'ALO', number: 14, teamId: 'aston', role: 'lead', ovr: 89, potential: 90, pace: 88, cons: 92, tyreMgmt: 91, age: 44, contract: 1, salary: 18.0, mood: 65, fatigue: 22, trainingBoost: 0, trait: 'wet_ace', preferredDna: 'downforce', acceptsSupport: false, transferRequest: false },
-      { id: 'str', name: 'Lance Strollo', code: 'STR', number: 18, teamId: 'aston', role: 'support', ovr: 79, potential: 81, pace: 78, cons: 79, tyreMgmt: 81, age: 27, contract: 2, salary: 5.5, mood: 58, fatigue: 15, trainingBoost: 0, trait: 'team_player', preferredDna: 'downforce', acceptsSupport: true, transferRequest: false },
-      { id: 'gas', name: 'Pietro Gaslini', code: 'GAS', number: 10, teamId: 'alpine', role: 'lead', ovr: 85, potential: 88, pace: 86, cons: 85, tyreMgmt: 84, age: 30, contract: 1, salary: 8.5, mood: 62, fatigue: 15, trainingBoost: 0, trait: 'attacker', preferredDna: 'topSpeed', acceptsSupport: false, transferRequest: false },
-      { id: 'dooh', name: 'Jack Duan', code: 'DUA', number: 7, teamId: 'alpine', role: 'support', ovr: 78, potential: 85, pace: 79, cons: 77, tyreMgmt: 78, age: 23, contract: 1, salary: 2.5, mood: 61, fatigue: 15, trainingBoost: 0, trait: 'team_player', preferredDna: 'topSpeed', acceptsSupport: true, transferRequest: false },
-      { id: 'sai', name: 'Carlos Sainzino', code: 'SAI', number: 55, teamId: 'williams', role: 'lead', ovr: 88, potential: 90, pace: 88, cons: 89, tyreMgmt: 88, age: 31, contract: 2, salary: 14.0, mood: 66, fatigue: 15, trainingBoost: 0, trait: 'tactician', preferredDna: 'topSpeed', acceptsSupport: false, transferRequest: false },
-      { id: 'alb', name: 'Alex Alboni', code: 'ALB', number: 23, teamId: 'williams', role: 'support', ovr: 85, potential: 88, pace: 85, cons: 85, tyreMgmt: 86, age: 30, contract: 1, salary: 8.0, mood: 65, fatigue: 15, trainingBoost: 0, trait: 'team_player', preferredDna: 'topSpeed', acceptsSupport: true, transferRequest: false },
-      { id: 'tsu', name: 'Yuki Tsunodini', code: 'TSU', number: 22, teamId: 'vcarb', role: 'co_lead', ovr: 82, potential: 86, pace: 84, cons: 80, tyreMgmt: 80, age: 25, contract: 1, salary: 3.5, mood: 63, fatigue: 15, trainingBoost: 0, trait: 'hothead', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
-      { id: 'had', name: 'Isack Adjar', code: 'ADJ', number: 6, teamId: 'vcarb', role: 'co_lead', ovr: 79, potential: 89, pace: 81, cons: 78, tyreMgmt: 78, age: 21, contract: 1, salary: 2.0, mood: 64, fatigue: 15, trainingBoost: 0, trait: 'attacker', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
-      { id: 'oco', name: 'Esteban Oconni', code: 'OCO', number: 31, teamId: 'haas', role: 'co_lead', ovr: 83, potential: 85, pace: 83, cons: 84, tyreMgmt: 83, age: 29, contract: 1, salary: 6.5, mood: 60, fatigue: 15, trainingBoost: 0, trait: 'hothead', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
-      { id: 'bea', name: 'Oliver Bermanno', code: 'BER', number: 87, teamId: 'haas', role: 'co_lead', ovr: 80, potential: 90, pace: 81, cons: 79, tyreMgmt: 80, age: 21, contract: 2, salary: 2.5, mood: 63, fatigue: 15, trainingBoost: 0, trait: 'attacker', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
-      { id: 'hul', name: 'Nico Hulkenbergio', code: 'HUL', number: 27, teamId: 'audi', role: 'lead', ovr: 84, potential: 85, pace: 84, cons: 85, tyreMgmt: 84, age: 38, contract: 1, salary: 7.5, mood: 66, fatigue: 18, trainingBoost: 0, trait: 'tactician', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
-      { id: 'bor', name: 'Gabriel Bortoletti', code: 'BOR', number: 5, teamId: 'audi', role: 'support', ovr: 80, potential: 91, pace: 82, cons: 79, tyreMgmt: 80, age: 21, contract: 2, salary: 3.0, mood: 67, fatigue: 14, trainingBoost: 0, trait: 'wet_ace', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
-      { id: 'bot', name: 'Valtteri Bottini', code: 'BOT', number: 77, teamId: 'cadillac', role: 'co_lead', ovr: 82, potential: 83, pace: 81, cons: 84, tyreMgmt: 83, age: 36, contract: 1, salary: 6.0, mood: 64, fatigue: 18, trainingBoost: 0, trait: 'team_player', preferredDna: 'topSpeed', acceptsSupport: true, transferRequest: false },
-      { id: 'per', name: 'Sergio Perezi', code: 'PER', number: 11, teamId: 'cadillac', role: 'co_lead', ovr: 81, potential: 82, pace: 80, cons: 81, tyreMgmt: 85, age: 36, contract: 1, salary: 6.5, mood: 62, fatigue: 18, trainingBoost: 0, trait: 'wet_ace', preferredDna: 'topSpeed', acceptsSupport: true, transferRequest: false }
-    ];
-
-    const FREE_AGENTS_POOL = [
-      { id: 'ric', name: 'Daniel Ricciardone', code: 'RIC', number: 3, ovr: 81, potential: 82, pace: 81, cons: 82, tyreMgmt: 82, age: 36, contract: 1, salary: 5.0, mood: 63, fatigue: 12, trainingBoost: 0, trait: 'attacker', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
-      { id: 'mag', name: 'Kevin Magnusseni', code: 'MAG', number: 20, ovr: 79, potential: 80, pace: 80, cons: 78, tyreMgmt: 79, age: 33, contract: 1, salary: 4.0, mood: 60, fatigue: 12, trainingBoost: 0, trait: 'hothead', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
-      { id: 'col', name: 'Franco Colapintino', code: 'COL', number: 43, ovr: 80, potential: 89, pace: 82, cons: 79, tyreMgmt: 79, age: 22, contract: 2, salary: 2.2, mood: 66, fatigue: 10, trainingBoost: 0, trait: 'attacker', preferredDna: 'topSpeed', acceptsSupport: false, transferRequest: false },
-      { id: 'pour', name: 'Theo Pourchairetti', code: 'POU', number: 98, ovr: 78, potential: 86, pace: 79, cons: 78, tyreMgmt: 78, age: 22, contract: 1, salary: 1.8, mood: 62, fatigue: 12, trainingBoost: 0, trait: 'tactician', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
-      { id: 'dru', name: 'Felipe Drugovichi', code: 'DRU', number: 34, ovr: 77, potential: 83, pace: 78, cons: 78, tyreMgmt: 77, age: 25, contract: 1, salary: 1.6, mood: 60, fatigue: 12, trainingBoost: 0, trait: 'team_player', preferredDna: 'downforce', acceptsSupport: true, transferRequest: false }
-    ];
-
-    const CALENDAR_2026 = [
-      { round: 1, dateLabel: '6-8 Mar', name: 'Australia', circuit: 'Albert Park', flag: '🇦🇺', laps: 58, baseLap: 79.5, downforce: 7, topSpeed: 7, tyreDeg: 2, rainChance: 0.20, hasSprint: false, path: 'M 150,130 L 82,130 C 48,130 34,104 52,82 L 84,48 C 102,30 132,36 144,58 L 164,84 C 176,96 196,74 186,52 C 178,34 214,28 242,46 C 268,64 268,104 244,122 C 226,134 192,130 150,130 Z' },
-      { round: 2, dateLabel: '13-15 Mar', name: 'Cina', circuit: 'Shanghai', flag: '🇨🇳', laps: 56, baseLap: 95.0, downforce: 6, topSpeed: 8, tyreDeg: 3, rainChance: 0.15, hasSprint: true, path: 'M 150,130 L 74,130 C 46,130 38,96 58,72 L 96,42 C 122,24 156,36 152,64 C 148,84 182,92 204,68 L 228,44 C 252,32 270,58 262,94 C 254,124 220,130 150,130 Z' },
-      { round: 3, dateLabel: '27-29 Mar', name: 'Giappone', circuit: 'Suzuka', flag: '🇯🇵', laps: 53, baseLap: 90.5, downforce: 9, topSpeed: 7, tyreDeg: 3, rainChance: 0.25, hasSprint: false, path: 'M 150,130 L 86,130 C 56,130 48,104 72,90 L 118,74 C 134,68 112,50 86,52 C 62,54 68,28 106,28 C 144,28 158,56 188,68 C 218,80 258,64 264,92 C 270,122 238,130 150,130 Z' },
-      { round: 4, dateLabel: '10-12 Apr', name: 'Bahrain', circuit: 'Sakhir', flag: '🇧🇭', laps: 57, baseLap: 91.2, downforce: 5, topSpeed: 8, tyreDeg: 3, rainChance: 0.02, hasSprint: false, path: 'M 150,130 L 78,130 L 44,104 L 84,76 L 136,44 L 224,38 L 262,68 L 244,108 L 214,130 Z' },
-      { round: 5, dateLabel: '17-19 Apr', name: 'Arabia Saudita', circuit: 'Jeddah', flag: '🇸🇦', laps: 50, baseLap: 89.8, downforce: 4, topSpeed: 9, tyreDeg: 2, rainChance: 0.02, hasSprint: false, path: 'M 150,130 L 72,130 C 42,130 38,98 62,80 L 128,46 L 236,38 C 266,42 270,78 248,98 L 218,130 Z' },
-      { round: 6, dateLabel: '1-3 Mag', name: 'Miami', circuit: 'Miami Autodrome', flag: '🇺🇸', laps: 57, baseLap: 89.4, downforce: 6, topSpeed: 8, tyreDeg: 2, rainChance: 0.22, hasSprint: true, path: 'M 150,130 L 74,130 L 42,108 L 46,56 L 128,36 L 248,38 L 264,74 L 238,104 L 212,130 Z' },
-      { round: 7, dateLabel: '15-17 Mag', name: 'Emilia-Romagna', circuit: 'Imola', flag: '🇮🇹', laps: 63, baseLap: 77.2, downforce: 8, topSpeed: 7, tyreDeg: 2, rainChance: 0.20, hasSprint: false, path: 'M 150,130 L 76,130 C 44,130 38,96 64,74 L 118,40 C 146,26 172,56 196,62 C 222,68 242,38 262,56 C 276,72 262,116 224,130 Z' },
-      { round: 8, dateLabel: '22-24 Mag', name: 'Monaco', circuit: 'Monte Carlo', flag: '🇲🇨', laps: 78, baseLap: 73.1, downforce: 10, topSpeed: 4, tyreDeg: 1, rainChance: 0.18, hasSprint: false, path: 'M 150,130 L 74,130 C 44,130 40,94 68,82 L 56,56 C 48,38 78,28 112,38 L 154,52 C 176,58 184,32 222,36 C 258,40 268,78 246,104 L 214,130 Z' },
-      { round: 9, dateLabel: '5-7 Giu', name: 'Spagna', circuit: 'Barcellona', flag: '🇪🇸', laps: 66, baseLap: 75.4, downforce: 8, topSpeed: 7, tyreDeg: 3, rainChance: 0.10, hasSprint: false, path: 'M 150,130 L 76,130 L 42,106 L 54,48 L 164,34 L 256,48 L 262,92 L 226,118 L 208,130 Z' },
-      { round: 10, dateLabel: '12-14 Giu', name: 'Canada', circuit: 'Montreal', flag: '🇨🇦', laps: 70, baseLap: 74.2, downforce: 5, topSpeed: 9, tyreDeg: 2, rainChance: 0.28, hasSprint: true, path: 'M 150,130 L 74,130 L 42,104 L 82,42 L 222,40 L 264,76 L 232,114 L 208,130 Z' },
-      { round: 11, dateLabel: '26-28 Giu', name: 'Austria', circuit: 'Red Bull Ring', flag: '🇦🇹', laps: 71, baseLap: 66.8, downforce: 6, topSpeed: 9, tyreDeg: 2, rainChance: 0.25, hasSprint: false, path: 'M 150,130 L 76,130 L 52,88 L 128,38 L 252,54 L 242,118 L 208,130 Z' },
-      { round: 12, dateLabel: '3-5 Lug', name: 'Gran Bretagna', circuit: 'Silverstone', flag: '🇬🇧', laps: 52, baseLap: 87.9, downforce: 9, topSpeed: 8, tyreDeg: 3, rainChance: 0.35, hasSprint: true, path: 'M 150,130 L 76,130 C 42,130 42,92 68,72 L 124,36 C 166,24 224,34 256,58 C 272,72 264,114 224,130 Z' },
-      { round: 13, dateLabel: '17-19 Lug', name: 'Belgio', circuit: 'Spa-Francorchamps', flag: '🇧🇪', laps: 44, baseLap: 105.2, downforce: 6, topSpeed: 9, tyreDeg: 3, rainChance: 0.42, hasSprint: false, path: 'M 150,130 L 74,130 C 42,130 38,94 64,72 L 106,36 C 138,24 166,68 196,64 C 224,60 242,34 262,54 C 274,74 260,118 218,130 Z' },
-      { round: 14, dateLabel: '24-26 Lug', name: 'Ungheria', circuit: 'Hungaroring', flag: '🇭🇺', laps: 70, baseLap: 78.5, downforce: 9, topSpeed: 5, tyreDeg: 2, rainChance: 0.18, hasSprint: false, path: 'M 150,130 L 74,130 C 42,130 38,94 66,72 L 114,34 C 154,24 188,68 218,64 C 242,60 256,38 266,64 C 274,94 252,124 212,130 Z' },
-      { round: 15, dateLabel: '21-23 Ago', name: 'Olanda', circuit: 'Zandvoort', flag: '🇳🇱', laps: 72, baseLap: 72.4, downforce: 9, topSpeed: 6, tyreDeg: 2, rainChance: 0.32, hasSprint: true, path: 'M 150,130 L 74,130 C 40,130 38,92 66,70 L 118,34 C 162,24 194,74 224,68 C 246,64 258,42 266,70 C 272,102 248,126 210,130 Z' },
-      { round: 16, dateLabel: '4-6 Set', name: 'Italia', circuit: 'Monza', flag: '🇮🇹', laps: 53, baseLap: 80.8, downforce: 2, topSpeed: 10, tyreDeg: 2, rainChance: 0.14, hasSprint: false, path: 'M 150,130 L 74,130 L 42,110 L 52,44 L 248,44 L 260,110 L 222,130 Z' },
-      { round: 17, dateLabel: '11-13 Set', name: 'Madrid', circuit: 'IFEMA Madrid', flag: '🇪🇸', laps: 57, baseLap: 85.0, downforce: 7, topSpeed: 7, tyreDeg: 2, rainChance: 0.10, hasSprint: false, path: 'M 150,130 L 76,130 L 42,104 L 78,40 L 188,36 L 258,64 L 244,120 L 210,130 Z' },
-      { round: 18, dateLabel: '25-27 Set', name: 'Azerbaijan', circuit: 'Baku', flag: '🇦🇿', laps: 51, baseLap: 103.0, downforce: 4, topSpeed: 10, tyreDeg: 1, rainChance: 0.08, hasSprint: false, path: 'M 150,130 L 74,130 L 44,116 L 46,42 L 168,38 L 174,84 L 256,84 L 254,126 L 214,130 Z' },
-      { round: 19, dateLabel: '9-11 Ott', name: 'Singapore', circuit: 'Marina Bay', flag: '🇸🇬', laps: 62, baseLap: 93.8, downforce: 10, topSpeed: 5, tyreDeg: 2, rainChance: 0.30, hasSprint: true, path: 'M 150,130 L 74,130 L 42,114 L 46,48 L 122,38 L 134,82 L 216,40 L 260,72 L 240,124 L 210,130 Z' },
-      { round: 20, dateLabel: '23-25 Ott', name: 'Stati Uniti', circuit: 'Austin COTA', flag: '🇺🇸', laps: 56, baseLap: 96.4, downforce: 8, topSpeed: 8, tyreDeg: 3, rainChance: 0.16, hasSprint: false, path: 'M 150,130 L 74,130 C 42,130 42,92 68,72 L 122,36 C 162,28 186,74 218,64 C 244,56 258,38 266,68 C 272,98 248,124 212,130 Z' },
-      { round: 21, dateLabel: '30 Ott-1 Nov', name: 'Messico', circuit: 'Hermanos Rodriguez', flag: '🇲🇽', laps: 71, baseLap: 78.9, downforce: 8, topSpeed: 8, tyreDeg: 2, rainChance: 0.12, hasSprint: false, path: 'M 150,130 L 74,130 L 44,106 L 62,44 L 178,38 L 252,62 L 232,124 L 208,130 Z' },
-      { round: 22, dateLabel: '6-8 Nov', name: 'Brasile', circuit: 'Interlagos', flag: '🇧🇷', laps: 71, baseLap: 72.1, downforce: 7, topSpeed: 8, tyreDeg: 2, rainChance: 0.34, hasSprint: false, path: 'M 150,130 L 74,130 L 42,102 L 96,42 L 232,46 L 258,94 L 216,128 L 204,130 Z' },
-      { round: 23, dateLabel: '19-21 Nov', name: 'Las Vegas', circuit: 'Las Vegas Strip', flag: '🇺🇸', laps: 50, baseLap: 94.6, downforce: 3, topSpeed: 10, tyreDeg: 1, rainChance: 0.05, hasSprint: false, path: 'M 150,130 L 74,130 L 44,114 L 50,40 L 250,40 L 258,114 L 218,130 Z' },
-      { round: 24, dateLabel: '27-29 Nov', name: 'Qatar', circuit: 'Lusail', flag: '🇶🇦', laps: 57, baseLap: 84.3, downforce: 9, topSpeed: 8, tyreDeg: 3, rainChance: 0.02, hasSprint: false, path: 'M 150,130 L 76,130 C 42,130 42,92 68,72 L 126,34 C 182,24 246,38 262,72 C 272,98 252,126 212,130 Z' }
-    ];
-
-    const TYRE_COMPOUNDS = {
-      S: { id: 'S', name: 'Soft', short: 'S', color: '#ff3b30', text: '#ffffff', paceBonus: -1.15, degRate: 4.35, wet: 0 },
-      M: { id: 'M', name: 'Medium', short: 'M', color: '#ffcc00', text: '#000000', paceBonus: -0.45, degRate: 2.75, wet: 0 },
-      H: { id: 'H', name: 'Hard', short: 'H', color: '#f2f2f7', text: '#000000', paceBonus: 0.10, degRate: 1.85, wet: 0 },
-      I: { id: 'I', name: 'Inter', short: 'I', color: '#34c759', text: '#ffffff', paceBonus: 1.75, degRate: 2.25, wet: 1 },
-      W: { id: 'W', name: 'Wet', short: 'W', color: '#007aff', text: '#ffffff', paceBonus: 3.30, degRate: 1.75, wet: 2 }
-    };
-
-    const RND_TIERS = {
-      minor: { id: 'minor', label: 'Minore', cost: 4.5, days: 4, gain: 1.4, desc: 'Aggiornamento rapido (4 gg)' },
-      standard: { id: 'standard', label: 'Standard', cost: 9.0, days: 8, gain: 2.8, desc: 'Pacchetto bilanciato (8 gg)' },
-      major: { id: 'major', label: 'Evoluzione', cost: 15.5, days: 13, gain: 4.6, desc: 'Grande sviluppo (13 gg)' }
-    };
-
-    function formatLapTime(sec) {
-      if (!sec || typeof sec !== 'number' || !isFinite(sec) || sec >= 890 || sec <= 0) return '--:--.---';
-      const totalMs = Math.round(sec * 1000);
-      const mins = Math.floor(totalMs / 60000);
-      const remMs = totalMs % 60000;
-      const wholeSecs = Math.floor(remMs / 1000);
-      const millis = remMs % 1000;
-      return `${mins}:${String(wholeSecs).padStart(2, '0')}.${String(millis).padStart(3, '0')}`;
+    function getBudgetCapLimit() {
+      return Number((gameState?.budgetCap || BUDGET_CAP_2026).toFixed(1));
     }
 
-    function getEstimatedStints(track, rules) {
-      const trackDegMult = track.tyreDeg === 3 ? 1.24 : track.tyreDeg === 2 ? 1.0 : 0.84;
-      const ruleMult = (rules && rules.extraDegMultiplier) ? rules.extraDegMultiplier : 1.0;
-
-      const calcRange = (compoundKey) => {
-        const comp = TYRE_COMPOUNDS[compoundKey];
-        const rate = comp.degRate * trackDegMult * ruleMult;
-        const avgLaps = Math.max(5, Math.round(66 / rate));
-        const minLaps = Math.max(4, Math.min(Math.max(6, track.laps - 4), avgLaps - 2));
-        const maxLaps = Math.max(minLaps + 2, Math.min(Math.max(8, track.laps - 3), avgLaps + 2));
-        return `${minLaps}-${maxLaps}`;
-      };
-
-      return { S: calcRange('S'), M: calcRange('M'), H: calcRange('H') };
+    function getCapSpent() {
+      return Number((gameState?.capSpent || 0).toFixed(1));
     }
 
-    function getMoodMeta(moodValue) {
-      const val = Math.max(0, Math.min(100, Number(moodValue ?? 65)));
-      if (val >= 82) return { label: 'Euforico', emoji: '🔥', color: 'text-emerald-400', bg: 'bg-emerald-950/50 border-emerald-500/40', paceDelta: -0.35, degMult: 0.90 };
-      if (val >= 62) return { label: 'Motivato', emoji: '😄', color: 'text-sky-300', bg: 'bg-sky-950/40 border-sky-500/35', paceDelta: -0.15, degMult: 0.96 };
-      if (val >= 42) return { label: 'Neutro', emoji: '😐', color: 'text-slate-300', bg: 'bg-slate-800/70 border-slate-600/40', paceDelta: 0.0, degMult: 1.0 };
-      if (val >= 22) return { label: 'Teso', emoji: '😟', color: 'text-amber-300', bg: 'bg-amber-950/50 border-amber-500/40', paceDelta: 0.22, degMult: 1.07 };
-      return { label: 'Frustrato', emoji: '😡', color: 'text-red-400', bg: 'bg-red-950/60 border-red-500/45', paceDelta: 0.45, degMult: 1.15 };
+    function getRemainingBudgetCap() {
+      return Number((getBudgetCapLimit() - getCapSpent()).toFixed(1));
     }
 
-    function getRoleLabel(role) {
-      if (role === 'lead') return '1ª Guida';
-      if (role === 'support') return '2ª Guida';
-      return 'Pari Livello';
+    function getDriversWageBill(teamId) {
+      return Number((gameState?.drivers || [])
+        .filter(d => d.teamId === teamId)
+        .reduce((sum, d) => sum + Number(d.salary || 0), 0)
+        .toFixed(1));
     }
 
-    function getAffinityScore(driver, team, allDrivers = []) {
-      if (!driver || !team) return 65;
-      let score = 62;
+    function chargeTeamExpense(amount, countsTowardCap = true, label = '') {
+      const team = getUserTeam();
+      if (!team) return false;
+      const cost = Number(amount.toFixed(1));
 
-      if (!driver.preferredDna || driver.preferredDna === 'balanced' || team.dna === 'balanced') {
-        score += 5;
-      } else if (driver.preferredDna === team.dna) {
-        score += 12;
-      } else {
-        score -= 7;
+      if (team.budget < cost) {
+        showToast(`Cassa insufficiente (€${team.budget.toFixed(1)}M disponibili, servono €${cost.toFixed(1)}M).`, 'danger');
+        return false;
       }
 
-      if (driver.role === 'lead') {
-        score += team.prestige >= 85 ? 8 : 3;
-      } else if (driver.role === 'support') {
-        score += driver.acceptsSupport ? 8 : -16;
-      } else {
-        score += 4;
+      if (countsTowardCap) {
+        const remCap = getRemainingBudgetCap();
+        if (remCap < cost) {
+          showToast(`Budget Cap FIA esaurito! Restano €${Math.max(0, remCap).toFixed(1)}M su €${getBudgetCapLimit().toFixed(1)}M.`, 'danger');
+          return false;
+        }
+        gameState.capSpent = Number((getCapSpent() + cost).toFixed(1));
       }
 
-      const mate = allDrivers.find(d => d.teamId === team.id && d.id !== driver.id);
-      if (mate && gameState && gameState.rivalries) {
-        const riv = getRivalryValue(driver.id, mate.id);
-        if (riv >= 65) score -= 10;
-        else if (riv >= 40) score -= 4;
+      team.budget = Number((team.budget - cost).toFixed(1));
+      if (label) {
+        const tag = countsTowardCap ? 'Dentro Cap' : 'Fuori Cap';
+        gameState.newsFeed.unshift(`FINANZE (-€${cost.toFixed(1)}M • ${tag}): ${label}`);
       }
-
-      score += Math.round(((driver.mood ?? 65) - 65) * 0.25);
-      return Math.max(20, Math.min(99, score));
+      return true;
     }
 
-    function getRivalryKey(idA, idB) {
-      return [idA, idB].sort().join('__');
-    }
-
-    function getRivalryValue(idA, idB) {
-      if (!gameState || !gameState.rivalries || !idA || !idB || idA === idB) return 0;
-      return gameState.rivalries[getRivalryKey(idA, idB)] || 0;
-    }
-
-    function bumpRivalry(idA, idB, delta, note = '') {
-      if (!gameState || !idA || !idB || idA === idB) return;
-      gameState.rivalries = gameState.rivalries || {};
-      const key = getRivalryKey(idA, idB);
-      const prev = gameState.rivalries[key] || 0;
-      const next = Math.max(0, Math.min(100, Math.round(prev + delta)));
-      gameState.rivalries[key] = next;
-
-      const dA = gameState.drivers.find(d => d.id === idA);
-      const dB = gameState.drivers.find(d => d.id === idB);
-      if (dA && dB && next - prev >= 6 && note) {
-        pushMediaQuote('Rivalita', `${dA.code} vs ${dB.code} (${next}/100): ${note}`);
+    function refundTeamExpense(amount, refundedCap = true, label = '') {
+      const team = getUserTeam();
+      if (!team) return;
+      const ref = Number(amount.toFixed(1));
+      team.budget = Number((team.budget + ref).toFixed(1));
+      if (refundedCap) {
+        gameState.capSpent = Math.max(0, Number((getCapSpent() - ref).toFixed(1)));
+      }
+      if (label) {
+        gameState.newsFeed.unshift(`RIMBORSO (+€${ref.toFixed(1)}M): ${label}`);
       }
     }
 
-    function pushMediaQuote(sourceTag, text) {
-      if (!gameState) return;
-      gameState.mediaFeed = gameState.mediaFeed || [];
-      gameState.mediaFeed.unshift({
-        id: `m_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-        round: gameState.round,
-        season: gameState.season,
-        source: sourceTag,
-        text
+    function createInitialState(selectedTeamId, selectedSponsorId = 'apex_tech') {
+      const teams = JSON.parse(JSON.stringify(INITIAL_TEAMS)).map(t => ({
+        ...t,
+        points: 0,
+        wins: 0,
+        podiums: 0
+      }));
+
+      const sponsor = SPONSOR_OPTIONS.find(s => s.id === selectedSponsorId) || SPONSOR_OPTIONS[0];
+      const userTm = teams.find(t => t.id === selectedTeamId) || teams[0];
+      userTm.budget = Number((userTm.budget + sponsor.upfront).toFixed(1));
+
+      const drivers = JSON.parse(JSON.stringify(INITIAL_DRIVERS)).map((d, idx) => ({
+        ...d,
+        mood: d.mood ?? (62 + ((idx * 7) % 18)),
+        fatigue: d.fatigue ?? 15,
+        trainingBoost: 0,
+        points: 0,
+        wins: 0,
+        podiums: 0,
+        transferRequest: false
+      }));
+
+      const freeAgents = JSON.parse(JSON.stringify(FREE_AGENTS_POOL)).map((fa, idx) => ({
+        ...fa,
+        mood: fa.mood ?? (60 + idx * 3),
+        fatigue: fa.fatigue ?? 12,
+        trainingBoost: 0,
+        transferRequest: false
+      }));
+
+      const garageParts = {};
+      teams.forEach(t => {
+        garageParts[t.id] = createInitialGaragePartsForTeam(t);
       });
-      if (gameState.mediaFeed.length > 60) gameState.mediaFeed.length = 60;
-      gameState.newsFeed.unshift(`[${sourceTag}] ${text}`);
-    }
 
-    function checkTransferRequestStatus(driver) {
-      if (!driver) return;
-      const shouldRequest = (driver.mood ?? 65) <= 28 || (!driver.acceptsSupport && driver.role === 'support');
-      if (shouldRequest && !driver.transferRequest) {
-        driver.transferRequest = true;
-        if (driver.teamId === gameState.userTeamId) {
-          pushMediaQuote('Pilota', `${driver.name} ha comunicato al muretto di voler valutare altre opzioni sul mercato se la situazione non cambia.`);
-        }
-      } else if (!shouldRequest && (driver.mood ?? 65) >= 55 && driver.role !== 'support') {
-        driver.transferRequest = false;
-      }
-    }
-
-    function adjustDriverMood(driverId, delta, reasonText = '') {
-      if (!gameState) return;
-      const driver = gameState.drivers.find(d => d.id === driverId);
-      if (!driver) return;
-      const prev = driver.mood ?? 65;
-      const next = Math.max(0, Math.min(100, Math.round(prev + delta)));
-      driver.mood = next;
-      checkTransferRequestStatus(driver);
-      const diff = next - prev;
-      if (driver.teamId === gameState.userTeamId && Math.abs(diff) >= 2 && reasonText) {
-        const sign = diff > 0 ? `+${diff}` : `${diff}`;
-        gameState.newsFeed.unshift(`UMORE ${driver.code} (${sign} -> ${next}/100): ${reasonText}`);
-      }
-    }
-
-    function createInitialGaragePartsForTeam(team) {
-      const basePerf = Math.round(((team.aero + team.pu + team.chassis) / 3) * 40);
-      const baseRel = Math.min(96, Math.max(70, team.rel));
-      return [
-        { id: `${team.id}_pu_1`, slot: 'pu', name: `${team.short} Power Unit v1`, perf: basePerf + 40, rel: baseRel, assignedCar: 1 },
-        { id: `${team.id}_pu_2`, slot: 'pu', name: `${team.short} Power Unit v1-B`, perf: basePerf + 15, rel: Math.min(98, baseRel + 3), assignedCar: 2 },
-        { id: `${team.id}_ch_1`, slot: 'chassis', name: `${team.short} Telaio Monoscocca v1`, perf: basePerf, rel: baseRel + 1, assignedCar: 1 },
-        { id: `${team.id}_ch_2`, slot: 'chassis', name: `${team.short} Telaio Monoscocca v1-B`, perf: basePerf - 10, rel: Math.min(98, baseRel + 2), assignedCar: 2 },
-        { id: `${team.id}_st_1`, slot: 'steer', name: `${team.short} Sterzo & Aero Front v1`, perf: basePerf - 15, rel: Math.max(68, baseRel - 2), assignedCar: 1 },
-        { id: `${team.id}_st_2`, slot: 'steer', name: `${team.short} Sterzo & Aero Front v1-B`, perf: basePerf - 30, rel: baseRel, assignedCar: 2 }
-      ];
-    }
-
-    function syncTeamStatsFromGarage(teamId) {
-      const team = getTeam(teamId);
-      const parts = gameState.garageParts?.[teamId] || [];
-      if (!team || !parts.length) return;
-      const avgOfSlot = (slot, field, fallback) => {
-        const list = parts.filter(p => p.slot === slot);
-        if (!list.length) return fallback;
-        return list.reduce((acc, p) => acc + p[field], 0) / list.length;
+      const state = {
+        season: 2026,
+        maxSeasons: 2026 + BASE_CAREER_YEARS - 1,
+        careerDay: 1,
+        weekendStartDay: 8,
+        round: 1,
+        userTeamId: selectedTeamId,
+        sponsorId: sponsor.id,
+        activeTab: 'hub',
+        hubMediaFilter: 'all',
+        rndSection: 'garage',
+        garageCarTab: 1,
+        paddockPressure: 62,
+        budgetCap: BUDGET_CAP_2026,
+        capSpent: 0.0,
+        rules: {
+          pointsTop12: false,
+          extraDegMultiplier: 1.0
+        },
+        teams,
+        drivers,
+        freeAgents,
+        garageParts,
+        rivalries: seedInitialRivalries(drivers),
+        pendingUpgrades: [],
+        pendingUpgradeConfirm: null,
+        completedRounds: [],
+        mediaFeed: [],
+        newsFeed: [
+          `Stagione 2026 avviata con ${userTm.name} e sponsor ${sponsor.name} (+€${sponsor.upfront.toFixed(1)}M alla firma).`,
+          `Budget Cap FIA 2026: €${BUDGET_CAP_2026.toFixed(1)}M per sviluppo e componenti (stipendi piloti e team building fuori Cap).`
+        ],
+        weekend: initWeekendState(1, selectedTeamId, drivers)
       };
-      const puPerf = avgOfSlot('pu', 'perf', team.pu * 40);
-      const chPerf = avgOfSlot('chassis', 'perf', team.chassis * 40);
-      const stPerf = avgOfSlot('steer', 'perf', team.aero * 40);
-      const avgRel = parts.reduce((acc, p) => acc + p.rel, 0) / parts.length;
 
-      team.pu = Number(Math.max(65, Math.min(99, puPerf / 40)).toFixed(1));
-      team.chassis = Number(Math.max(65, Math.min(99, chPerf / 40)).toFixed(1));
-      team.aero = Number(Math.max(65, Math.min(99, stPerf / 40)).toFixed(1));
-      team.rel = Number(Math.max(65, Math.min(99, avgRel)).toFixed(1));
+      gameState = state;
+      generatePaddockPressForRound(1);
+      return gameState;
     }
 
-    function generatePaddockPressForRound(roundNum) {
-      if (!gameState) return;
-      const track = CALENDAR_2026[roundNum - 1] || CALENDAR_2026[0];
-      const userTeam = getUserTeam();
+    function runExtraActivity(kind) {
+      const team = getUserTeam();
       const uDrivers = getUserDrivers();
-      const sortedTeams = [...gameState.teams].sort((a, b) => b.points - a.points);
-      const rivalTeam = sortedTeams.find(t => t.id !== userTeam.id) || sortedTeams[0];
-      const rivalDriver = gameState.drivers.find(d => d.teamId === rivalTeam.id);
+      if (!team || !uDrivers.length) return;
 
-      const pressureLvl = Math.min(100, Math.max(25, Math.round(userTeam.fanPassion * 0.65 + (11 - userTeam.objective) * 3.5)));
-      gameState.paddockPressure = pressureLvl;
-
-      const sprintNote = track.hasSprint ? ' (Weekend Sprint: Venerdi Qualifica Sprint, Sabato FP2 + Sprint + Qualifiche GP)' : '';
-      pushMediaQuote('Stampa Pre-GP', `Vigilia GP ${track.name} (${track.dateLabel})${sprintNote}: pressione paddock al ${pressureLvl}%, obiettivo Top ${userTeam.objective}.`);
-
-      if (rivalTeam && rivalDriver) {
-        pushMediaQuote('Team Principal', `${rivalTeam.tpName} (${rivalTeam.name}): "A ${track.name} metteremo pressione a ${userTeam.name} in pista."`);
-        bumpRivalry(uDrivers[0]?.id, rivalDriver.id, 4, `Dichiarazioni pre-GP a ${track.name}`);
-      }
-    }
-
-    function generatePostSessionPress(sessionType, payload = {}) {
-      if (!gameState) return;
-      const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
-      const userTeam = getUserTeam();
-      const uDrivers = getUserDrivers();
-
-      if (sessionType === 'quali' && payload.gridOrder) {
-        const bestUserIdx = payload.gridOrder.findIndex(e => e.teamId === userTeam.id);
-        const bestPos = bestUserIdx >= 0 ? bestUserIdx + 1 : 15;
-        if (bestPos <= 3) {
-          gameState.paddockPressure = Math.max(20, (gameState.paddockPressure || 65) - 8);
-          pushMediaQuote('Stampa Qualifiche', `Grande sabato per ${userTeam.name} a ${track.name}: miglior auto in P${bestPos}!`);
-          uDrivers.forEach(d => adjustDriverMood(d.id, 3, 'Ottima qualifica'));
-        } else if (bestPos > userTeam.objective * 2 + 4) {
-          gameState.paddockPressure = Math.min(100, (gameState.paddockPressure || 65) + 10);
-          pushMediaQuote('Stampa Qualifiche', `Qualifiche in salita per ${userTeam.name} (P${bestPos}): la stampa chiede risposte.`);
-          uDrivers.forEach(d => adjustDriverMood(d.id, -3, 'Qualifica sotto le attese'));
+      if (kind === 'simulator') {
+        const cost = 2.5;
+        if (!chargeTeamExpense(cost, true, 'Sessione Simulatore Tecnico')) return;
+        uDrivers.forEach(d => {
+          d.fatigue = Math.min(100, (d.fatigue ?? 15) + 14);
+          d.trainingBoost = (d.trainingBoost || 0) + 5;
+          adjustDriverMood(d.id, 3, 'Sessione intensa al simulatore e analisi dati');
+        });
+        pushMediaQuote('Attivita Extra', `Simulatore attivato per ${uDrivers.map(x => x.code).join(' e ')}: -€${cost}M (nel Cap), +fatica.`);
+        showToast('Simulatore completato (-€2.5M nel Cap, +fatica)!', 'success');
+      } else if (kind === 'media_sponsor') {
+        const sponsor = getActiveSponsor();
+        const gain = Number((sponsor.perRace * 0.6).toFixed(1));
+        team.budget = Number((team.budget + gain).toFixed(1));
+        gameState.paddockPressure = Math.min(100, (gameState.paddockPressure || 62) + 5);
+        uDrivers.forEach(d => {
+          d.fatigue = Math.min(100, (d.fatigue ?? 15) + 6);
+          adjustDriverMood(d.id, 2, 'Evento sponsor e incontro con la stampa');
+        });
+        pushMediaQuote('Sponsor & Media Day', `${sponsor.name} e ${team.name} protagonisti dell evento media: +€${gain.toFixed(1)}M in cassa.`);
+        showToast(`Media Day completato: +€${gain.toFixed(1)}M in cassa!`, 'success');
+      } else if (kind === 'team_building') {
+        const cost = 2.0;
+        if (!chargeTeamExpense(cost, false, 'Team Building Scuderia')) return;
+        uDrivers.forEach(d => {
+          d.fatigue = Math.max(0, (d.fatigue ?? 15) - 6);
+          adjustDriverMood(d.id, 7, 'Ritiro di team building e confronto costruttivo');
+        });
+        if (uDrivers.length === 2) {
+          const curRiv = getRivalryValue(uDrivers[0].id, uDrivers[1].id);
+          gameState.rivalries[getRivalryKey(uDrivers[0].id, uDrivers[1].id)] = Math.max(0, curRiv - 10);
         }
-      }
-
-      if (sessionType === 'race' && payload.classification) {
-        const uRows = payload.classification.filter(r => r.isUser);
-        const bestRow = uRows[0];
-        const bestPos = typeof bestRow?.pos === 'number' ? bestRow.pos : 22;
-
-        if (bestPos === 1) {
-          gameState.paddockPressure = Math.max(15, (gameState.paddockPressure || 65) - 15);
-          pushMediaQuote('Stampa Post-GP', `VITTORIA ${userTeam.name}! ${bestRow.name} trionfa a ${track.name}.`);
-        } else if (bestPos <= 3) {
-          gameState.paddockPressure = Math.max(20, (gameState.paddockPressure || 65) - 10);
-          pushMediaQuote('Stampa Post-GP', `Podio per ${userTeam.name} con ${bestRow.name} (P${bestPos}) a ${track.name}.`);
-        } else if (bestPos <= 10) {
-          pushMediaQuote('Stampa Post-GP', `A punti con ${bestRow.name} (P${bestPos}) a ${track.name}: bottino utile per la classifica.`);
-        } else {
-          gameState.paddockPressure = Math.min(100, (gameState.paddockPressure || 65) + 12);
-          pushMediaQuote('Stampa Post-GP', `Domenica difficile per ${userTeam.name} fuori dai punti a ${track.name}: sale la pressione.`);
+        pushMediaQuote('Paddock', `Team building per ${team.name}: -€${cost}M (fuori Cap), morale su e rivalita interna piu calma.`);
+        showToast('Team building riuscito (-€2.0M fuori Cap)!', 'success');
+      } else if (kind === 'wind_tunnel') {
+        const cost = 4.0;
+        if (!chargeTeamExpense(cost, true, 'Giornata in Galleria del Vento')) return;
+        team.aero = Number(Math.min(99, team.aero + 0.4).toFixed(1));
+        if (gameState.garageParts?.[team.id]) {
+          gameState.garageParts[team.id].filter(p => p.slot === 'steer' || p.slot === 'chassis').forEach(p => {
+            p.perf += 18;
+          });
+          syncTeamStatsFromGarage(team.id);
         }
+        pushMediaQuote('Reparto Tecnico', `${team.name} in galleria del vento: -€${cost}M (nel Cap), +0.4 Aerodinamica.`);
+        showToast('Galleria del vento completata (-€4.0M nel Cap, +0.4 Aero)!', 'success');
       }
-    }
-    let gameState = null;
-    let simTimer = null;
-    let animFrameId = null;
-    let lastAnimTimestamp = 0;
 
-    function saveGame() {
-      if (!gameState) return;
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
-      } catch (e) {
-        console.warn('Errore salvataggio locale:', e);
-      }
-    }
-
-    function loadGame() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return null;
-        return JSON.parse(raw);
-      } catch (e) {
-        return null;
-      }
-    }
-
-    function resetCareer() {
-      stopAllLoops();
-      localStorage.removeItem(STORAGE_KEY);
-      gameState = null;
+      saveGame();
       renderApp();
     }
 
-    function stopAllLoops() {
-      if (simTimer) {
-        clearInterval(simTimer);
-        simTimer = null;
+    function boostSinglePart(partId) {
+      const team = getUserTeam();
+      const parts = gameState.garageParts?.[team.id] || [];
+      const part = parts.find(p => p.id === partId);
+      const cost = 3.0;
+      if (!part) return;
+      if (!chargeTeamExpense(cost, true, `Potenziamento ${part.name}`)) return;
+      part.perf += 45;
+      part.rel = Math.max(55, Math.min(99, part.rel - 2));
+      syncTeamStatsFromGarage(team.id);
+      showToast(`${part.name} potenziato (-€3.0M nel Cap)!`, 'success');
+      saveGame();
+      renderApp();
+    }
+
+    function buildNewGaragePart(slot) {
+      const team = getUserTeam();
+      const cost = 6.5;
+      const slotLabel = slot === 'pu' ? 'PU' : (slot === 'chassis' ? 'Telaio' : 'Sterzo');
+      if (!chargeTeamExpense(cost, true, `Costruzione nuova parte ${slotLabel}`)) return;
+      gameState.garageParts[team.id] = gameState.garageParts[team.id] || [];
+      const count = gameState.garageParts[team.id].filter(p => p.slot === slot).length + 1;
+      const basePerf = Math.round(((team.aero + team.pu + team.chassis) / 3) * 40) + 60;
+      gameState.garageParts[team.id].push({
+        id: `${team.id}_${slot}_${Date.now().toString(36)}`,
+        slot,
+        name: `${team.short} ${slotLabel} Evo #${count}`,
+        perf: basePerf,
+        rel: 92,
+        assignedCar: gameState.garageCarTab || 1
+      });
+      syncTeamStatsFromGarage(team.id);
+      showToast(`Nuova parte ${slotLabel} costruita (-€6.5M nel Cap)!`, 'success');
+      saveGame();
+      renderApp();
+    }
+
+    function confirmAndBuyUpgrade() {
+      const p = gameState.pendingUpgradeConfirm;
+      if (!p) return;
+      if (!chargeTeamExpense(p.cost, true, `Sviluppo ${p.area.toUpperCase()} (${p.label})`)) return;
+      gameState.pendingUpgrades.push({
+        id: `upg_${Date.now()}`, area: p.area, tierLabel: p.label, cost: p.cost, daysLeft: p.days, gain: p.gain
+      });
+      gameState.pendingUpgradeConfirm = null;
+      showToast(`Ordine ${p.label} avviato (${p.days} gg, nel Cap)!`, 'success');
+      saveGame();
+      renderApp();
+    }
+
+    function cancelPendingUpgradeWithRefund(id) {
+      const idx = gameState.pendingUpgrades.findIndex(u => u.id === id);
+      if (idx < 0) return;
+      const upg = gameState.pendingUpgrades[idx];
+      const refund = Number((upg.cost * 0.5).toFixed(1));
+      refundTeamExpense(refund, true, `Annullamento sviluppo ${upg.area.toUpperCase()}`);
+      gameState.pendingUpgrades.splice(idx, 1);
+      showToast(`Annullato: rimborso 50% (+€${refund.toFixed(1)}M).`, 'info');
+      saveGame();
+      renderApp();
+    }
+
+    function renewDriverContract(driverId) {
+      const team = getUserTeam();
+      const drv = gameState.drivers.find(d => d.id === driverId && d.teamId === team.id);
+      if (!drv) return;
+      const fee = Number((drv.salary * 0.3).toFixed(1));
+      if (!chargeTeamExpense(fee, false, `Rinnovo contratto ${drv.name}`)) return;
+      drv.contract = (drv.contract || 1) + 2;
+      adjustDriverMood(drv.id, 6, 'Contratto prolungato di 2 anni');
+      showToast(`${drv.name} rinnovato (+2 anni, -€${fee}M fuori Cap)!`, 'success');
+      saveGame();
+      renderApp();
+    }
+
+    function signFreeAgent(agentId, replaceDriverId) {
+      const team = getUserTeam();
+      const agentIdx = (gameState.freeAgents || []).findIndex(a => a.id === agentId);
+      const oldIdx = gameState.drivers.findIndex(d => d.id === replaceDriverId && d.teamId === team.id);
+      if (agentIdx < 0 || oldIdx < 0) return;
+      const agent = gameState.freeAgents[agentIdx];
+      const oldDriver = gameState.drivers[oldIdx];
+      const fee = Number((agent.salary * 0.4).toFixed(1));
+      if (!chargeTeamExpense(fee, false, `Ingaggio pilota ${agent.name}`)) return;
+      gameState.freeAgents.splice(agentIdx, 1);
+      gameState.drivers[oldIdx] = { ...agent, teamId: team.id, role: oldDriver.role || 'co_lead', points: 0, wins: 0, podiums: 0 };
+      gameState.freeAgents.push({ ...oldDriver, teamId: null, role: 'co_lead' });
+      showToast(`${agent.name} ingaggiato (-€${fee}M fuori Cap)!`, 'success');
+      saveGame();
+      renderApp();
+    }
+
+    function advanceToNextRound() {
+      const team = getUserTeam();
+      if (gameState.round < 24) {
+        gameState.round += 1;
+        gameState.weekendStartDay = (gameState.careerDay || 1) + 7;
+        gameState.weekend = initWeekendState(gameState.round, gameState.userTeamId, gameState.drivers);
+        gameState.activeTab = 'hub';
+        generatePaddockPressForRound(gameState.round);
+        saveGame();
+        renderApp();
+        return;
       }
-      if (animFrameId) {
-        cancelAnimationFrame(animFrameId);
-        animFrameId = null;
+
+      const sortedByPts = [...gameState.teams].sort((a, b) => (b.points || 0) - (a.points || 0));
+      const userRankIdx = Math.max(0, sortedByPts.findIndex(t => t.id === gameState.userTeamId));
+      const fomPrize = FOM_PRIZE_POOL[userRankIdx] ?? 60.0;
+      const userWages = getDriversWageBill(gameState.userTeamId);
+      const sponsor = getActiveSponsor();
+      const netEndSeasonCash = Number((fomPrize + sponsor.upfront - userWages).toFixed(1));
+
+      if (gameState.season < gameState.maxSeasons) {
+        gameState.season += 1;
+        gameState.round = 1;
+        gameState.careerDay = 1;
+        gameState.weekendStartDay = 8;
+        gameState.capSpent = 0.0;
+
+        gameState.teams.forEach(t => {
+          const rankIdx = Math.max(0, sortedByPts.findIndex(x => x.id === t.id));
+          const prize = FOM_PRIZE_POOL[rankIdx] ?? 60.0;
+          const wages = getDriversWageBill(t.id);
+          t.points = 0;
+          t.wins = 0;
+          t.podiums = 0;
+          if (t.id === gameState.userTeamId) {
+            t.budget = Number((t.budget + prize + sponsor.upfront - wages).toFixed(1));
+          } else {
+            t.budget = Number((t.budget + prize * 0.5 - wages * 0.5).toFixed(1));
+          }
+        });
+
+        gameState.drivers.forEach(d => {
+          d.age += 1;
+          d.points = 0;
+          d.wins = 0;
+          d.podiums = 0;
+          d.contract = Math.max(0, (d.contract || 1) - 1);
+          const cap = d.potential ?? d.ovr;
+          if (d.age <= 25 && d.ovr < cap) d.ovr = Math.min(cap, d.ovr + 1);
+          else if (d.age >= 36 && d.ovr > 72) d.ovr = Math.max(72, d.ovr - 1);
+        });
+
+        gameState.weekend = initWeekendState(1, gameState.userTeamId, gameState.drivers);
+        gameState.activeTab = 'hub';
+        pushMediaQuote('Chiusura Stagione', `Fine anno: premio FOM P${userRankIdx + 1} (+€${fomPrize}M), sponsor (+€${sponsor.upfront}M), ingaggi (-€${userWages}M). Budget Cap azzerato a €${BUDGET_CAP_2026}M.`);
+        generatePaddockPressForRound(1);
+        saveGame();
+        renderApp();
+        return;
+      }
+
+      if (confirm(`Hai completato il ciclo di ${BASE_CAREER_YEARS} stagioni (P${userRankIdx + 1} Costruttori, bilancio netto fine anno €${netEndSeasonCash >= 0 ? '+' : ''}${netEndSeasonCash}M)! Vuoi prolungare la carriera di altri 3 anni?`)) {
+        gameState.maxSeasons += 3;
+        gameState.season += 1;
+        gameState.round = 1;
+        gameState.capSpent = 0.0;
+        team.budget = Number((team.budget + fomPrize + sponsor.upfront - userWages).toFixed(1));
+        gameState.drivers.forEach(d => { d.age += 1; d.points = 0; d.contract = Math.max(1, d.contract); });
+        gameState.teams.forEach(t => { t.points = 0; });
+        gameState.weekend = initWeekendState(1, gameState.userTeamId, gameState.drivers);
+        gameState.activeTab = 'hub';
+        saveGame();
+        renderApp();
+      } else {
+        resetCareer();
       }
     }
 
-    function getTeam(teamId) {
-      return gameState.teams.find(t => t.id === teamId) || gameState.teams[0];
-    }
-
-    function getUserTeam() {
-      return getTeam(gameState.userTeamId);
-    }
-
-    function getUserDrivers() {
-      return gameState.drivers.filter(d => d.teamId === gameState.userTeamId);
-    }
-
-    function getActiveSponsor() {
-      return SPONSOR_OPTIONS.find(s => s.id === gameState.sponsorId) || SPONSOR_OPTIONS[0];
-    }
-
-    function showToast(msg, type = 'info') {
-      const existing = document.getElementById('fm-toast');
-      if (existing) existing.remove();
-      const colors = {
-        info: 'bg-slate-800 border-sky-500/60 text-sky-100',
-        success: 'bg-emerald-950 border-emerald-500/70 text-emerald-100',
-        danger: 'bg-red-950 border-red-500/70 text-red-100'
-      };
-      const div = document.createElement('div');
-      div.id = 'fm-toast';
-      div.className = `fixed top-3 left-1/2 -translate-x-1/2 z-50 px-3.5 py-2 rounded-xl border text-xs font-bold shadow-xl max-w-[92vw] text-center ${colors[type] || colors.info}`;
-      div.textContent = msg;
-      document.body.appendChild(div);
-      setTimeout(() => div.remove(), 3200);
+    function renderTopHeader() {
+      const team = getUserTeam();
+      const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[23];
+      const dayTag = getWeekendDayBadge(gameState.weekend);
+      const remCap = getRemainingBudgetCap();
+      const capLimit = getBudgetCapLimit();
+      return `
+        <header class="sticky top-0 z-30 bg-f1bg/95 backdrop-blur border-b border-f1border px-4 py-2.5 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-6 rounded-full" style="background:${team.color}"></span>
+            <div>
+              <div class="text-xs font-extrabold text-white leading-tight">${team.name} <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 ml-1">${dayTag}</span></div>
+              <div class="text-[10px] text-slate-400 font-mono-num">Anno ${gameState.season}/${gameState.maxSeasons} • G${gameState.careerDay || 1} • GP${gameState.round}/24 ${track.flag}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="text-right font-mono-num">
+              <div class="text-xs font-extrabold text-emerald-400">Cassa €${team.budget.toFixed(1)}M</div>
+              <div class="text-[9px] ${remCap < 15 ? 'text-amber-300 font-bold' : 'text-sky-300'}">Cap: €${remCap.toFixed(1)}M / €${capLimit.toFixed(0)}M</div>
+            </div>
+            <button onclick="if(confirm('Vuoi azzerare la carriera?')) resetCareer()" class="px-2 py-1 rounded-lg bg-slate-800 text-[10px] text-slate-400 hover:text-white">Reset</button>
+          </div>
+        </header>
+      `;
     }
 
     function seedInitialRivalries(drivers) {
