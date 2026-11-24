@@ -56,53 +56,62 @@
   <div id="app" class="w-full max-w-md min-h-screen flex flex-col bg-f1bg relative shadow-2xl border-x border-f1border/40"></div>
 
   <script>
-    const STORAGE_KEY = 'formula_manager_2026_save_v6';
+    const STORAGE_KEY = 'formula_manager_2026_save_v7';
 
+    // hierarchy: '1st_2nd' = prima e seconda guida definite | 'equal' = pari livello (nessuna gerarchia)
     const INITIAL_TEAMS = [
-      { id: 'ferrari', name: 'Scuderia Rossa', short: 'ROS', color: '#e10600', budget: 148.0, aero: 89, pu: 88, chassis: 88, rel: 86, objective: 2, prestige: 94 },
-      { id: 'redbull', name: 'Toro Alato Racing', short: 'TAR', color: '#1e41ff', budget: 150.0, aero: 91, pu: 90, chassis: 89, rel: 88, objective: 1, prestige: 95 },
-      { id: 'mclaren', name: 'Papaia Racing', short: 'PAP', color: '#ff8000', budget: 146.0, aero: 90, pu: 89, chassis: 89, rel: 87, objective: 2, prestige: 91 },
-      { id: 'mercedes', name: 'Argento GP', short: 'ARG', color: '#00d2be', budget: 147.0, aero: 87, pu: 90, chassis: 88, rel: 89, objective: 3, prestige: 93 },
-      { id: 'aston', name: 'Verde Britannico', short: 'VER', color: '#006f62', budget: 132.0, aero: 84, pu: 86, chassis: 84, rel: 84, objective: 5, prestige: 80 },
-      { id: 'alpine', name: 'Blu Alpino F1', short: 'ALP', color: '#ff69b4', budget: 124.0, aero: 80, pu: 82, chassis: 81, rel: 80, objective: 7, prestige: 75 },
-      { id: 'williams', name: 'Grove Azzurra', short: 'GRO', color: '#005aff', budget: 120.0, aero: 79, pu: 85, chassis: 79, rel: 81, objective: 7, prestige: 77 },
-      { id: 'vcarb', name: 'Faenza Toro', short: 'FAE', color: '#2b4562', budget: 112.0, aero: 78, pu: 84, chassis: 78, rel: 82, objective: 8, prestige: 70 },
-      { id: 'haas', name: 'Stella Americana', short: 'AME', color: '#b6babd', budget: 105.0, aero: 76, pu: 83, chassis: 76, rel: 79, objective: 9, prestige: 66 },
-      { id: 'audi', name: 'Quattro Anelli Audi', short: 'AUD', color: '#c0c0c0', budget: 138.0, aero: 82, pu: 81, chassis: 83, rel: 80, objective: 6, prestige: 84 },
-      { id: 'cadillac', name: 'Stella Cadillac', short: 'CAD', color: '#eab308', budget: 128.0, aero: 77, pu: 79, chassis: 78, rel: 77, objective: 8, prestige: 76 }
+      { id: 'ferrari', name: 'Scuderia Rossa', short: 'ROS', color: '#e10600', budget: 148.0, aero: 89, pu: 88, chassis: 88, rel: 86, objective: 2, prestige: 94, dna: 'balanced', hierarchy: 'equal', fanPassion: 96, tpName: 'F. Vasseurini' },
+      { id: 'redbull', name: 'Toro Alato Racing', short: 'TAR', color: '#1e41ff', budget: 150.0, aero: 91, pu: 90, chassis: 89, rel: 88, objective: 1, prestige: 95, dna: 'downforce', hierarchy: '1st_2nd', fanPassion: 85, tpName: 'C. Hornerino' },
+      { id: 'mclaren', name: 'Papaia Racing', short: 'PAP', color: '#ff8000', budget: 146.0, aero: 90, pu: 89, chassis: 89, rel: 87, objective: 2, prestige: 91, dna: 'balanced', hierarchy: 'equal', fanPassion: 88, tpName: 'A. Stellone' },
+      { id: 'mercedes', name: 'Argento GP', short: 'ARG', color: '#00d2be', budget: 147.0, aero: 87, pu: 90, chassis: 88, rel: 89, objective: 3, prestige: 93, dna: 'topSpeed', hierarchy: '1st_2nd', fanPassion: 86, tpName: 'T. Wolffini' },
+      { id: 'aston', name: 'Verde Britannico', short: 'VER', color: '#006f62', budget: 132.0, aero: 84, pu: 86, chassis: 84, rel: 84, objective: 5, prestige: 80, dna: 'downforce', hierarchy: '1st_2nd', fanPassion: 74, tpName: 'M. Kracko' },
+      { id: 'alpine', name: 'Blu Alpino F1', short: 'ALP', color: '#ff69b4', budget: 124.0, aero: 80, pu: 82, chassis: 81, rel: 80, objective: 7, prestige: 75, dna: 'topSpeed', hierarchy: '1st_2nd', fanPassion: 72, tpName: 'O. Oakesi' },
+      { id: 'williams', name: 'Grove Azzurra', short: 'GRO', color: '#005aff', budget: 120.0, aero: 79, pu: 85, chassis: 79, rel: 81, objective: 7, prestige: 77, dna: 'topSpeed', hierarchy: '1st_2nd', fanPassion: 79, tpName: 'J. Vowlesi' },
+      { id: 'vcarb', name: 'Faenza Toro', short: 'FAE', color: '#2b4562', budget: 112.0, aero: 78, pu: 84, chassis: 78, rel: 82, objective: 8, prestige: 70, dna: 'balanced', hierarchy: 'equal', fanPassion: 66, tpName: 'L. Mekkiesi' },
+      { id: 'haas', name: 'Stella Americana', short: 'AME', color: '#b6babd', budget: 105.0, aero: 76, pu: 83, chassis: 76, rel: 79, objective: 9, prestige: 66, dna: 'balanced', hierarchy: 'equal', fanPassion: 64, tpName: 'A. Komatsui' },
+      { id: 'audi', name: 'Quattro Anelli Audi', short: 'AUD', color: '#c0c0c0', budget: 138.0, aero: 82, pu: 81, chassis: 83, rel: 80, objective: 6, prestige: 84, dna: 'balanced', hierarchy: '1st_2nd', fanPassion: 82, tpName: 'M. Binottini' },
+      { id: 'cadillac', name: 'Stella Cadillac', short: 'CAD', color: '#eab308', budget: 128.0, aero: 77, pu: 79, chassis: 78, rel: 77, objective: 8, prestige: 76, dna: 'topSpeed', hierarchy: 'equal', fanPassion: 77, tpName: 'G. Lowdoni' }
     ];
 
+    const DRIVER_TRAITS = {
+      attacker: { id: 'attacker', label: 'Attaccante', icon: '⚔️', desc: 'Feroce nei duelli e sul giro secco, ma più esigente sulle gomme.' },
+      team_player: { id: 'team_player', label: 'Uomo Squadra', icon: '🤝', desc: 'Accetta più facilmente i ruoli e collabora agli ordini del muretto.' },
+      tactician: { id: 'tactician', label: 'Tattico', icon: '🧠', desc: 'Lettura pulita del degrado e costanza sul passo gara.' },
+      hothead: { id: 'hothead', label: 'Testa Calda', icon: '🔥', desc: 'Scintille alte in rivalità e reazioni forti se declassato o superato.' },
+      wet_ace: { id: 'wet_ace', label: 'Mago del Bagno', icon: '🌧️', desc: 'Sensibilità superiore sull’asfalto umido o bagnato.' }
+    };
+
     const INITIAL_DRIVERS = [
-      { id: 'lec', name: 'Carletto Leclaire', code: 'LEC', number: 16, teamId: 'ferrari', ovr: 91, pace: 92, cons: 89, tyreMgmt: 88, age: 28, contract: 3, salary: 24.0, mood: 68 },
-      { id: 'ham', name: 'Luigi Amilton', code: 'HAM', number: 44, teamId: 'ferrari', ovr: 90, pace: 89, cons: 91, tyreMgmt: 92, age: 41, contract: 2, salary: 28.0, mood: 70 },
-      { id: 'ver', name: 'Massimo Verstappo', code: 'VER', number: 1, teamId: 'redbull', ovr: 95, pace: 96, cons: 94, tyreMgmt: 93, age: 28, contract: 3, salary: 32.0, mood: 74 },
-      { id: 'law', name: 'Liamos Lavson', code: 'LAW', number: 30, teamId: 'redbull', ovr: 82, pace: 83, cons: 81, tyreMgmt: 80, age: 24, contract: 1, salary: 4.5, mood: 64 },
-      { id: 'nor', name: 'Lando Norri', code: 'NOR', number: 4, teamId: 'mclaren', ovr: 91, pace: 92, cons: 90, tyreMgmt: 89, age: 26, contract: 3, salary: 20.0, mood: 72 },
-      { id: 'pia', name: 'Oscar Piastrello', code: 'PIA', number: 81, teamId: 'mclaren', ovr: 88, pace: 89, cons: 88, tyreMgmt: 87, age: 25, contract: 2, salary: 12.0, mood: 67 },
-      { id: 'rus', name: 'Giorgio Russi', code: 'RUS', number: 63, teamId: 'mercedes', ovr: 89, pace: 90, cons: 89, tyreMgmt: 87, age: 28, contract: 2, salary: 16.0, mood: 66 },
-      { id: 'ant', name: 'Kimi Antonelli', code: 'ANT', number: 12, teamId: 'mercedes', ovr: 83, pace: 85, cons: 81, tyreMgmt: 82, age: 19, contract: 2, salary: 5.0, mood: 69 },
-      { id: 'alo', name: 'Fernando Alonsino', code: 'ALO', number: 14, teamId: 'aston', ovr: 89, pace: 88, cons: 92, tyreMgmt: 91, age: 44, contract: 2, salary: 18.0, mood: 65 },
-      { id: 'str', name: 'Lance Strollo', code: 'STR', number: 18, teamId: 'aston', ovr: 79, pace: 78, cons: 79, tyreMgmt: 81, age: 27, contract: 2, salary: 5.5, mood: 58 },
-      { id: 'gas', name: 'Pietro Gaslini', code: 'GAS', number: 10, teamId: 'alpine', ovr: 85, pace: 86, cons: 85, tyreMgmt: 84, age: 30, contract: 2, salary: 8.5, mood: 62 },
-      { id: 'dooh', name: 'Jack Duan', code: 'DUA', number: 7, teamId: 'alpine', ovr: 78, pace: 79, cons: 77, tyreMgmt: 78, age: 23, contract: 1, salary: 2.5, mood: 61 },
-      { id: 'sai', name: 'Carlos Sainzino', code: 'SAI', number: 55, teamId: 'williams', ovr: 88, pace: 88, cons: 89, tyreMgmt: 88, age: 31, contract: 2, salary: 14.0, mood: 66 },
-      { id: 'alb', name: 'Alex Alboni', code: 'ALB', number: 23, teamId: 'williams', ovr: 85, pace: 85, cons: 85, tyreMgmt: 86, age: 30, contract: 2, salary: 8.0, mood: 65 },
-      { id: 'tsu', name: 'Yuki Tsunodini', code: 'TSU', number: 22, teamId: 'vcarb', ovr: 82, pace: 84, cons: 80, tyreMgmt: 80, age: 25, contract: 1, salary: 3.5, mood: 63 },
-      { id: 'had', name: 'Isack Adjar', code: 'ADJ', number: 6, teamId: 'vcarb', ovr: 79, pace: 81, cons: 78, tyreMgmt: 78, age: 21, contract: 1, salary: 2.0, mood: 64 },
-      { id: 'oco', name: 'Esteban Oconni', code: 'OCO', number: 31, teamId: 'haas', ovr: 83, pace: 83, cons: 84, tyreMgmt: 83, age: 29, contract: 2, salary: 6.5, mood: 60 },
-      { id: 'bea', name: 'Oliver Bermanno', code: 'BER', number: 87, teamId: 'haas', ovr: 80, pace: 81, cons: 79, tyreMgmt: 80, age: 21, contract: 2, salary: 2.5, mood: 63 },
-      { id: 'hul', name: 'Nico Hulkenbergio', code: 'HUL', number: 27, teamId: 'audi', ovr: 84, pace: 84, cons: 85, tyreMgmt: 84, age: 38, contract: 2, salary: 7.5, mood: 66 },
-      { id: 'bor', name: 'Gabriel Bortoletti', code: 'BOR', number: 5, teamId: 'audi', ovr: 80, pace: 82, cons: 79, tyreMgmt: 80, age: 21, contract: 2, salary: 3.0, mood: 67 },
-      { id: 'bot', name: 'Valtteri Bottini', code: 'BOT', number: 77, teamId: 'cadillac', ovr: 82, pace: 81, cons: 84, tyreMgmt: 83, age: 36, contract: 1, salary: 6.0, mood: 64 },
-      { id: 'per', name: 'Sergio Perezi', code: 'PER', number: 11, teamId: 'cadillac', ovr: 81, pace: 80, cons: 81, tyreMgmt: 85, age: 36, contract: 1, salary: 6.5, mood: 62 }
+      { id: 'lec', name: 'Carletto Leclaire', code: 'LEC', number: 16, teamId: 'ferrari', role: 'co_lead', ovr: 91, potential: 94, pace: 92, cons: 89, tyreMgmt: 88, age: 28, contract: 3, salary: 24.0, mood: 68, trait: 'attacker', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
+      { id: 'ham', name: 'Luigi Amilton', code: 'HAM', number: 44, teamId: 'ferrari', role: 'co_lead', ovr: 90, potential: 91, pace: 89, cons: 91, tyreMgmt: 92, age: 41, contract: 2, salary: 28.0, mood: 70, trait: 'tactician', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
+      { id: 'ver', name: 'Massimo Verstappo', code: 'VER', number: 1, teamId: 'redbull', role: 'lead', ovr: 95, potential: 97, pace: 96, cons: 94, tyreMgmt: 93, age: 28, contract: 3, salary: 32.0, mood: 74, trait: 'attacker', preferredDna: 'downforce', acceptsSupport: false, transferRequest: false },
+      { id: 'law', name: 'Liamos Lavson', code: 'LAW', number: 30, teamId: 'redbull', role: 'support', ovr: 82, potential: 88, pace: 83, cons: 81, tyreMgmt: 80, age: 24, contract: 1, salary: 4.5, mood: 64, trait: 'hothead', preferredDna: 'downforce', acceptsSupport: true, transferRequest: false },
+      { id: 'nor', name: 'Lando Norri', code: 'NOR', number: 4, teamId: 'mclaren', role: 'co_lead', ovr: 91, potential: 95, pace: 92, cons: 90, tyreMgmt: 89, age: 26, contract: 3, salary: 20.0, mood: 72, trait: 'tactician', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
+      { id: 'pia', name: 'Oscar Piastrello', code: 'PIA', number: 81, teamId: 'mclaren', role: 'co_lead', ovr: 88, potential: 94, pace: 89, cons: 88, tyreMgmt: 87, age: 25, contract: 2, salary: 12.0, mood: 67, trait: 'tactician', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
+      { id: 'rus', name: 'Giorgio Russi', code: 'RUS', number: 63, teamId: 'mercedes', role: 'lead', ovr: 89, potential: 92, pace: 90, cons: 89, tyreMgmt: 87, age: 28, contract: 2, salary: 16.0, mood: 66, trait: 'tactician', preferredDna: 'topSpeed', acceptsSupport: false, transferRequest: false },
+      { id: 'ant', name: 'Kimi Antonelli', code: 'ANT', number: 12, teamId: 'mercedes', role: 'support', ovr: 83, potential: 93, pace: 85, cons: 81, tyreMgmt: 82, age: 19, contract: 2, salary: 5.0, mood: 69, trait: 'attacker', preferredDna: 'topSpeed', acceptsSupport: true, transferRequest: false },
+      { id: 'alo', name: 'Fernando Alonsino', code: 'ALO', number: 14, teamId: 'aston', role: 'lead', ovr: 89, potential: 90, pace: 88, cons: 92, tyreMgmt: 91, age: 44, contract: 2, salary: 18.0, mood: 65, trait: 'wet_ace', preferredDna: 'downforce', acceptsSupport: false, transferRequest: false },
+      { id: 'str', name: 'Lance Strollo', code: 'STR', number: 18, teamId: 'aston', role: 'support', ovr: 79, potential: 81, pace: 78, cons: 79, tyreMgmt: 81, age: 27, contract: 2, salary: 5.5, mood: 58, trait: 'team_player', preferredDna: 'downforce', acceptsSupport: true, transferRequest: false },
+      { id: 'gas', name: 'Pietro Gaslini', code: 'GAS', number: 10, teamId: 'alpine', role: 'lead', ovr: 85, potential: 88, pace: 86, cons: 85, tyreMgmt: 84, age: 30, contract: 2, salary: 8.5, mood: 62, trait: 'attacker', preferredDna: 'topSpeed', acceptsSupport: false, transferRequest: false },
+      { id: 'dooh', name: 'Jack Duan', code: 'DUA', number: 7, teamId: 'alpine', role: 'support', ovr: 78, potential: 85, pace: 79, cons: 77, tyreMgmt: 78, age: 23, contract: 1, salary: 2.5, mood: 61, trait: 'team_player', preferredDna: 'topSpeed', acceptsSupport: true, transferRequest: false },
+      { id: 'sai', name: 'Carlos Sainzino', code: 'SAI', number: 55, teamId: 'williams', role: 'lead', ovr: 88, potential: 90, pace: 88, cons: 89, tyreMgmt: 88, age: 31, contract: 2, salary: 14.0, mood: 66, trait: 'tactician', preferredDna: 'topSpeed', acceptsSupport: false, transferRequest: false },
+      { id: 'alb', name: 'Alex Alboni', code: 'ALB', number: 23, teamId: 'williams', role: 'support', ovr: 85, potential: 88, pace: 85, cons: 85, tyreMgmt: 86, age: 30, contract: 2, salary: 8.0, mood: 65, trait: 'team_player', preferredDna: 'topSpeed', acceptsSupport: true, transferRequest: false },
+      { id: 'tsu', name: 'Yuki Tsunodini', code: 'TSU', number: 22, teamId: 'vcarb', role: 'co_lead', ovr: 82, potential: 86, pace: 84, cons: 80, tyreMgmt: 80, age: 25, contract: 1, salary: 3.5, mood: 63, trait: 'hothead', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
+      { id: 'had', name: 'Isack Adjar', code: 'ADJ', number: 6, teamId: 'vcarb', role: 'co_lead', ovr: 79, potential: 89, pace: 81, cons: 78, tyreMgmt: 78, age: 21, contract: 1, salary: 2.0, mood: 64, trait: 'attacker', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
+      { id: 'oco', name: 'Esteban Oconni', code: 'OCO', number: 31, teamId: 'haas', role: 'co_lead', ovr: 83, potential: 85, pace: 83, cons: 84, tyreMgmt: 83, age: 29, contract: 2, salary: 6.5, mood: 60, trait: 'hothead', preferredDna: 'balanced', acceptsSupport: false, transferRequest: false },
+      { id: 'bea', name: 'Oliver Bermanno', code: 'BER', number: 87, teamId: 'haas', role: 'co_lead', ovr: 80, potential: 90, pace: 81, cons: 79, tyreMgmt: 80, age: 21, contract: 2, salary: 2.5, mood: 63, trait: 'attacker', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
+      { id: 'hul', name: 'Nico Hulkenbergio', code: 'HUL', number: 27, teamId: 'audi', role: 'lead', ovr: 84, potential: 85, pace: 84, cons: 85, tyreMgmt: 84, age: 38, contract: 2, salary: 7.5, mood: 66, trait: 'tactician', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
+      { id: 'bor', name: 'Gabriel Bortoletti', code: 'BOR', number: 5, teamId: 'audi', role: 'support', ovr: 80, potential: 91, pace: 82, cons: 79, tyreMgmt: 80, age: 21, contract: 2, salary: 3.0, mood: 67, trait: 'wet_ace', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
+      { id: 'bot', name: 'Valtteri Bottini', code: 'BOT', number: 77, teamId: 'cadillac', role: 'co_lead', ovr: 82, potential: 83, pace: 81, cons: 84, tyreMgmt: 83, age: 36, contract: 1, salary: 6.0, mood: 64, trait: 'team_player', preferredDna: 'topSpeed', acceptsSupport: true, transferRequest: false },
+      { id: 'per', name: 'Sergio Perezi', code: 'PER', number: 11, teamId: 'cadillac', role: 'co_lead', ovr: 81, potential: 82, pace: 80, cons: 81, tyreMgmt: 85, age: 36, contract: 1, salary: 6.5, mood: 62, trait: 'wet_ace', preferredDna: 'topSpeed', acceptsSupport: true, transferRequest: false }
     ];
 
     const FREE_AGENTS_POOL = [
-      { id: 'ric', name: 'Daniel Ricciardone', code: 'RIC', number: 3, ovr: 81, pace: 81, cons: 82, tyreMgmt: 82, age: 36, contract: 1, salary: 5.0, mood: 63 },
-      { id: 'mag', name: 'Kevin Magnusseni', code: 'MAG', number: 20, ovr: 79, pace: 80, cons: 78, tyreMgmt: 79, age: 33, contract: 1, salary: 4.0, mood: 60 },
-      { id: 'col', name: 'Franco Colapintino', code: 'COL', number: 43, ovr: 80, pace: 82, cons: 79, tyreMgmt: 79, age: 22, contract: 2, salary: 2.2, mood: 66 },
-      { id: 'pour', name: 'Theo Pourchairetti', code: 'POU', number: 98, ovr: 78, pace: 79, cons: 78, tyreMgmt: 78, age: 22, contract: 1, salary: 1.8, mood: 62 },
-      { id: 'dru', name: 'Felipe Drugovichi', code: 'DRU', number: 34, ovr: 77, pace: 78, cons: 78, tyreMgmt: 77, age: 25, contract: 1, salary: 1.6, mood: 60 }
+      { id: 'ric', name: 'Daniel Ricciardone', code: 'RIC', number: 3, ovr: 81, potential: 82, pace: 81, cons: 82, tyreMgmt: 82, age: 36, contract: 1, salary: 5.0, mood: 63, trait: 'attacker', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
+      { id: 'mag', name: 'Kevin Magnusseni', code: 'MAG', number: 20, ovr: 79, potential: 80, pace: 80, cons: 78, tyreMgmt: 79, age: 33, contract: 1, salary: 4.0, mood: 60, trait: 'hothead', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
+      { id: 'col', name: 'Franco Colapintino', code: 'COL', number: 43, ovr: 80, potential: 89, pace: 82, cons: 79, tyreMgmt: 79, age: 22, contract: 2, salary: 2.2, mood: 66, trait: 'attacker', preferredDna: 'topSpeed', acceptsSupport: false, transferRequest: false },
+      { id: 'pour', name: 'Theo Pourchairetti', code: 'POU', number: 98, ovr: 78, potential: 86, pace: 79, cons: 78, tyreMgmt: 78, age: 22, contract: 1, salary: 1.8, mood: 62, trait: 'tactician', preferredDna: 'balanced', acceptsSupport: true, transferRequest: false },
+      { id: 'dru', name: 'Felipe Drugovichi', code: 'DRU', number: 34, ovr: 77, potential: 83, pace: 78, cons: 78, tyreMgmt: 77, age: 25, contract: 1, salary: 1.6, mood: 60, trait: 'team_player', preferredDna: 'downforce', acceptsSupport: true, transferRequest: false }
     ];
 
     const CALENDAR_2026 = [
@@ -146,6 +155,17 @@
       major: { id: 'major', label: 'Evoluzione', cost: 15.5, races: 3, gain: 4.6, desc: 'Grande sviluppo ad alto impatto' }
     };
 
+    // Always formats lap times with minutes when >= 60s, seconds and milliseconds: M:SS.mmm
+    function formatLapTime(sec) {
+      if (!sec || typeof sec !== 'number' || !isFinite(sec) || sec >= 890 || sec <= 0) return '--:--.---';
+      const totalMs = Math.round(sec * 1000);
+      const mins = Math.floor(totalMs / 60000);
+      const remMs = totalMs % 60000;
+      const wholeSecs = Math.floor(remMs / 1000);
+      const millis = remMs % 1000;
+      return `${mins}:${String(wholeSecs).padStart(2, '0')}.${String(millis).padStart(3, '0')}`;
+    }
+
     function getEstimatedStints(track, rules) {
       const trackDegMult = track.tyreDeg === 3 ? 1.24 : track.tyreDeg === 2 ? 1.0 : 0.84;
       const ruleMult = (rules && rules.extraDegMultiplier) ? rules.extraDegMultiplier : 1.0;
@@ -171,6 +191,98 @@
       return { label: 'Frustrato', emoji: '😡', color: 'text-red-400', bg: 'bg-red-950/60 border-red-500/45', paceDelta: 0.45, degMult: 1.15 };
     }
 
+    function getRoleLabel(role) {
+      if (role === 'lead') return '1ª Guida';
+      if (role === 'support') return '2ª Guida';
+      return 'Pari Livello';
+    }
+
+    function getAffinityScore(driver, team, allDrivers = []) {
+      if (!driver || !team) return 65;
+      let score = 62;
+
+      // 1. DNA car vs driver preference
+      if (!driver.preferredDna || driver.preferredDna === 'balanced' || team.dna === 'balanced') {
+        score += 5;
+      } else if (driver.preferredDna === team.dna) {
+        score += 12;
+      } else {
+        score -= 7;
+      }
+
+      // 2. Role & ambition alignment
+      if (driver.role === 'lead') {
+        score += team.prestige >= 85 ? 8 : 3;
+      } else if (driver.role === 'support') {
+        score += driver.acceptsSupport ? 8 : -16;
+      } else {
+        score += 4;
+      }
+
+      // 3. Teammate tension / rivalry
+      const mate = allDrivers.find(d => d.teamId === team.id && d.id !== driver.id);
+      if (mate && gameState?.rivalries) {
+        const riv = getRivalryValue(driver.id, mate.id);
+        if (riv >= 65) score -= 10;
+        else if (riv >= 40) score -= 4;
+      }
+
+      // 4. Mood bonus/penalty
+      score += Math.round(((driver.mood ?? 65) - 65) * 0.25);
+
+      return Math.max(20, Math.min(99, score));
+    }
+
+    function getRivalryKey(idA, idB) {
+      return [idA, idB].sort().join('__');
+    }
+
+    function getRivalryValue(idA, idB) {
+      if (!gameState?.rivalries || !idA || !idB || idA === idB) return 0;
+      return gameState.rivalries[getRivalryKey(idA, idB)] || 0;
+    }
+
+    function bumpRivalry(idA, idB, delta, note = '') {
+      if (!gameState || !idA || !idB || idA === idB) return;
+      gameState.rivalries = gameState.rivalries || {};
+      const key = getRivalryKey(idA, idB);
+      const prev = gameState.rivalries[key] || 0;
+      const next = Math.max(0, Math.min(100, Math.round(prev + delta)));
+      gameState.rivalries[key] = next;
+
+      const dA = gameState.drivers.find(d => d.id === idA);
+      const dB = gameState.drivers.find(d => d.id === idB);
+      if (dA && dB && next - prev >= 8 && note) {
+        pushMediaQuote('Rivalità', `${dA.code} vs ${dB.code} (${next}/100): ${note}`);
+      }
+    }
+
+    function pushMediaQuote(sourceTag, text) {
+      if (!gameState) return;
+      gameState.mediaFeed = gameState.mediaFeed || [];
+      gameState.mediaFeed.unshift({
+        id: `m_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        round: gameState.round,
+        source: sourceTag,
+        text
+      });
+      if (gameState.mediaFeed.length > 45) gameState.mediaFeed.length = 45;
+      gameState.newsFeed.unshift(`🗞️ [${sourceTag}] ${text}`);
+    }
+
+    function checkTransferRequestStatus(driver) {
+      if (!driver) return;
+      const shouldRequest = (driver.mood ?? 65) <= 28 || (!driver.acceptsSupport && driver.role === 'support');
+      if (shouldRequest && !driver.transferRequest) {
+        driver.transferRequest = true;
+        if (driver.teamId === gameState.userTeamId) {
+          pushMediaQuote('Pilota', `${driver.name} ha comunicato al muretto di voler valutare altre opzioni sul mercato se la situazione non cambia.`);
+        }
+      } else if (!shouldRequest && (driver.mood ?? 65) >= 55 && driver.role !== 'support') {
+        driver.transferRequest = false;
+      }
+    }
+
     function adjustDriverMood(driverId, delta, reasonText = '') {
       if (!gameState) return;
       const driver = gameState.drivers.find(d => d.id === driverId);
@@ -178,13 +290,44 @@
       const prev = driver.mood ?? 65;
       const next = Math.max(0, Math.min(100, Math.round(prev + delta)));
       driver.mood = next;
+      checkTransferRequestStatus(driver);
       const diff = next - prev;
       if (driver.teamId === gameState.userTeamId && Math.abs(diff) >= 2 && reasonText) {
         const sign = diff > 0 ? `+${diff}` : `${diff}`;
         gameState.newsFeed.unshift(`UMORE ${driver.code} (${sign} -> ${next}/100): ${reasonText}`);
       }
     }
-    let gameState = null;
+
+    function generatePaddockPressForRound(roundNum) {
+      if (!gameState) return;
+      const track = CALENDAR_2026[roundNum - 1] || CALENDAR_2026[0];
+      const userTeam = getUserTeam();
+      const uDrivers = getUserDrivers();
+      const sortedTeams = [...gameState.teams].sort((a, b) => b.points - a.points);
+      const rivalTeam = sortedTeams.find(t => t.id !== userTeam.id) || sortedTeams[0];
+      const rivalDriver = gameState.drivers.find(d => d.teamId === rivalTeam.id);
+
+      const fanLines = [
+        `I tifosi di ${userTeam.name} chiedono a gran voce un weekend pulito a ${track.name} per accendere il campionato.`,
+        `Sugli spalti di ${track.circuit} cresce l'attesa: i fan si aspettano coraggio strategico dal tuo muretto.`
+      ];
+      pushMediaQuote('Tifosi', fanLines[roundNum % fanLines.length]);
+
+      if (rivalTeam && rivalDriver) {
+        pushMediaQuote('Team Principal', `${rivalTeam.tpName} (${rivalTeam.name}): "A ${track.name} sarà dura per chiunque, ma credo che il nostro pacchetto sia pronto a dettare il ritmo."`);
+        bumpRivalry(uDrivers[0]?.id, rivalDriver.id, 4, `Scintille pre-GP a ${track.name}`);
+      }
+
+      if (uDrivers.length === 2) {
+        const [dA, dB] = uDrivers;
+        const internalRiv = getRivalryValue(dA.id, dB.id);
+        if (internalRiv >= 35 || userTeam.hierarchy === 'equal') {
+          pushMediaQuote('Paddock', `Clima acceso in casa ${userTeam.name}: ${dA.code} e ${dB.code} si osservano da vicino sul passo gara.`);
+        }
+      }
+    }
+  </script>
+  let gameState = null;
     let simTimer = null;
     let animFrameId = null;
     let lastAnimTimestamp = 0;
@@ -238,13 +381,6 @@
       return gameState.drivers.filter(d => d.teamId === gameState.userTeamId);
     }
 
-    function formatLapTime(sec) {
-      if (!sec || sec >= 900) return '--:--.---';
-      const mins = Math.floor(sec / 60);
-      const rem = (sec % 60).toFixed(3).padStart(6, '0');
-      return `${mins}:${rem}`;
-    }
-
     function showToast(msg, type = 'info') {
       const existing = document.getElementById('fm-toast');
       if (existing) existing.remove();
@@ -261,6 +397,26 @@
       setTimeout(() => div.remove(), 3200);
     }
 
+    function seedInitialRivalries(drivers) {
+      const map = {};
+      const pairs = [
+        ['lec', 'ham', 28],
+        ['ver', 'nor', 45],
+        ['nor', 'pia', 34],
+        ['rus', 'ant', 22],
+        ['alo', 'str', 20],
+        ['gas', 'oco', 48],
+        ['sai', 'alb', 18],
+        ['tsu', 'had', 20]
+      ];
+      pairs.forEach(([a, b, val]) => {
+        if (drivers.some(d => d.id === a) && drivers.some(d => d.id === b)) {
+          map[getRivalryKey(a, b)] = val;
+        }
+      });
+      return map;
+    }
+
     function createInitialState(selectedTeamId) {
       const teams = JSON.parse(JSON.stringify(INITIAL_TEAMS)).map(t => ({
         ...t,
@@ -274,19 +430,22 @@
         mood: d.mood ?? (62 + ((idx * 7) % 18)),
         points: 0,
         wins: 0,
-        podiums: 0
+        podiums: 0,
+        transferRequest: false
       }));
 
       const freeAgents = JSON.parse(JSON.stringify(FREE_AGENTS_POOL)).map((fa, idx) => ({
         ...fa,
-        mood: fa.mood ?? (60 + idx * 3)
+        mood: fa.mood ?? (60 + idx * 3),
+        transferRequest: false
       }));
 
-      return {
+      const state = {
         season: 2026,
         round: 1,
         userTeamId: selectedTeamId,
         activeTab: 'hub',
+        hubMediaFilter: 'all',
         budgetCap: 150.0,
         rules: {
           pointsTop12: false,
@@ -295,14 +454,20 @@
         teams,
         drivers,
         freeAgents,
+        rivalries: seedInitialRivalries(drivers),
         pendingUpgrades: [],
         jobOffers: [],
+        mediaFeed: [],
         newsFeed: [
           `Benvenuto nel paddock 2026! Hai assunto il ruolo di Team Principal per ${teams.find(t => t.id === selectedTeamId).name}.`,
           `Nuovo regolamento 2026: Audi e Cadillac debuttano ufficialmente portando la griglia a 22 monoposto.`
         ],
         weekend: initWeekendState(1, selectedTeamId, drivers)
       };
+
+      gameState = state;
+      generatePaddockPressForRound(1);
+      return gameState;
     }
 
     function initWeekendState(roundNum, userTeamId, drivers) {
@@ -311,37 +476,50 @@
       const d1 = userDrivers[0];
       const d2 = userDrivers[1];
 
+      const baseSusp = Math.max(1, Math.min(10, Math.round((track.downforce + (10 - track.topSpeed)) / 2)));
+      const baseBrake = Math.max(1, Math.min(10, 11 - track.topSpeed));
+      const baseRide = Math.max(1, Math.min(10, track.tyreDeg === 3 ? 6 : (track.downforce >= 8 ? 5 : 7)));
+      const baseDiff = Math.max(1, Math.min(10, track.tyreDeg === 3 ? 6 : 5));
+
       const targetD1 = {
         wing: track.downforce,
-        susp: Math.max(1, Math.min(10, Math.round((track.downforce + (10 - track.topSpeed)) / 2))),
-        brake: Math.max(1, Math.min(10, 11 - track.topSpeed))
+        susp: baseSusp,
+        brake: baseBrake,
+        ride: baseRide,
+        diff: baseDiff
       };
       const targetD2 = {
         wing: Math.max(1, Math.min(10, track.downforce - (track.downforce > 6 ? 1 : -1))),
-        susp: Math.max(1, Math.min(10, targetD1.susp + (targetD1.susp < 8 ? 1 : -1))),
-        brake: Math.max(1, Math.min(10, targetD1.brake))
+        susp: Math.max(1, Math.min(10, baseSusp + (baseSusp < 8 ? 1 : -1))),
+        brake: baseBrake,
+        ride: Math.max(1, Math.min(10, baseRide + (baseRide < 9 ? 1 : -1))),
+        diff: Math.max(1, Math.min(10, baseDiff - (baseDiff > 2 ? 1 : 0)))
       };
 
-      const makeDriverSetup = (initWing = 5, initSusp = 5, initBrake = 5) => ({
+      const makeDriverSetup = (initWing = 5, initSusp = 5, initBrake = 5, initRide = 5, initDiff = 5) => ({
         wing: initWing,
         susp: initSusp,
         brake: initBrake,
-        confidence: 45,
+        ride: initRide,
+        diff: initDiff,
+        confidence: 35,
         plan: 'race',
         fpRunsDone: 0,
-        feedback: 'Nessun dato telemetrico ancora raccolto per questo pilota. Regola ala, sospensioni e bilanciamento freni ed esegui il run in pista per ottenere il feedback dedicato.'
+        lastError: null,
+        feedback: 'Sessione aperta: regola i 5 parametri d’assetto (Ala, Sospensioni, Freni, Altezza/Gomme, Differenziale) ed esegui i run per affinare il bilanciamento.'
       });
 
       return {
         round: roundNum,
         phase: 'fp',
-        targets: { wing: targetD1.wing, susp: targetD1.susp, brake: targetD1.brake },
+        targets: { wing: targetD1.wing, susp: targetD1.susp, brake: targetD1.brake, ride: targetD1.ride, diff: targetD1.diff },
         driverTargets: { d1: targetD1, d2: targetD2 },
         fp: {
           session: 1,
+          runsLeftInSession: 3,
           activeSlot: 'd1',
-          d1: d1 ? makeDriverSetup(4, 5, 6) : null,
-          d2: d2 ? makeDriverSetup(6, 5, 4) : null
+          d1: d1 ? makeDriverSetup(4, 5, 6, 5, 5) : null,
+          d2: d2 ? makeDriverSetup(6, 5, 4, 6, 5) : null
         },
         quali: null,
         preRaceStrategy: null,
@@ -361,6 +539,74 @@
       gameState.activeTab = tab;
       saveGame();
       renderApp();
+    }
+
+    function setHubMediaFilter(flt) {
+      if (!gameState) return;
+      gameState.hubMediaFilter = flt;
+      saveGame();
+      renderApp();
+    }
+
+    function setTeamHierarchyMode(mode) {
+      const team = getUserTeam();
+      const uDrivers = getUserDrivers();
+      if (!team || uDrivers.length < 2) return;
+
+      team.hierarchy = mode;
+      const [d1, d2] = uDrivers;
+
+      if (mode === 'equal') {
+        d1.role = 'co_lead';
+        d2.role = 'co_lead';
+        adjustDriverMood(d1.id, 3, 'Scuderia impostata su pari livello');
+        adjustDriverMood(d2.id, 4, 'Parità di trattamento confermata dal team');
+        pushMediaQuote('Team Principal', `${team.name} annuncia pari opportunità in pista tra ${d1.name} e ${d2.name}.`);
+        showToast('Gerarchia impostata: Pari Livello per entrambi i piloti.', 'info');
+      } else {
+        applyRoleAssignments(d1.id, 'lead', d2.id, 'support');
+      }
+
+      saveGame();
+      renderApp();
+    }
+
+    function setLeadDriverSelection(newLeadId) {
+      const team = getUserTeam();
+      const uDrivers = getUserDrivers();
+      if (!team || uDrivers.length < 2) return;
+      team.hierarchy = '1st_2nd';
+      const leadDrv = uDrivers.find(d => d.id === newLeadId) || uDrivers[0];
+      const suppDrv = uDrivers.find(d => d.id !== leadDrv.id) || uDrivers[1];
+      applyRoleAssignments(leadDrv.id, 'lead', suppDrv.id, 'support');
+      saveGame();
+      renderApp();
+    }
+
+    function applyRoleAssignments(leadId, leadRole, suppId, suppRole) {
+      const team = getUserTeam();
+      const lead = gameState.drivers.find(d => d.id === leadId);
+      const supp = gameState.drivers.find(d => d.id === suppId);
+      if (!lead || !supp) return;
+
+      const prevSuppRole = supp.role;
+      lead.role = leadRole;
+      supp.role = suppRole;
+
+      adjustDriverMood(lead.id, 6, `Nominato 1ª Guida in ${team.name}`);
+
+      if (prevSuppRole !== 'support') {
+        const penalty = supp.acceptsSupport ? -6 : -18;
+        adjustDriverMood(supp.id, penalty, supp.acceptsSupport ? 'Declassato a 2ª Guida ma disposto a collaborare' : 'Non gradisce il ruolo di 2ª Guida: tensione alta!');
+        bumpRivalry(lead.id, supp.id, supp.acceptsSupport ? 8 : 18, `Gerarchia 1ª/2ª guida in casa ${team.name}`);
+        if (!supp.acceptsSupport) {
+          pushMediaQuote('Pilota', `${supp.name} mal digerisce il ruolo di 2ª guida in ${team.name} e guarda già al mercato.`);
+        } else {
+          pushMediaQuote('Pilota', `${supp.name} accetta il ruolo di supporto per il bene del team, pur volendo farsi trovare pronto.`);
+        }
+      }
+
+      showToast(`${lead.code} 1ª Guida • ${supp.code} 2ª Guida`, 'info');
     }
 
     function getPitLaneCoord(car) {
@@ -452,13 +698,14 @@
           <div class="bg-f1card border border-f1border rounded-2xl p-4">
             <div class="text-[11px] font-extrabold uppercase tracking-wider text-f1red">Stagione 2026 • Griglia Ufficiale</div>
             <h1 class="text-xl font-black text-white mt-0.5">Formula Manager 2026</h1>
-            <p class="text-xs text-slate-400 mt-1">Scegli la scuderia da guidare come Team Principal. Gestisci sviluppo, budget, umore piloti e strategia giro per giro.</p>
+            <p class="text-xs text-slate-400 mt-1">Scegli la scuderia: gestisci gerarchie piloti, rivalità, potenziale, media, assetti su più run e strategia gara.</p>
           </div>
 
           <div class="space-y-2.5 pb-6">
             ${INITIAL_TEAMS.map(t => {
               const tDrivers = INITIAL_DRIVERS.filter(d => d.teamId === t.id);
               const avgPerf = Math.round((t.aero + t.pu + t.chassis) / 3);
+              const hLabel = t.hierarchy === '1st_2nd' ? '1ª / 2ª Guida' : 'Pari Livello';
               return `
                 <button onclick="selectTeamAndStart('${t.id}')" class="w-full text-left bg-f1card hover:bg-slate-800/80 border border-f1border rounded-2xl p-3.5 transition active:scale-[0.99]">
                   <div class="flex items-center justify-between">
@@ -475,8 +722,8 @@
                     </div>
                   </div>
                   <div class="mt-2.5 flex items-center justify-between text-[10px] text-slate-400 border-t border-f1border/60 pt-2">
-                    <span>Obiettivo Costruttori: <strong class="text-slate-200">Top ${t.objective}</strong></span>
-                    <span>Prestigio: <strong class="text-amber-300">${t.prestige}%</strong></span>
+                    <span>Obiettivo: <strong class="text-slate-200">Top ${t.objective}</strong> • <strong class="text-sky-300">${hLabel}</strong></span>
+                    <span>DNA: <strong class="text-amber-300 uppercase">${t.dna}</strong></span>
                   </div>
                 </button>
               `;
@@ -537,13 +784,21 @@
       const userDrivers = getUserDrivers();
       const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
       const stints = getEstimatedStints(track, gameState.rules);
+      const mateRiv = userDrivers.length === 2 ? getRivalryValue(userDrivers[0].id, userDrivers[1].id) : 0;
+      const mediaFilter = gameState.hubMediaFilter || 'all';
+
+      const filteredMedia = (gameState.mediaFeed || []).filter(m => {
+        if (mediaFilter === 'fans') return m.source === 'Tifosi' || m.source === 'Team Principal';
+        if (mediaFilter === 'rivalry') return m.source === 'Rivalità' || m.source === 'Pilota' || m.source === 'Paddock';
+        return true;
+      });
 
       return `
         <div class="p-4 space-y-3.5">
           <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-3">
             <div class="flex items-center justify-between">
               <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Prossimo Appuntamento • Round ${gameState.round}/24</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Round ${gameState.round}/24 • DNA ${team.dna.toUpperCase()}</span>
                 <h2 class="text-lg font-extrabold text-white">${track.flag} GP ${track.name}</h2>
                 <div class="text-xs text-slate-400">${track.circuit} • ${track.laps} Giri • Pioggia ${Math.round(track.rainChance * 100)}%</div>
               </div>
@@ -554,7 +809,7 @@
             </div>
 
             <div class="flex items-center justify-between text-[11px] font-mono-num bg-f1bg p-2.5 rounded-xl border border-f1border/70">
-              <span class="text-slate-400">Durata Stint Stimata:</span>
+              <span class="text-slate-400">Stint Stimati:</span>
               <span class="text-red-400 font-bold">S: ${stints.S}g</span>
               <span class="text-amber-300 font-bold">M: ${stints.M}g</span>
               <span class="text-slate-200 font-bold">H: ${stints.H}g</span>
@@ -565,39 +820,86 @@
             </button>
           </div>
 
-          <div class="bg-f1card border border-f1border rounded-2xl p-4">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Lineup Piloti & Umore</h3>
+          <!-- HIERARCHY & DRIVER PROFILES -->
+          <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Gerarchia & Profili Piloti</h3>
+              ${userDrivers.length === 2 ? `<span class="text-[10px] font-mono-num text-amber-300">Rivalità Box: ${mateRiv}/100</span>` : ''}
+            </div>
+
+            ${userDrivers.length === 2 ? `
+              <div class="grid grid-cols-2 gap-1.5 bg-f1bg p-1 rounded-xl border border-f1border">
+                <button onclick="setTeamHierarchyMode('1st_2nd')" class="py-1.5 rounded-lg text-[11px] font-extrabold transition ${team.hierarchy === '1st_2nd' ? 'bg-f1red text-white' : 'text-slate-400'}">
+                  1ª / 2ª Guida
+                </button>
+                <button onclick="setTeamHierarchyMode('equal')" class="py-1.5 rounded-lg text-[11px] font-extrabold transition ${team.hierarchy !== '1st_2nd' ? 'bg-sky-600 text-white' : 'text-slate-400'}">
+                  Pari Livello
+                </button>
+              </div>
+
+              ${team.hierarchy === '1st_2nd' ? `
+                <div class="grid grid-cols-2 gap-1.5">
+                  ${userDrivers.map(ud => `
+                    <button onclick="setLeadDriverSelection('${ud.id}')" class="py-1.5 px-2 rounded-xl text-[11px] font-bold border ${ud.role === 'lead' ? 'bg-amber-500/20 border-amber-400 text-amber-200' : 'bg-f1bg border-f1border text-slate-400'}">
+                      1ª Guida: ${ud.code}
+                    </button>
+                  `).join('')}
+                </div>
+              ` : ''}
+            ` : ''}
+
             <div class="space-y-2.5">
               ${userDrivers.map(d => {
                 const mood = getMoodMeta(d.mood);
+                const trait = DRIVER_TRAITS[d.trait] || DRIVER_TRAITS.tactician;
+                const affinity = getAffinityScore(d, team, gameState.drivers);
                 return `
-                  <div class="flex items-center justify-between bg-f1bg p-3 rounded-xl border border-f1border/60">
-                    <div class="flex items-center gap-3">
-                      <span class="font-mono-num font-extrabold text-sm px-2 py-1 rounded-lg bg-slate-800" style="color: ${team.color}">#${d.number}</span>
+                  <div class="bg-f1bg p-3 rounded-xl border border-f1border/70 space-y-1.5">
+                    <div class="flex items-center justify-between">
                       <div>
-                        <div class="text-sm font-bold text-white flex flex-wrap items-center gap-1.5">
-                          <span>${d.name}</span>
-                          <span class="text-[10px] px-1.5 py-0.5 rounded border ${mood.bg} ${mood.color} font-semibold">${mood.emoji} ${mood.label} (${d.mood ?? 65})</span>
-                        </div>
-                        <div class="text-[11px] text-slate-400">Età ${d.age} • Contratto ${d.contract} ${d.contract === 1 ? 'anno' : 'anni'}</div>
+                        <span class="font-mono-num font-extrabold text-xs px-1.5 py-0.5 rounded bg-slate-800 mr-1" style="color:${team.color}">#${d.number}</span>
+                        <span class="text-sm font-extrabold text-white">${d.name}</span>
+                        <span class="text-[10px] ml-1 px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 font-bold">${getRoleLabel(d.role)}</span>
+                      </div>
+                      <div class="text-right font-mono-num">
+                        <span class="text-xs font-black text-white">OVR ${d.ovr}</span>
+                        <span class="text-[10px] text-sky-300 ml-1">POT ${d.potential ?? d.ovr}</span>
                       </div>
                     </div>
-                    <div class="text-right">
-                      <div class="text-sm font-mono-num font-extrabold text-white">OVR ${d.ovr}</div>
-                      <div class="text-[11px] font-mono-num text-slate-400">${d.points} pt</div>
+                    <div class="flex flex-wrap items-center justify-between gap-1 text-[10px]">
+                      <span class="px-1.5 py-0.5 rounded border ${mood.bg} ${mood.color} font-semibold">${mood.emoji} ${mood.label} (${d.mood ?? 65})</span>
+                      <span class="text-slate-300">${trait.icon} ${trait.label}</span>
+                      <span class="font-mono-num text-emerald-300">Affinità ${affinity}%</span>
                     </div>
+                    ${d.transferRequest ? `<div class="text-[10px] text-red-400 font-bold">⚠️ Il pilota ha chiesto di valutare il mercato per il futuro.</div>` : ''}
                   </div>
                 `;
               }).join('')}
             </div>
           </div>
 
-          <div class="bg-f1card border border-f1border rounded-2xl p-4">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Ultime dal Paddock</h3>
-            <div class="space-y-2 max-h-40 overflow-y-auto no-scrollbar">
-              ${gameState.newsFeed.slice(0, 8).map(n => `
-                <div class="text-xs text-slate-300 bg-f1bg p-2.5 rounded-xl border border-f1border/50 leading-relaxed">${n}</div>
+          <!-- MEDIA, FANS & RIVALRIES FEED -->
+          <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Media, Tifosi & Rivalità</h3>
+              <div class="flex gap-1">
+                ${[
+                  { id: 'all', lbl: 'Tutti' },
+                  { id: 'fans', lbl: 'Media/TP' },
+                  { id: 'rivalry', lbl: 'Rivalità' }
+                ].map(f => `
+                  <button onclick="setHubMediaFilter('${f.id}')" class="px-2 py-0.5 rounded text-[10px] font-bold ${mediaFilter === f.id ? 'bg-f1red text-white' : 'bg-f1bg text-slate-400'}">${f.lbl}</button>
+                `).join('')}
+              </div>
+            </div>
+            <div class="space-y-1.5 max-h-44 overflow-y-auto no-scrollbar">
+              ${filteredMedia.slice(0, 10).map(m => `
+                <div class="text-xs text-slate-200 bg-f1bg p-2.5 rounded-xl border border-f1border/50 leading-snug">
+                  <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 mr-1.5">${m.source}</span>
+                  <span>${m.text}</span>
+                </div>
               `).join('')}
+              ${filteredMedia.length === 0 ? `<div class="text-xs text-slate-500">Nessuna voce in questo filtro.</div>` : ''}
             </div>
           </div>
         </div>
@@ -645,6 +947,7 @@
       const activeDriver = activeSlot === 'd2' ? d2 : d1;
       const fpData = fp[activeSlot];
       const stints = getEstimatedStints(track, gameState.rules);
+      const runsLeft = fp.runsLeftInSession ?? 3;
 
       const planLabels = {
         quali: { title: 'Giro Secco', desc: '+0.28s in Qualifica', badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
@@ -653,12 +956,13 @@
       };
 
       const mood = activeDriver ? getMoodMeta(activeDriver.mood) : getMoodMeta(65);
+      const trait = activeDriver ? (DRIVER_TRAITS[activeDriver.trait] || DRIVER_TRAITS.tactician) : DRIVER_TRAITS.tactician;
 
       return `
-        <div class="p-4 space-y-4">
+        <div class="p-4 space-y-3.5">
           <div class="flex items-center justify-between">
             <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Fase 1 • Prove Libere</span>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Prove Libere • Run Rimasti: ${runsLeft}/3</span>
               <h2 class="text-lg font-extrabold text-white">Sessione FP${Math.min(3, fp.session)} di 3</h2>
             </div>
             <div class="text-right text-[11px] text-slate-400">
@@ -669,71 +973,77 @@
 
           <div class="grid grid-cols-2 gap-2 bg-f1card p-1.5 rounded-2xl border border-f1border">
             ${d1 ? `
-              <button onclick="selectFpDriverTab('d1')" class="py-2.5 px-3 rounded-xl text-left transition ${activeSlot === 'd1' ? 'bg-f1red text-white shadow' : 'text-slate-300 hover:bg-slate-800'}">
-                <div class="text-[10px] uppercase font-bold opacity-80">Pilota 1 • Conf. ${fp.d1?.confidence || 45}%</div>
+              <button onclick="selectFpDriverTab('d1')" class="py-2 px-3 rounded-xl text-left transition ${activeSlot === 'd1' ? 'bg-f1red text-white shadow' : 'text-slate-300 hover:bg-slate-800'}">
+                <div class="text-[10px] uppercase font-bold opacity-80">Pilota 1 • Conf. ${fp.d1?.confidence || 35}%</div>
                 <div class="text-xs font-extrabold truncate">#${d1.number} ${d1.name}</div>
               </button>
             ` : ''}
             ${d2 ? `
-              <button onclick="selectFpDriverTab('d2')" class="py-2.5 px-3 rounded-xl text-left transition ${activeSlot === 'd2' ? 'bg-f1red text-white shadow' : 'text-slate-300 hover:bg-slate-800'}">
-                <div class="text-[10px] uppercase font-bold opacity-80">Pilota 2 • Conf. ${fp.d2?.confidence || 45}%</div>
+              <button onclick="selectFpDriverTab('d2')" class="py-2 px-3 rounded-xl text-left transition ${activeSlot === 'd2' ? 'bg-f1red text-white shadow' : 'text-slate-300 hover:bg-slate-800'}">
+                <div class="text-[10px] uppercase font-bold opacity-80">Pilota 2 • Conf. ${fp.d2?.confidence || 35}%</div>
                 <div class="text-xs font-extrabold truncate">#${d2.number} ${d2.name}</div>
               </button>
             ` : ''}
           </div>
 
           ${activeDriver && fpData ? `
-            <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-3">
+            <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between gap-2">
                 <div>
-                  <span class="text-xs font-mono-num text-slate-400">#${activeDriver.number}</span>
-                  <h4 class="text-sm font-extrabold text-white inline ml-1">${activeDriver.name}</h4>
-                  <div class="mt-1">
-                    <span class="text-[10px] px-2 py-0.5 rounded border ${mood.bg} ${mood.color} font-semibold">
-                      ${mood.emoji} Umore: ${mood.label} (${activeDriver.mood ?? 65}/100)
-                    </span>
-                  </div>
+                  <h4 class="text-sm font-extrabold text-white">${activeDriver.name} <span class="text-[10px] text-slate-400 font-normal">(${trait.icon} ${trait.label})</span></h4>
+                  <span class="text-[10px] px-2 py-0.5 rounded border ${mood.bg} ${mood.color} font-semibold">${mood.emoji} ${mood.label} (${activeDriver.mood ?? 65}/100)</span>
                 </div>
                 <div class="text-right">
-                  <span class="text-[10px] text-slate-400 block">Confidenza Assetto</span>
+                  <span class="text-[10px] text-slate-400 block">Confidenza</span>
                   <span class="text-base font-mono-num font-extrabold ${fpData.confidence >= 85 ? 'text-emerald-400' : fpData.confidence >= 65 ? 'text-amber-400' : 'text-slate-200'}">${fpData.confidence}%</span>
                 </div>
               </div>
 
-              <div class="bg-f1bg border border-f1border/90 rounded-xl p-3 text-xs text-slate-200 leading-relaxed whitespace-normal break-words">
-                <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase text-f1red mb-1">
-                  <span>🎙️</span>
-                  <span>Feedback Dedicato ${activeDriver.code} (Run ${fpData.fpRunsDone}/3)</span>
-                </div>
-                <p class="text-slate-200">${fpData.feedback}</p>
+              <div class="bg-f1bg border border-f1border/90 rounded-xl p-2.5 text-xs text-slate-200 leading-relaxed whitespace-normal break-words">
+                <div class="text-[10px] font-bold uppercase text-f1red mb-1">🎙️ Telemetria & Commento ${activeDriver.code} (Run #${fpData.fpRunsDone})</div>
+                <p>${fpData.feedback}</p>
               </div>
 
-              <div class="space-y-2.5 pt-1">
+              <div class="space-y-2">
                 <div>
-                  <div class="flex justify-between text-xs mb-1">
-                    <span class="text-slate-400">Incidenza Ala Ant/Post (${activeDriver.code})</span>
+                  <div class="flex justify-between text-[11px] mb-0.5">
+                    <span class="text-slate-400">Incidenza Ali</span>
                     <span class="font-mono-num font-bold text-white">${fpData.wing} / 10</span>
                   </div>
                   <input type="range" min="1" max="10" value="${fpData.wing}" onchange="updateFpSlider('${activeSlot}', 'wing', this.value)" class="w-full" />
                 </div>
                 <div>
-                  <div class="flex justify-between text-xs mb-1">
-                    <span class="text-slate-400">Rigidità Sospensioni (${activeDriver.code})</span>
+                  <div class="flex justify-between text-[11px] mb-0.5">
+                    <span class="text-slate-400">Rigidità Sospensioni</span>
                     <span class="font-mono-num font-bold text-white">${fpData.susp} / 10</span>
                   </div>
                   <input type="range" min="1" max="10" value="${fpData.susp}" onchange="updateFpSlider('${activeSlot}', 'susp', this.value)" class="w-full" />
                 </div>
                 <div>
-                  <div class="flex justify-between text-xs mb-1">
-                    <span class="text-slate-400">Bilanciamento Freni & Cambio (${activeDriver.code})</span>
+                  <div class="flex justify-between text-[11px] mb-0.5">
+                    <span class="text-slate-400">Freni & Rapporti Cambio</span>
                     <span class="font-mono-num font-bold text-white">${fpData.brake} / 10</span>
                   </div>
                   <input type="range" min="1" max="10" value="${fpData.brake}" onchange="updateFpSlider('${activeSlot}', 'brake', this.value)" class="w-full" />
                 </div>
+                <div>
+                  <div class="flex justify-between text-[11px] mb-0.5">
+                    <span class="text-slate-400">Altezza da Terra & Pressione Gomme</span>
+                    <span class="font-mono-num font-bold text-white">${fpData.ride} / 10</span>
+                  </div>
+                  <input type="range" min="1" max="10" value="${fpData.ride}" onchange="updateFpSlider('${activeSlot}', 'ride', this.value)" class="w-full" />
+                </div>
+                <div>
+                  <div class="flex justify-between text-[11px] mb-0.5">
+                    <span class="text-slate-400">Differenziale & Trazione Uscita</span>
+                    <span class="font-mono-num font-bold text-white">${fpData.diff} / 10</span>
+                  </div>
+                  <input type="range" min="1" max="10" value="${fpData.diff}" onchange="updateFpSlider('${activeSlot}', 'diff', this.value)" class="w-full" />
+                </div>
               </div>
 
-              <div class="pt-1">
-                <div class="text-[11px] font-semibold text-slate-400 mb-1.5">Piano Lavoro per ${activeDriver.name}:</div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-400 mb-1">Programma di Lavoro:</div>
                 <div class="grid grid-cols-3 gap-1.5">
                   ${Object.entries(planLabels).map(([k, info]) => {
                     const selected = fpData.plan === k;
@@ -752,11 +1062,11 @@
           <div class="grid grid-cols-2 gap-2.5 pt-1">
             ${fp.session <= 3 ? `
               <button onclick="runPracticeSession()" class="py-3.5 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 active:scale-[0.99] font-bold text-xs text-white shadow-lg">
-                ESEGUI RUN FP${fp.session} (ENTRAMBI)
+                RUN FP${fp.session} (${runsLeft} RIMASTI)
               </button>
             ` : `
               <div class="py-3.5 px-3 rounded-xl bg-slate-800 text-slate-400 text-center text-xs font-semibold">
-                Prove Libere Complete
+                FP Completate
               </div>
             `}
             <button onclick="startQualifying()" class="py-3.5 px-3 rounded-xl bg-f1red hover:bg-red-600 active:scale-[0.99] font-bold text-xs text-white shadow-lg">
@@ -769,6 +1079,7 @@
 
     function runPracticeSession() {
       const fp = gameState.weekend.fp;
+      if (fp.session > 3) return;
       const targetsMap = gameState.weekend.driverTargets || {
         d1: gameState.weekend.targets,
         d2: gameState.weekend.targets
@@ -781,57 +1092,77 @@
         const diffWing = data.wing - t.wing;
         const diffSusp = data.susp - t.susp;
         const diffBrake = data.brake - t.brake;
-        const totalError = Math.abs(diffWing) + Math.abs(diffSusp) + Math.abs(diffBrake);
+        const diffRide = (data.ride ?? 5) - (t.ride ?? 5);
+        const diffDiff = (data.diff ?? 5) - (t.diff ?? 5);
 
-        const rawConf = Math.max(30, Math.min(100, 100 - totalError * 6));
-        const improved = rawConf > data.confidence;
+        const totalError = Math.abs(diffWing) + Math.abs(diffSusp) + Math.abs(diffBrake) + Math.abs(diffRide) + Math.abs(diffDiff);
+        const rawConf = Math.max(30, Math.min(100, 100 - totalError * 4.5));
+        const improved = rawConf > data.confidence || (data.lastError !== null && totalError < data.lastError);
         data.confidence = Math.max(data.confidence, rawConf);
+        data.lastError = totalError;
         data.fpRunsDone += 1;
 
         const userDrivers = getUserDrivers();
         const drvObj = slot === 'd1' ? userDrivers[0] : userDrivers[1];
         if (drvObj) {
-          adjustDriverMood(drvObj.id, improved ? 2 : -1, improved ? 'Assetto migliorato nelle prove libere' : 'Assetto ancora da affinare in FP');
+          adjustDriverMood(drvObj.id, improved ? 2 : -1, improved ? 'Progresso assetto nelle prove libere' : 'Assetto ancora da sistemare nelle FP');
         }
 
         const sentences = [];
         if (diffWing === 0) {
-          sentences.push('Il carico aerodinamico delle ali è centrato al millimetro: ottima velocità di punta e aderenza nei curvoni veloci.');
-        } else if (diffWing < -2) {
-          sentences.push('In curva veloce e nei cambi di direzione l’anteriore scivola troppo per mancanza di deportanza: serve aumentare decisamente l’incidenza delle ali.');
+          sentences.push('Ali bilanciate: carico e velocità di punta sono in linea con il tracciato.');
+        } else if (diffWing < -1) {
+          sentences.push('Poca deportanza nei curvoni: serve alzare l’incidenza delle ali.');
         } else if (diffWing < 0) {
-          sentences.push('Manca ancora un pizzico di carico aerodinamico in percorrenza di curva: prova ad aggiungere 1 o 2 tacche di ala.');
-        } else if (diffWing > 2) {
-          sentences.push('Abbiamo troppa resistenza aerodinamica sui rettilinei e veniamo sverniciati in allungo: bisogna scaricare sensibilmente le ali.');
+          sentences.push('Manca un leggero carico aerodinamico in curva: prova ad aggiungere 1 tacca di ala.');
+        } else if (diffWing > 1) {
+          sentences.push('Ali troppo cariche e penalizzanti sui rettilinei: conviene scaricare l’incidenza.');
         } else {
-          sentences.push('La macchina è ben piantata ma siamo leggermente lenti sul dritto: prova a ridurre di poco l’incidenza dell’ala.');
+          sentences.push('Leggero eccesso di ala: un piccolo scarico aiuta in allungo.');
         }
 
         if (diffSusp === 0) {
-          sentences.push('Le sospensioni assorbono perfettamente i cordoli garantendo trazione immediata in uscita.');
+          sentences.push('Sospensioni ben accordate sui cordoli.');
         } else if (diffSusp < 0) {
-          sentences.push('L’assetto meccanico risulta troppo morbido e la vettura rolla nei cambi di direzione: irrigidisci un po’ le sospensioni per renderla più reattiva.');
+          sentences.push('Sospensioni troppo morbide: irrigidisci per maggiore reattività.');
         } else {
-          sentences.push('Le sospensioni sono troppo rigide e la monoposto saltella sui cordoli perdendo trazione: prova ad ammorbidirle leggermente.');
+          sentences.push('Sospensioni troppo rigide: ammorbidisci per assorbire meglio i cordoli.');
         }
 
-        if (diffBrake === 0) {
-          sentences.push('Bilanciamento freni e rapporti del cambio sono impeccabili in ogni staccata.');
-        } else if (diffBrake < 0) {
-          sentences.push('In ingresso curva il posteriore tende a scappare in staccata: sposta il bilanciamento freni più in avanti (valore più alto).');
-        } else {
-          sentences.push('Tendo a bloccare l’anteriore nelle frenate più violente: arretra leggermente il bilanciamento freni (valore più basso).');
+        if (diffRide < -1) {
+          sentences.push('Altezza da terra troppo bassa: la vettura tocca il fondo e rischia usura eccessiva.');
+        } else if (diffRide > 1) {
+          sentences.push('Altezza/pressioni troppo alte: si perde efficienza aerodinamica.');
+        }
+
+        if (diffDiff < -1) {
+          sentences.push('Differenziale troppo aperto in uscita curva: chiudilo leggermente per migliorare la trazione.');
+        } else if (diffDiff > 1) {
+          sentences.push('Differenziale troppo chiuso: tende a spingere il muso largo in uscita.');
+        }
+
+        if (diffBrake < 0) {
+          sentences.push('Freni troppo arretrati: sposta il bilanciamento più avanti in staccata.');
+        } else if (diffBrake > 0) {
+          sentences.push('Freni troppo sbilanciati sull’anteriore: arretra leggermente per evitare bloccaggi.');
         }
 
         data.feedback = sentences.join(' ');
       });
 
-      if (fp.session < 3) {
-        fp.session += 1;
-        showToast(`Run completato! Feedback separati aggiornati per FP${fp.session}.`, 'info');
+      fp.runsLeftInSession = (fp.runsLeftInSession ?? 3) - 1;
+      if (fp.runsLeftInSession <= 0) {
+        if (fp.session < 3) {
+          fp.session += 1;
+          fp.runsLeftInSession = 3;
+          showToast(`Sessione FP${fp.session - 1} terminata: inizia FP${fp.session} (3 run)!`, 'info');
+        } else {
+          fp.session = 4;
+          fp.runsLeftInSession = 0;
+          showToast('Tutte le sessioni di Prove Libere completate!', 'success');
+        }
       } else {
-        fp.session = 4;
-        showToast('Tutte le sessioni di Prove Libere completate!', 'success');
+        showToast(`Run completato! Restano ${fp.runsLeftInSession} run in FP${fp.session}.`, 'info');
       }
 
       saveGame();
@@ -852,7 +1183,7 @@
         let plan = 'race';
         if (isUser) {
           const slot = userDrivers[0]?.id === d.id ? fp.d1 : fp.d2;
-          confBonus = (slot?.confidence || 50) / 100;
+          confBonus = (slot?.confidence || 45) / 100;
           plan = slot?.plan || 'race';
         }
         return {
@@ -953,14 +1284,12 @@
         entry.runTimer += step;
 
         if (entry.status === 'OUT_LAP') {
-          entry.progress = Math.min(0.99, entry.runTimer / 85);
           if (entry.runTimer >= 85) {
             entry.status = 'HOT_LAP';
             entry.runTimer = 0;
             entry.progress = 0.01;
           }
         } else if (entry.status === 'HOT_LAP') {
-          entry.progress = Math.min(0.99, entry.runTimer / track.baseLap);
           if (entry.runTimer >= track.baseLap) {
             const driver = gameState.drivers.find(d => d.id === entry.driverId);
             const team = getTeam(entry.teamId);
@@ -969,11 +1298,11 @@
             const carPerf = (team.aero * 0.42 + team.pu * 0.35 + team.chassis * 0.23);
             const carDelta = (90 - carPerf) * 0.09;
             const driverDelta = (90 - driver.pace) * 0.06;
-            const setupDelta = entry.isUser ? -(entry.confBonus * 0.40) - (entry.plan === 'quali' ? 0.28 : 0) : -0.25;
+            const setupDelta = entry.isUser ? -(entry.confBonus * 0.42) - (entry.plan === 'quali' ? 0.28 : 0) : -0.25;
             const gripDelta = ((82 - q.trackGrip) * 0.024);
             const trafficPenalty = Math.max(0, (activeCarsOnTrack - 6) * 0.06);
             let weatherPenalty = 0;
-            if (q.weather === 'wet' && comp.wet === 0) weatherPenalty = 8.5;
+            if (q.weather === 'wet' && comp.wet === 0) weatherPenalty = driver.trait === 'wet_ace' ? 6.2 : 8.5;
             if (q.weather === 'dry' && comp.wet > 0) weatherPenalty = 4.2;
 
             const lap = track.baseLap + carDelta + driverDelta + setupDelta + moodMeta.paceDelta + comp.paceBonus + gripDelta + trafficPenalty + weatherPenalty + (Math.random() - 0.5) * 0.28;
@@ -984,7 +1313,6 @@
             entry.progress = 0.01;
           }
         } else if (entry.status === 'IN_LAP') {
-          entry.progress = Math.min(0.99, entry.runTimer / 80);
           if (entry.runTimer >= 80) {
             entry.status = 'BOX';
             entry.runTimer = 0;
@@ -1030,6 +1358,43 @@
       renderApp();
     }
 
+    function startQualiSmoothLoop() {
+      stopAllLoops();
+      const q = gameState?.weekend?.quali;
+      if (!q || gameState.weekend.phase !== 'quali') return;
+
+      const track = CALENDAR_2026[gameState.round - 1];
+      syncTrackCarPositions('fm-quali-svg');
+      lastAnimTimestamp = performance.now();
+
+      const animateQuali = (now) => {
+        const dt = Math.min(0.1, (now - lastAnimTimestamp) / 1000);
+        lastAnimTimestamp = now;
+
+        const curQ = gameState?.weekend?.quali;
+        if (curQ && curQ.speed > 0 && gameState.weekend.phase === 'quali') {
+          const simSec = dt * curQ.speed * 4;
+          curQ.entries.forEach(entry => {
+            if (entry.eliminated || entry.status === 'BOX') return;
+            const segDur = entry.status === 'HOT_LAP' ? track.baseLap : (entry.status === 'OUT_LAP' ? 85 : 80);
+            entry.progress = (((entry.progress || 0) + simSec / segDur) % 1 + 1) % 1;
+            const dot = document.getElementById(`quali-dot-${entry.driverId}`);
+            if (dot) dot.setAttribute('data-track-progress', entry.progress.toFixed(4));
+          });
+          syncTrackCarPositions('fm-quali-svg');
+        }
+        animFrameId = requestAnimationFrame(animateQuali);
+      };
+      animFrameId = requestAnimationFrame(animateQuali);
+
+      const ms = q.speed > 0 ? Math.max(250, 1000 / q.speed) : 1000;
+      simTimer = setInterval(() => {
+        if (gameState?.weekend?.quali && gameState.weekend.quali.speed > 0 && gameState.weekend.phase === 'quali') {
+          tickQualiSecond();
+        }
+      }, ms);
+    }
+
     function renderQualifyingView() {
       const q = gameState.weekend.quali;
       const track = CALENDAR_2026[gameState.round - 1];
@@ -1041,7 +1406,7 @@
 
       const dotsHtml = activeEntries.filter(e => e.status !== 'BOX').map(e => {
         const t = getTeam(e.teamId);
-        return `<circle cx="150" cy="130" r="${e.isUser ? 5 : 3.5}" fill="${t.color}" stroke="${e.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2" data-track-progress="${(e.progress || 0).toFixed(4)}"/>`;
+        return `<circle id="quali-dot-${e.driverId}" cx="150" cy="130" r="${e.isUser ? 5 : 3.5}" fill="${t.color}" stroke="${e.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2" data-track-progress="${(e.progress || 0).toFixed(4)}"/>`;
       }).join('');
 
       return `
@@ -1315,93 +1680,105 @@
         </div>
       `;
     }
-    function launchRaceFromStrategy() {
+          function launchRaceFromStrategy() {
       stopAllLoops();
-      const q = gameState.weekend.quali;
-      const strat = gameState.weekend.preRaceStrategy;
       const track = CALENDAR_2026[gameState.round - 1];
-      const active = q.entries.filter(e => !e.eliminated).sort((a, b) => a.bestTime - b.bestTime);
-      const elimQ2 = q.entries.filter(e => e.eliminatedIn === 'Q2').sort((a, b) => a.bestTime - b.bestTime);
-      const elimQ1 = q.entries.filter(e => e.eliminatedIn === 'Q1').sort((a, b) => a.bestTime - b.bestTime);
-      const gridOrder = [...active, ...elimQ2, ...elimQ1];
-
+      const q = gameState.weekend.quali;
+      const stratObj = gameState.weekend.preRaceStrategy;
       const userDrivers = getUserDrivers();
-      const startWeather = Math.random() < track.rainChance * 0.45 ? 'light_rain' : 'dry';
-      const initialWater = startWeather === 'dry' ? 4 : 42;
-      const initialThreat = Math.min(95, Math.round(track.rainChance * 100 + (startWeather === 'dry' ? 12 : 35)));
+
+      let gridOrder = [];
+      if (q && q.entries) {
+        const active = q.entries.filter(e => !e.eliminated).sort((a, b) => a.bestTime - b.bestTime);
+        const elimQ2 = q.entries.filter(e => e.eliminatedIn === 'Q2').sort((a, b) => a.bestTime - b.bestTime);
+        const elimQ1 = q.entries.filter(e => e.eliminatedIn === 'Q1').sort((a, b) => a.bestTime - b.bestTime);
+        gridOrder = [...active, ...elimQ2, ...elimQ1];
+      } else {
+        gridOrder = [...gameState.drivers].sort((a, b) => b.ovr - a.ovr).map(d => ({ driverId: d.id }));
+      }
+
+      const initialWeather = q?.weather === 'wet' ? 'wet' : (Math.random() < track.rainChance * 0.45 ? 'damp' : 'dry');
 
       const cars = gridOrder.map((entry, idx) => {
-        const driver = gameState.drivers.find(d => d.id === entry.driverId);
-        const team = getTeam(entry.teamId);
-        let planForCar = null;
-        if (entry.isUser) {
-          planForCar = userDrivers[0]?.id === driver.id ? strat?.d1 : strat?.d2;
-        }
+        const driver = gameState.drivers.find(d => d.id === entry.driverId) || gameState.drivers[idx];
+        const team = getTeam(driver.teamId);
+        const isUser = driver.teamId === gameState.userTeamId;
+        const slotKey = userDrivers[0]?.id === driver.id ? 'd1' : (userDrivers[1]?.id === driver.id ? 'd2' : null);
+        const userPlan = slotKey ? stratObj?.[slotKey] : null;
+        const fpSlot = slotKey ? gameState.weekend.fp?.[slotKey] : null;
 
-        const startComp = entry.isUser && planForCar
-          ? (startWeather === 'dry' ? planForCar.startTyre : 'I')
-          : (startWeather === 'dry' ? (idx < 10 && Math.random() > 0.45 ? 'S' : 'M') : 'I');
+        const startTyre = initialWeather === 'wet'
+          ? 'W'
+          : (initialWeather === 'damp'
+            ? 'I'
+            : (userPlan?.startTyre || (track.tyreDeg === 3 ? 'M' : 'S')));
 
-        const firstPlannedTyre = planForCar?.stintTyres?.[0] || 'H';
+        const plannedStops = userPlan
+          ? userPlan.stopsCount
+          : (track.tyreDeg === 3 ? 2 : (track.laps >= 68 ? 2 : 1));
+
+        const pitLap1 = userPlan?.pitLaps?.[0] || Math.max(5, Math.min(track.laps - 7, Math.round(track.laps / (plannedStops + 1))));
+        const pitLap2 = userPlan?.pitLaps?.[1] || Math.max(pitLap1 + 6, Math.min(track.laps - 4, Math.round((track.laps * 2) / (plannedStops + 1))));
+        const pitLap3 = userPlan?.pitLaps?.[2] || Math.max(pitLap2 + 5, Math.min(track.laps - 2, Math.round((track.laps * 3) / (plannedStops + 1))));
 
         return {
           driverId: driver.id,
           name: driver.name,
           code: driver.code,
           number: driver.number,
-          teamId: team.id,
-          color: team.color,
-          isUser: entry.isUser,
+          teamId: driver.teamId,
+          isUser,
+          gridPos: idx + 1,
           pos: idx + 1,
-          totalTime: idx * 0.45,
-          lastLapTime: track.baseLap,
-          tyre: startComp,
+          lap: 1,
+          progress: Math.max(0.01, (1 - idx * 0.012 + 1) % 1),
+          gapToLeader: idx * 0.35,
+          lastLap: 0,
+          bestLap: 999,
+          tyre: startTyre,
           tyreWear: 0,
-          fuel: 100,
-          paceMode: planForCar?.initialPace || 'balanced',
-          ersMode: 'balanced',
-          teamOrder: 'free',
-          pitRequested: false,
-          nextTyre: firstPlannedTyre,
-          plannedStops: planForCar ? {
-            stopsCount: planForCar.stopsCount,
-            pitLaps: [...planForCar.pitLaps],
-            stintTyres: [...planForCar.stintTyres],
-            currentStopIdx: 0
-          } : null,
-          pitsDone: 0,
-          dnf: false,
-          dnfReason: '',
-          confBonus: entry.confBonus || 0.6,
-          plan: entry.plan || 'race',
-          progressOnLap: Math.max(0.01, (0.99 - idx * 0.018 + 1) % 1),
-          pitAnim: { mode: 'none', t: 0 }
+          pitStops: 0,
+          plannedStops,
+          pitLaps: [pitLap1, pitLap2, pitLap3],
+          stintTyres: userPlan?.stintTyres || ['H', 'M', 'H', 'S'],
+          paceMode: isUser ? (userPlan?.initialPace || 'balanced') : 'balanced',
+          fpPlan: fpSlot?.plan || 'race',
+          confBonus: isUser ? ((fpSlot?.confidence || 45) / 100) : 0.65,
+          retired: false,
+          pitAnim: { mode: 'none', t: 0, targetTyre: null }
         };
       });
+
+      const banner = initialWeather === 'wet'
+        ? { type: 'rain', title: 'PIOGGIA IN CORSO', detail: 'Asfalto bagnato al via: monitora mescole Intermedie e Wet.' }
+        : (initialWeather === 'damp'
+          ? { type: 'rain', title: 'ASFALTO UMIDO', detail: 'Possibile finestra per gomme Intermedie se l’umidità sale.' }
+          : null);
 
       gameState.weekend.phase = 'race';
       gameState.weekend.race = {
         lap: 1,
         totalLaps: track.laps,
-        speed: 1,
-        lapFraction: 0,
-        activePanel: 'pitwall',
-        weather: startWeather,
-        weatherTrend: initialThreat > 55 ? 'Peggioramento' : 'Stabile',
-        trackWater: initialWater,
-        rainThreat: initialThreat,
+        weather: initialWeather,
         safetyCar: 'NONE',
-        scLapsRemaining: 0,
-        fastestLap: { driverId: null, code: '-', time: 999 },
-        radioLog: [`G1/${track.laps}: Semaforo verde a ${track.name}! Ritmo 1x calmo per gestire meteo e pit.`],
-        teamOrders: {
-          noOvertake: false,
-          swapDone: false
-        },
+        scLapsLeft: 0,
+        speed: 1,
+        radioOpen: false,
+        radioFilter: 'all',
+        alertBanner: banner,
+        logs: [
+          `Semafori spenti a ${track.name}! Meteo iniziale: ${initialWeather === 'wet' ? 'Bagnato' : initialWeather === 'damp' ? 'Umido' : 'Asciutto'}.`
+        ],
         cars
       };
 
       saveGame();
+      renderApp();
+    }
+
+    function dismissRaceAlert() {
+      if (!gameState?.weekend?.race) return;
+      gameState.weekend.race.alertBanner = null;
       renderApp();
     }
 
@@ -1412,862 +1789,777 @@
       renderApp();
     }
 
-    function setRacePanel(panelId) {
-      if (!gameState.weekend?.race) return;
-      gameState.weekend.race.activePanel = panelId;
-      saveGame();
-      renderApp();
-    }
-
-    function setCarMode(driverId, modeType, val) {
-      const car = gameState.weekend?.race?.cars.find(c => c.driverId === driverId);
+    function setRacePace(driverId, mode) {
+      const r = gameState.weekend?.race;
+      if (!r) return;
+      const car = r.cars.find(c => c.driverId === driverId && !c.retired);
       if (!car) return;
-      if (modeType === 'pace') car.paceMode = val;
-      if (modeType === 'ers') car.ersMode = val;
+      car.paceMode = mode;
+      const lbl = mode === 'push' ? 'Attacco' : mode === 'conserve' ? 'Conservativo' : 'Bilanciato';
+      r.logs.unshift(`G${r.lap} • ${car.code}: ritmo impostato su ${lbl}.`);
       saveGame();
       renderApp();
     }
 
-    function requestPitStop(driverId, tyreCode) {
-      const car = gameState.weekend?.race?.cars.find(c => c.driverId === driverId);
-      if (!car || car.dnf) return;
-      car.pitRequested = true;
-      car.nextTyre = tyreCode;
-      showToast(`Box confermato per ${car.code}: gomme ${TYRE_COMPOUNDS[tyreCode].name}!`, 'info');
+    function orderPitStop(driverId, tyreCode) {
+      const r = gameState.weekend?.race;
+      if (!r) return;
+      const car = r.cars.find(c => c.driverId === driverId && !c.retired);
+      if (!car) return;
+      car.pitAnim = { mode: 'pit_in', t: 0, targetTyre: tyreCode };
+      r.logs.unshift(`G${r.lap} • BOX BOX per ${car.code} -> gomme ${TYRE_COMPOUNDS[tyreCode].name}!`);
       saveGame();
       renderApp();
     }
 
-    function toggleNoOvertakeOrder() {
-      const race = gameState.weekend?.race;
-      if (!race) return;
-      race.teamOrders = race.teamOrders || { noOvertake: false, swapDone: false };
-      race.teamOrders.noOvertake = !race.teamOrders.noOvertake;
-      const stateLabel = race.teamOrders.noOvertake ? 'No Sorpassi ATTIVO' : 'Piloti liberi di lottare';
-      race.radioLog.unshift(`G${race.lap}: 📋 Ordine: ${stateLabel}`);
-      showToast(stateLabel, 'info');
-      saveGame();
+    function toggleRaceRadio() {
+      if (!gameState.weekend?.race) return;
+      gameState.weekend.race.radioOpen = !gameState.weekend.race.radioOpen;
       renderApp();
     }
 
-    function executeTeammateSwap() {
-      const race = gameState.weekend?.race;
-      if (!race) return;
-      const uCars = race.cars.filter(c => c.isUser && !c.dnf).sort((a, b) => a.pos - b.pos);
-      if (uCars.length < 2) {
-        showToast('Servono entrambi i piloti in gara per lo scambio.', 'danger');
-        return;
-      }
-      const ahead = uCars[0];
-      const behind = uCars[1];
-      const gap = behind.totalTime - ahead.totalTime;
-      if (gap > 6.5) {
-        showToast(`Troppo distacco (${gap.toFixed(1)}s) per lo scambio.`, 'danger');
-        return;
-      }
-      const tempTime = ahead.totalTime;
-      ahead.totalTime = behind.totalTime + 0.25;
-      behind.totalTime = tempTime;
-
-      const activeCars = race.cars.filter(c => !c.dnf).sort((a, b) => a.totalTime - b.totalTime);
-      const dnfCars = race.cars.filter(c => c.dnf);
-      race.cars = [...activeCars, ...dnfCars];
-      race.cars.forEach((c, i) => { c.pos = i + 1; });
-
-      race.radioLog.unshift(`G${race.lap}: 🔄 Scambio: ${behind.code} passa davanti a ${ahead.code}.`);
-      showToast(`Scambio effettuato: ${behind.code} davanti a ${ahead.code}!`, 'success');
-      saveGame();
+    function setRaceRadioFilter(flt) {
+      if (!gameState.weekend?.race) return;
+      gameState.weekend.race.radioFilter = flt;
       renderApp();
     }
 
-    function quickStrategySwitch(driverId, tyreCode, paceMode) {
-      const car = gameState.weekend?.race?.cars.find(c => c.driverId === driverId);
-      const race = gameState.weekend?.race;
-      if (!car || !race || car.dnf) return;
-      car.paceMode = paceMode;
-      car.pitRequested = true;
-      car.nextTyre = tyreCode;
-      race.radioLog.unshift(`G${race.lap}: ⚡ ${car.code} -> ${TYRE_COMPOUNDS[tyreCode].name} (${paceMode === 'push' ? 'Attacco' : paceMode === 'conserve' ? 'Lungo' : 'Neutro'})`);
-      showToast(`Strategia aggiornata per ${car.code}!`, 'info');
-      saveGame();
-      renderApp();
-    }
+    function computeCarLapSeconds(car, race, track) {
+      const driver = gameState.drivers.find(d => d.id === car.driverId);
+      const team = getTeam(car.teamId);
+      const moodMeta = getMoodMeta(driver?.mood ?? 65);
+      const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
+      const carPerf = (team.aero * 0.40 + team.pu * 0.36 + team.chassis * 0.24);
+      const carDelta = (90 - carPerf) * 0.085;
+      const driverDelta = (90 - (driver?.pace ?? 82)) * 0.055;
+      const paceDelta = car.paceMode === 'push' ? -0.42 : (car.paceMode === 'conserve' ? 0.45 : 0);
+      const wearDelta = (car.tyreWear / 100) * 2.25;
+      const setupDelta = car.isUser ? -(car.confBonus * 0.35) - (car.fpPlan === 'race' ? 0.22 : 0) : -0.18;
 
-    function simulateRaceLap() {
-      const race = gameState.weekend?.race;
-      if (!race || gameState.weekend.phase !== 'race') return;
-      if (race.lap > race.totalLaps) {
-        finishRaceAndSeasonCheck();
-        return;
-      }
-
-      const track = CALENDAR_2026[gameState.round - 1];
-      const degMult = gameState.rules?.extraDegMultiplier || 1.0;
-
-      const prevWater = race.trackWater ?? 0;
-      if (Math.random() < track.rainChance * 0.055) {
-        const prevW = race.weather;
-        race.weather = race.weather === 'dry' ? 'light_rain' : (Math.random() > 0.5 ? 'heavy_rain' : 'dry');
-        if (race.weather !== prevW) {
-          const wLabel = race.weather === 'dry' ? '☀️ Asciutto' : race.weather === 'light_rain' ? '🌦️ Pioggia leggera' : '🌧️ Pioggia forte';
-          race.radioLog.unshift(`G${race.lap}: Meteo -> ${wLabel}!`);
-        }
-      }
-      if (race.weather === 'heavy_rain') race.trackWater = Math.min(100, (race.trackWater ?? 0) + 18);
-      else if (race.weather === 'light_rain') race.trackWater = Math.min(75, (race.trackWater ?? 0) + 9);
-      else race.trackWater = Math.max(0, (race.trackWater ?? 0) - 11);
-
-      race.rainThreat = Math.max(5, Math.min(98, Math.round(
-        track.rainChance * 100 + race.trackWater * 0.55 + (Math.random() - 0.5) * 14
-      )));
-      if (race.trackWater > prevWater + 2 || race.rainThreat >= 65) {
-        race.weatherTrend = 'In peggioramento';
-      } else if (race.trackWater < prevWater - 2 && race.weather === 'dry') {
-        race.weatherTrend = 'In asciugatura';
+      let weatherDelta = 0;
+      if (race.weather === 'wet') {
+        if (comp.wet === 2) weatherDelta = -0.3;
+        else if (comp.wet === 1) weatherDelta = 0.6;
+        else weatherDelta = driver?.trait === 'wet_ace' ? 5.8 : 8.2;
+      } else if (race.weather === 'damp') {
+        if (comp.wet === 1) weatherDelta = -0.2;
+        else if (comp.wet === 2) weatherDelta = 1.8;
+        else weatherDelta = 1.4;
       } else {
-        race.weatherTrend = 'Stabile';
+        if (comp.wet > 0) weatherDelta = 3.8;
       }
 
-      if (race.scLapsRemaining > 0) {
-        race.scLapsRemaining -= 1;
-        if (race.scLapsRemaining === 0) {
-          race.safetyCar = 'NONE';
-          race.radioLog.unshift(`G${race.lap}: 🟢 Bandiera verde!`);
+      const scDelta = race.safetyCar === 'SC' ? 14.0 : (race.safetyCar === 'VSC' ? 6.5 : 0);
+      const noise = (Math.random() - 0.5) * 0.32;
+      return Math.max(58.0, track.baseLap + carDelta + driverDelta + paceDelta + wearDelta + setupDelta + moodMeta.paceDelta + comp.paceBonus + weatherDelta + scDelta + noise);
+    }
+
+    function tickRaceLap() {
+      const r = gameState.weekend?.race;
+      if (!r || gameState.weekend.phase !== 'race') return;
+      const track = CALENDAR_2026[gameState.round - 1];
+
+      if (r.safetyCar !== 'NONE') {
+        r.scLapsLeft -= 1;
+        if (r.scLapsLeft <= 0) {
+          const wasSC = r.safetyCar === 'SC';
+          r.safetyCar = 'NONE';
+          r.alertBanner = {
+            type: 'sc',
+            title: 'BANDIERA VERDE • GARA RIPRESA',
+            detail: wasSC ? 'Safety Car rientrata ai box: via libera al sorpasso!' : 'Virtual Safety Car terminata: ritmo pieno ristabilito.'
+          };
+          r.logs.unshift(`🟢 G${r.lap} • Bandiera verde! ${wasSC ? 'Safety Car rientrata.' : 'VSC terminata.'}`);
         }
-      } else if (race.lap > 2 && race.lap < race.totalLaps - 2 && Math.random() < 0.04) {
-        race.safetyCar = Math.random() < 0.55 ? 'VSC' : 'SC';
-        race.scLapsRemaining = race.safetyCar === 'SC' ? 3 : 2;
-        race.radioLog.unshift(`G${race.lap}: ⚠️ ${race.safetyCar === 'SC' ? 'SAFETY CAR IN PISTA' : 'VSC IN CORSO'}!`);
+      } else if (r.lap > 3 && r.lap < r.totalLaps - 2) {
+        const roll = Math.random();
+        if (roll < 0.045) {
+          r.safetyCar = 'VSC';
+          r.scLapsLeft = 2;
+          r.alertBanner = {
+            type: 'sc',
+            title: '⚠️ VIRTUAL SAFETY CAR (VSC)',
+            detail: 'Ritmo ridotto in pista: finestra pit stop vantaggiosa per risparmiare tempo.'
+          };
+          r.logs.unshift(`🟡 G${r.lap} • VIRTUAL SAFETY CAR in pista! Pit stop più economici.`);
+        } else if (roll < 0.075) {
+          r.safetyCar = 'SC';
+          r.scLapsLeft = 3;
+          r.alertBanner = {
+            type: 'sc',
+            title: '🚨 SAFETY CAR IN PISTA',
+            detail: 'Gruppo compattato dietro la Safety Car: pit stop strategici a rischio minimo!'
+          };
+          r.logs.unshift(`🚨 G${r.lap} • SAFETY CAR in pista! Gruppo compattato.`);
+        }
       }
 
-      let doubleStackCounter = 0;
+      if (Math.random() < track.rainChance * 0.085) {
+        if (r.weather === 'dry') {
+          r.weather = 'damp';
+          r.alertBanner = {
+            type: 'rain',
+            title: '🌧️ ARRIVA LA PIOGGIA • ASFALTO UMIDO',
+            detail: 'Gocce sul tracciato: valuta le gomme Intermedie (I) se la pista si bagna ulteriormente.'
+          };
+          r.logs.unshift(`🌧️ G${r.lap} • Meteo in cambiamento: asfalto umido su alcuni settori!`);
+        } else if (r.weather === 'damp') {
+          r.weather = 'wet';
+          r.alertBanner = {
+            type: 'rain',
+            title: '⛈️ PIOGGIA INTENSA • PISTA BAGNATA',
+            detail: 'Asfalto bagnato: mescole Intermedie o Wet obbligatorie per evitare crolli di prestazione!'
+          };
+          r.logs.unshift(`⛈️ G${r.lap} • Pioggia decisa sul circuito! Valuta gomme Intermedie o Wet.`);
+        }
+      } else if (r.weather !== 'dry' && Math.random() < 0.09) {
+        r.weather = r.weather === 'wet' ? 'damp' : 'dry';
+        r.alertBanner = {
+          type: 'rain',
+          title: r.weather === 'dry' ? '☀️ PISTA IN ASCIUGATURA (SLICK)' : '🌤️ PIOGGIA IN ATTENUAZIONE',
+          detail: r.weather === 'dry' ? 'Traiettoria asciutta: le gomme slick tornano rapidamente più veloci.' : 'Pioggia in calo: asfalto ancora umido.'
+        };
+        r.logs.unshift(`🌤️ G${r.lap} • Il meteo migliora: ${r.weather === 'dry' ? 'pista asciutta' : 'asfalto umido'}.`);
+      }
 
-      race.cars.forEach(car => {
-        if (car.dnf) return;
+      const activeCars = r.cars.filter(c => !c.retired);
+      const leaderBefore = [...activeCars].sort((a, b) => a.gapToLeader - b.gapToLeader)[0];
+      const leaderLapSec = leaderBefore ? computeCarLapSeconds(leaderBefore, r, track) : track.baseLap;
 
+      activeCars.forEach(car => {
         const driver = gameState.drivers.find(d => d.id === car.driverId);
         const team = getTeam(car.teamId);
-        const moodMeta = getMoodMeta(driver.mood ?? 65);
-
-        const dnfProb = ((100 - team.rel) * 0.00025) + (car.paceMode === 'push' ? 0.0012 : 0.0003);
-        if (Math.random() < dnfProb) {
-          car.dnf = true;
-          car.dnfReason = Math.random() > 0.5 ? 'Problema Power Unit' : 'Guasto Idraulico';
-          race.radioLog.unshift(`G${race.lap}: ❌ Ritiro ${car.code} (${car.dnfReason})`);
-          if (car.isUser) {
-            adjustDriverMood(driver.id, -12, `Ritiro in gara a ${track.name}`);
-            showToast(`RITIRO! ${car.name} fuori gara (${car.dnfReason})!`, 'danger');
-          }
-          return;
-        }
-
-        if (car.isUser && car.plannedStops && !car.pitRequested) {
-          const ps = car.plannedStops;
-          const targetLap = ps.pitLaps[ps.currentStopIdx];
-          if (targetLap && race.lap === targetLap && race.lap < race.totalLaps) {
-            car.pitRequested = true;
-            car.nextTyre = ps.stintTyres[ps.currentStopIdx] || 'H';
-          }
-        }
-
-        if (!car.isUser) {
-          if (race.trackWater >= 65 && car.tyre !== 'W') {
-            car.pitRequested = true;
-            car.nextTyre = 'W';
-          } else if (race.trackWater >= 25 && race.trackWater < 65 && car.tyre !== 'I') {
-            car.pitRequested = true;
-            car.nextTyre = 'I';
-          } else if (race.trackWater < 20 && (car.tyre === 'I' || car.tyre === 'W')) {
-            car.pitRequested = true;
-            car.nextTyre = 'M';
-          } else if (car.tyreWear >= 64 && race.lap < race.totalLaps - 2) {
-            car.pitRequested = true;
-            car.nextTyre = (race.totalLaps - race.lap) <= 13 ? 'S' : 'H';
-          }
-          car.paceMode = car.tyreWear > 52 ? 'conserve' : 'balanced';
-        }
-
-        let pitLoss = 0;
-        if (car.pitRequested) {
-          pitLoss = race.safetyCar !== 'NONE' ? 12.5 : 21.5;
-          if (car.isUser) {
-            doubleStackCounter += 1;
-            if (doubleStackCounter > 1) pitLoss += 4.5;
-            if (car.plannedStops) car.plannedStops.currentStopIdx += 1;
-          }
-          car.tyre = car.nextTyre;
-          car.tyreWear = 0;
-          car.pitsDone += 1;
-          car.pitRequested = false;
-          car.pitAnim = { mode: 'pit_in', t: 0 };
-
-          if (car.isUser) {
-            race.radioLog.unshift(`G${race.lap}: 🔧 Box ${car.code} -> ${TYRE_COMPOUNDS[car.tyre].name}`);
-          }
-        }
-
-        const comp = TYRE_COMPOUNDS[car.tyre];
-        const carPerf = (team.aero * 0.4 + team.pu * 0.35 + team.chassis * 0.25);
-        const carDelta = (90 - carPerf) * 0.085;
-        const driverDelta = (90 - driver.ovr) * 0.055;
-        const setupDelta = car.isUser ? -(car.confBonus * 0.35) - (car.plan === 'race' ? 0.22 : 0) : -0.22;
-
-        const paceMod = car.paceMode === 'push' ? -0.50 : car.paceMode === 'conserve' ? 0.45 : 0;
-        const ersMod = car.ersMode === 'overtake' ? -0.35 : car.ersMode === 'harvest' ? 0.30 : 0;
-
-        const baseWearLoss = car.tyreWear * 0.032;
-        const cliffPenalty = car.tyreWear > 55 ? Math.pow((car.tyreWear - 55) * 0.20, 1.55) : 0;
-        const wearPenalty = baseWearLoss + cliffPenalty;
-
-        let weatherMismatch = 0;
-        if (race.trackWater >= 65 && comp.wet < 2) weatherMismatch = comp.wet === 1 ? 3.5 : 14.0;
-        else if (race.trackWater >= 25 && race.trackWater < 65 && comp.wet === 0) weatherMismatch = 7.5;
-        else if (race.trackWater < 15 && comp.wet > 0) weatherMismatch = comp.wet === 2 ? 9.0 : 4.5;
-
-        const fuelSaving = -((100 - car.fuel) * 0.015);
-        const variance = (Math.random() - 0.5) * 0.35;
-
-        let lapTime = track.baseLap + carDelta + driverDelta + setupDelta + moodMeta.paceDelta + paceMod + ersMod + comp.paceBonus + wearPenalty + weatherMismatch + fuelSaving + pitLoss + variance;
-
-        if (race.safetyCar === 'SC') lapTime = track.baseLap * 1.32 + pitLoss;
-        else if (race.safetyCar === 'VSC') lapTime = track.baseLap * 1.18 + pitLoss;
-
-        car.lastLapTime = lapTime;
-        car.totalTime += lapTime;
-
-        if (race.safetyCar === 'NONE' && pitLoss === 0 && lapTime < race.fastestLap.time) {
-          race.fastestLap = { driverId: car.driverId, code: car.code, time: lapTime };
-        }
-
+        const moodMeta = getMoodMeta(driver?.mood ?? 65);
+        const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
         const trackDegMult = track.tyreDeg === 3 ? 1.24 : track.tyreDeg === 2 ? 1.0 : 0.84;
-        const paceWearMult = car.paceMode === 'push' ? 1.35 : car.paceMode === 'conserve' ? 0.72 : 1.0;
-        const planWearMult = (car.isUser && car.plan === 'tyre') ? 0.86 : 1.0;
-        const scWearMult = race.safetyCar !== 'NONE' ? 0.35 : 1.0;
+        const ruleDegMult = gameState.rules?.extraDegMultiplier || 1.0;
+        const paceDegMult = car.paceMode === 'push' ? 1.32 : (car.paceMode === 'conserve' ? 0.72 : 1.0);
+        const traitDegMult = driver?.trait === 'attacker' ? 1.08 : (driver?.trait === 'tactician' ? 0.92 : 1.0);
+        const mgmtFactor = Math.max(0.75, 1.15 - ((driver?.tyreMgmt ?? 82) - 70) * 0.004);
+        const fpTyreFactor = car.isUser && car.fpPlan === 'tyre' ? 0.86 : 1.0;
 
-        car.tyreWear = Math.min(100, car.tyreWear + (comp.degRate * trackDegMult * paceWearMult * planWearMult * scWearMult * degMult * moodMeta.degMult));
-        car.fuel = Math.max(0, car.fuel - (100 / race.totalLaps) * (car.paceMode === 'push' ? 1.04 : 0.98));
+        car.tyreWear = Math.min(100, car.tyreWear + comp.degRate * trackDegMult * ruleDegMult * paceDegMult * traitDegMult * mgmtFactor * fpTyreFactor * moodMeta.degMult);
+
+        if (!car.isUser && car.pitAnim.mode === 'none') {
+          const nextStopIdx = car.pitStops;
+          const scheduledLap = car.pitLaps?.[nextStopIdx];
+          const needWetSwap = (r.weather === 'wet' && comp.wet === 0) || (r.weather === 'dry' && comp.wet > 0);
+          if (needWetSwap || car.tyreWear >= 76 || (scheduledLap && r.lap >= scheduledLap && car.pitStops < car.plannedStops)) {
+            let nextTyre = car.stintTyres?.[nextStopIdx] || (car.tyre === 'S' ? 'M' : 'H');
+            if (r.weather === 'wet') nextTyre = 'I';
+            else if (r.weather === 'dry' && TYRE_COMPOUNDS[nextTyre]?.wet > 0) nextTyre = car.tyreWear > 55 ? 'H' : 'M';
+            car.pitAnim = { mode: 'pit_in', t: 0, targetTyre: nextTyre };
+          }
+        }
+
+        if (car.pitAnim.mode === 'pit_in') {
+          car.pitStops += 1;
+          car.tyre = car.pitAnim.targetTyre || 'H';
+          car.tyreWear = 0;
+          car.pitAnim = { mode: 'pit_out', t: 0.25, targetTyre: null };
+          const pitLoss = r.safetyCar === 'SC' ? 11.5 : (r.safetyCar === 'VSC' ? 16.0 : 21.5);
+          car.gapToLeader += pitLoss;
+          if (car.isUser) {
+            r.logs.unshift(`🔧 G${r.lap} • ${car.code} monta gomme ${TYRE_COMPOUNDS[car.tyre].name} (Sosta #${car.pitStops}).`);
+          }
+        } else if (car.pitAnim.mode === 'pit_out') {
+          car.pitAnim = { mode: 'none', t: 0, targetTyre: null };
+        }
+
+        const lapSec = computeCarLapSeconds(car, r, track);
+        car.lastLap = lapSec;
+        if (lapSec < car.bestLap) car.bestLap = lapSec;
+
+        if (car.driverId !== leaderBefore?.driverId) {
+          const deltaVsLeader = (lapSec - leaderLapSec) * (r.safetyCar === 'SC' ? 0.25 : 1.0);
+          car.gapToLeader = Math.max(0.2, car.gapToLeader + deltaVsLeader);
+        } else {
+          car.gapToLeader = 0;
+        }
+
+        if (Math.random() < 0.0032 * (110 - (team.rel ?? 82)) * 0.045) {
+          car.retired = true;
+          r.logs.unshift(`💥 G${r.lap} • RITIRO per ${car.code} (${team.name}) per problema tecnico!`);
+          if (car.isUser) {
+            adjustDriverMood(car.driverId, -6, 'Ritiro tecnico in gara');
+          }
+        }
       });
 
-      const activeCars = race.cars.filter(c => !c.dnf).sort((a, b) => a.totalTime - b.totalTime);
-
-      if (race.teamOrders?.noOvertake) {
-        const uActive = activeCars.filter(c => c.isUser);
-        if (uActive.length === 2) {
-          const [firstU, secondU] = uActive;
-          const idx1 = activeCars.findIndex(c => c.driverId === firstU.driverId);
-          const idx2 = activeCars.findIndex(c => c.driverId === secondU.driverId);
-          if (idx2 < idx1 && secondU.totalTime < firstU.totalTime) {
-            secondU.totalTime = Number((firstU.totalTime + 0.35).toFixed(2));
-            activeCars.sort((a, b) => a.totalTime - b.totalTime);
-          }
-        }
+      const remaining = r.cars.filter(c => !c.retired);
+      if (remaining.length > 0) {
+        remaining.sort((a, b) => a.gapToLeader - b.gapToLeader);
+        const minGap = remaining[0].gapToLeader;
+        remaining.forEach((c, idx) => {
+          c.gapToLeader = Number((c.gapToLeader - minGap).toFixed(2));
+          c.pos = idx + 1;
+        });
       }
 
-      const dnfCars = race.cars.filter(c => c.dnf);
-      const ordered = [...activeCars, ...dnfCars];
-      ordered.forEach((c, idx) => { c.pos = idx + 1; });
-      race.cars = ordered;
+      const uCars = r.cars.filter(c => c.isUser && !c.retired);
+      if (uCars.length === 2 && Math.abs(uCars[0].gapToLeader - uCars[1].gapToLeader) < 0.8 && r.lap > 4) {
+        bumpRivalry(uCars[0].driverId, uCars[1].driverId, 1.5, `Ruota a ruota in casa ${getUserTeam().name}`);
+      }
 
-      race.lap += 1;
-      race.lapFraction = 0;
-
-      if (race.lap > race.totalLaps) {
-        finishRaceAndSeasonCheck();
+      if (r.lap >= r.totalLaps) {
+        finishRaceAndSeason();
         return;
       }
 
+      r.lap += 1;
       saveGame();
       renderApp();
     }
 
-    function finishRaceAndSeasonCheck() {
+    function startRaceSmoothLoop() {
       stopAllLoops();
-      const race = gameState.weekend.race;
-      const track = CALENDAR_2026[gameState.round - 1];
-      const top12 = Boolean(gameState.rules?.pointsTop12);
-      const ptsTable = top12
-        ? [25, 18, 15, 12, 10, 8, 6, 4, 3, 2, 1, 0.5]
-        : [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
-
-      race.cars.forEach((car, idx) => {
-        if (car.dnf) return;
-        const pts = ptsTable[idx] || 0;
-        const flPt = (race.fastestLap.driverId === car.driverId && idx < 10) ? 1 : 0;
-        const totalGain = pts + flPt;
-
-        const drv = gameState.drivers.find(d => d.id === car.driverId);
-        const tm = getTeam(car.teamId);
-        if (drv) {
-          drv.points = Number((drv.points + totalGain).toFixed(1));
-          if (idx === 0) drv.wins += 1;
-          if (idx < 3) drv.podiums += 1;
-        }
-        if (tm) {
-          tm.points = Number((tm.points + totalGain).toFixed(1));
-          if (idx === 0) tm.wins += 1;
-          if (idx < 3) tm.podiums += 1;
-        }
-      });
-
-      const userCars = race.cars.filter(c => c.isUser && !c.dnf);
-      const bestUserPos = userCars.length ? Math.min(...userCars.map(c => c.pos)) : 20;
-      const raceRevenue = Number((4.5 + Math.max(0, (15 - bestUserPos) * 0.45)).toFixed(1));
-      const userTeam = getUserTeam();
-      userTeam.budget = Number((userTeam.budget + raceRevenue).toFixed(1));
-
-      const finishedUserCars = race.cars.filter(c => c.isUser);
-      if (finishedUserCars.length === 2) {
-        const [a, b] = finishedUserCars;
-        if (!a.dnf && !b.dnf) {
-          const winnerCar = a.pos < b.pos ? a : b;
-          const loserCar = a.pos < b.pos ? b : a;
-          adjustDriverMood(winnerCar.driverId, 3, `Ha chiuso davanti al compagno di squadra a ${track.name}`);
-          adjustDriverMood(loserCar.driverId, -2, `Ha chiuso dietro al compagno di squadra a ${track.name}`);
-        }
-      }
-      finishedUserCars.forEach(c => {
-        if (c.dnf) return;
-        if (c.pos <= userTeam.objective) {
-          adjustDriverMood(c.driverId, 6, `Risultato in linea o sopra l'obiettivo (P${c.pos})`);
-        } else if (c.pos > userTeam.objective + 4) {
-          adjustDriverMood(c.driverId, -5, `Gara sottotono rispetto alle attese (P${c.pos})`);
-        }
-      });
-
-      gameState.pendingUpgrades.forEach(up => {
-        up.racesLeft -= 1;
-        if (up.racesLeft <= 0 && up.teamId === gameState.userTeamId) {
-          const t = getTeam(up.teamId);
-          t[up.area] = Math.min(99, Number((t[up.area] + up.gain).toFixed(1)));
-          gameState.newsFeed.unshift(`R&D COMPLETATO: ${up.label} (+${up.gain}) ora montato sulla monoposto!`);
-        }
-      });
-      gameState.pendingUpgrades = gameState.pendingUpgrades.filter(u => u.racesLeft > 0);
-
-      if (gameState.round >= 6 && Math.random() < 0.25) {
-        const otherTeams = gameState.teams.filter(t => t.id !== gameState.userTeamId && t.prestige >= userTeam.prestige - 8);
-        if (otherTeams.length > 0 && gameState.jobOffers.length < 2) {
-          const offeredTeam = otherTeams[Math.floor(Math.random() * otherTeams.length)];
-          gameState.jobOffers.push({
-            id: `${offeredTeam.id}_${gameState.round}`,
-            teamId: offeredTeam.id,
-            teamName: offeredTeam.name,
-            budgetOffer: Number((offeredTeam.budget + 6).toFixed(1)),
-            note: `Offerta formale come Team Principal per puntare alla Top ${offeredTeam.objective}.`
-          });
-          gameState.newsFeed.unshift(`📩 OFFERTA TEAM PRINCIPAL: ${offeredTeam.name} ha contattato il tuo management!`);
-        }
-      }
-
-      gameState.weekend.phase = 'summary';
-      gameState.weekend.results = {
-        trackName: track.name,
-        raceRevenue,
-        classification: race.cars.map(c => ({ ...c }))
-      };
-
-      saveGame();
-      renderApp();
-    }
-
-    function computeCarVisualProgress(car, leaderCar, baseLap, lapFraction) {
-      if (!leaderCar || car.driverId === leaderCar.driverId) {
-        return (((car.progressOnLap || 0) + lapFraction) % 1 + 1) % 1;
-      }
-      const gapSeconds = Math.max(0, (car.totalTime || 0) - (leaderCar.totalTime || 0));
-      const visualLapLag = Math.min(0.62, (gapSeconds / Math.max(60, baseLap)) * 2.4);
-      const leaderProg = (((leaderCar.progressOnLap || 0) + lapFraction) % 1 + 1) % 1;
-      return (((leaderProg - visualLapLag) % 1) + 1) % 1;
-    }
-
-    function renderRaceView() {
-      const race = gameState.weekend.race;
-      const track = CALENDAR_2026[gameState.round - 1];
-      const stints = getEstimatedStints(track, gameState.rules);
-      const leaderCar = race.cars.find(c => !c.dnf) || race.cars[0];
-      const leaderTime = leaderCar?.totalTime || 0;
-
-      // Locked order of user's two drivers (Driver 1 first, Driver 2 second — never swaps slots)
-      const userDriversOrdered = getUserDrivers();
-      const lockedUserCars = userDriversOrdered
-        .map(ud => race.cars.find(c => c.driverId === ud.id))
-        .filter(Boolean);
-
-      const activePanel = race.activePanel || 'pitwall';
-      const weatherIcon = race.weather === 'dry' ? '☀️ Asciutto' : race.weather === 'light_rain' ? '🌦️ Pioggia' : '🌧️ Diluvio';
-      const scBadge = race.safetyCar === 'NONE'
-        ? '<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">🟢 VERDE</span>'
-        : `<span class="px-1.5 py-0.5 rounded bg-amber-500/25 text-amber-300 font-extrabold">⚠️ ${race.safetyCar}</span>`;
-      const noOvertakeActive = Boolean(race.teamOrders?.noOvertake);
-
-      const dotsHtml = race.cars.map(c => {
-        if (c.dnf) return '';
-        const pitCoord = getPitLaneCoord(c);
-        const visProg = computeCarVisualProgress(c, leaderCar, track.baseLap, race.lapFraction || 0);
-        const pitMode = c.pitAnim?.mode || 'none';
-        const cx = pitCoord ? pitCoord.x.toFixed(1) : '150';
-        const cy = pitCoord ? pitCoord.y.toFixed(1) : '130';
-        return `<circle id="car-dot-${c.driverId}" cx="${cx}" cy="${cy}" r="${c.isUser ? 5 : 3.3}" fill="${c.color}" stroke="${c.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2" data-track-progress="${visProg.toFixed(4)}" data-pit-mode="${pitMode}"/>`;
-      }).join('');
-
-      const panels = [
-        { id: 'pitwall', label: '🎛️ Muretto' },
-        { id: 'track', label: '🗺️ Pista & 22' },
-        { id: 'weather', label: '☁️ Meteo' },
-        { id: 'radio', label: '📡 Radio' }
-      ];
-
-      let panelBodyHtml = '';
-
-      if (activePanel === 'pitwall') {
-        const u0 = lockedUserCars[0];
-        const u1 = lockedUserCars[1];
-        const mateGap = (u0 && u1 && !u0.dnf && !u1.dnf)
-          ? `${Math.abs(u1.totalTime - u0.totalTime).toFixed(1)}s`
-          : '--';
-
-        panelBodyHtml = `
-          <div class="bg-f1card border border-f1border rounded-xl px-2.5 py-1.5 flex items-center justify-between text-[10px] font-mono-num">
-            <span class="text-slate-400">Ordini Scuderia:</span>
-            <div class="flex items-center gap-1.5">
-              <span class="text-slate-300">Gap Compagni: <strong class="text-white">${mateGap}</strong></span>
-              <button onclick="toggleNoOvertakeOrder()" class="px-2 py-0.5 rounded font-bold border ${noOvertakeActive ? 'bg-amber-500 text-slate-950 border-amber-300' : 'bg-f1bg text-slate-300 border-f1border'}">
-                ${noOvertakeActive ? '🔒 No Sorpassi' : '🔓 Libero'}
-              </button>
-              <button onclick="executeTeammateSwap()" class="px-2 py-0.5 rounded font-bold bg-f1bg text-sky-300 border border-f1border">
-                🔄 Scambio
-              </button>
-            </div>
-          </div>
-
-          <div class="space-y-2">
-            ${lockedUserCars.map((car, slotIdx) => {
-              const drv = gameState.drivers.find(d => d.id === car.driverId);
-              const mood = getMoodMeta(drv?.mood ?? 65);
-              const tc = TYRE_COMPOUNDS[car.tyre];
-              const gapLeader = car.pos === 1 ? 'LEADER' : (car.dnf ? 'DNF' : `+${Math.max(0.1, car.totalTime - leaderTime).toFixed(1)}s`);
-              const wearColor = car.tyreWear > 65 ? 'text-red-400' : car.tyreWear > 45 ? 'text-amber-300' : 'text-emerald-400';
-
-              return `
-                <div class="bg-f1card border border-f1border rounded-xl p-2.5 space-y-2">
-                  <div class="flex items-center justify-between gap-2">
-                    <div class="min-w-0">
-                      <span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 mr-1">P${slotIdx + 1}</span>
-                      <span class="font-mono-num font-black text-xs text-amber-300">P${car.pos}</span>
-                      <span class="text-xs font-extrabold text-white ml-1">${car.code}</span>
-                      <span class="text-[10px] font-mono-num text-slate-400 ml-1">${gapLeader}</span>
-                    </div>
-                    <div class="flex items-center gap-1.5 text-[10px] font-mono-num shrink-0">
-                      <span class="${mood.color}">${mood.emoji}${drv?.mood ?? 65}</span>
-                      <span class="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black" style="background:${tc.color}; color:${tc.text}">${tc.short}</span>
-                      <span class="${wearColor} font-bold">${Math.round(car.tyreWear)}%</span>
-                    </div>
-                  </div>
-
-                  ${car.dnf ? `
-                    <div class="text-[11px] text-red-400 font-bold bg-red-950/40 px-2.5 py-1.5 rounded-lg border border-red-500/30">Ritirato: ${car.dnfReason}</div>
-                  ` : `
-                    <div class="grid grid-cols-3 gap-1">
-                      ${[
-                        { id: 'conserve', lbl: '🐢 Lungo' },
-                        { id: 'balanced', lbl: '⚖️ Neutro' },
-                        { id: 'push', lbl: '🔥 Attacco' }
-                      ].map(pm => `
-                        <button onclick="setCarMode('${car.driverId}', 'pace', '${pm.id}')" class="py-1 rounded-lg text-[10px] font-bold border ${car.paceMode === pm.id ? 'bg-sky-600 border-sky-400 text-white' : 'bg-f1bg border-f1border text-slate-400'}">${pm.lbl}</button>
-                      `).join('')}
-                    </div>
-
-                    <div class="flex items-center justify-between gap-1">
-                      <span class="text-[10px] font-bold text-slate-400">${car.pitRequested ? '⏳ BOX:' : 'PIT:'}</span>
-                      <div class="flex gap-1">
-                        ${['S', 'M', 'H', 'I', 'W'].map(tk => {
-                          const cObj = TYRE_COMPOUNDS[tk];
-                          const isQueued = car.pitRequested && car.nextTyre === tk;
-                          return `<button onclick="requestPitStop('${car.driverId}', '${tk}')" class="w-6 h-6 rounded-full text-[10px] font-black border ${isQueued ? 'border-white scale-110' : 'border-transparent opacity-85'}" style="background:${cObj.color}; color:${cObj.text}">${cObj.short}</button>`;
-                        }).join('')}
-                      </div>
-                      <button onclick="quickStrategySwitch('${car.driverId}', 'M', 'balanced')" class="px-1.5 py-1 rounded bg-f1bg border border-f1border text-[9px] text-amber-300 font-bold">M+Neutro</button>
-                      <button onclick="quickStrategySwitch('${car.driverId}', 'H', 'conserve')" class="px-1.5 py-1 rounded bg-f1bg border border-f1border text-[9px] text-slate-200 font-bold">H+Lungo</button>
-                    </div>
-                  `}
-                </div>
-              `;
-            }).join('')}
-          </div>
-        `;
-      } else if (activePanel === 'track') {
-        panelBodyHtml = `
-          ${buildCircuitSvgMarkup(track, dotsHtml, 'h-32', 'fm-race-svg')}
-          <div class="bg-f1card border border-f1border rounded-xl p-2 max-h-56 overflow-y-auto no-scrollbar space-y-1">
-            ${race.cars.map((c, idx) => {
-              const gap = idx === 0 ? 'LEADER' : (c.dnf ? 'DNF' : `+${Math.max(0.1, c.totalTime - leaderTime).toFixed(1)}s`);
-              const lapStr = c.dnf ? '--.-' : `${c.lastLapTime.toFixed(1)}s`;
-              return `
-                <div class="flex items-center justify-between text-[11px] px-2 py-0.5 rounded ${c.isUser ? 'bg-slate-800 font-extrabold text-white' : 'text-slate-300'}">
-                  <div class="flex items-center gap-1.5">
-                    <span class="font-mono-num w-4 text-slate-400">${idx + 1}</span>
-                    <span class="w-2 h-2 rounded-full" style="background:${c.color}"></span>
-                    <span>${c.code}</span>
-                    <span class="px-1 rounded font-mono-num text-[9px]" style="background:${TYRE_COMPOUNDS[c.tyre].color}; color:${TYRE_COMPOUNDS[c.tyre].text}">${c.tyre}</span>
-                  </div>
-                  <div class="font-mono-num text-[10px] flex items-center gap-2">
-                    <span class="text-slate-400">${lapStr}</span>
-                    <span class="w-12 text-right font-bold">${gap}</span>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        `;
-      } else if (activePanel === 'weather') {
-        const recTyre = race.trackWater >= 65 ? 'Full Wet (W)' : race.trackWater >= 25 ? 'Intermedia (I)' : 'Asciutto Slick (S/M/H)';
-        panelBodyHtml = `
-          <div class="bg-f1card border border-f1border rounded-xl p-3 space-y-2.5 text-xs">
-            <div class="flex items-center justify-between">
-              <span class="text-slate-400">Condizioni Attuali</span>
-              <span class="font-extrabold text-white">${weatherIcon}</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-400">Tendenza Meteo</span>
-              <span class="font-bold text-amber-300">${race.weatherTrend || 'Stabile'}</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-400">Probabilità Pioggia / Acqua</span>
-              <span class="font-mono-num font-bold text-sky-300">${race.rainThreat ?? 15}% • ${Math.round(race.trackWater ?? 0)}%</span>
-            </div>
-            <div class="flex items-center justify-between border-t border-f1border/60 pt-2">
-              <span class="text-slate-400">Finestra Gomme Consigliata</span>
-              <span class="font-extrabold text-emerald-400">${recTyre}</span>
-            </div>
-            <div class="flex items-center justify-between text-[11px] font-mono-num bg-f1bg p-2 rounded-lg border border-f1border/60">
-              <span class="text-red-400 font-bold">S: ${stints.S}g</span>
-              <span class="text-amber-300 font-bold">M: ${stints.M}g</span>
-              <span class="text-slate-200 font-bold">H: ${stints.H}g</span>
-            </div>
-          </div>
-        `;
-      } else {
-        panelBodyHtml = `
-          <div class="bg-f1card border border-f1border rounded-xl p-2.5 max-h-60 overflow-y-auto no-scrollbar space-y-1.5">
-            ${race.radioLog.slice(0, 14).map(line => `
-              <div class="text-[11px] text-slate-200 bg-f1bg px-2.5 py-1.5 rounded-lg border border-f1border/50 leading-snug">${line}</div>
-            `).join('')}
-          </div>
-        `;
-      }
-
-      return `
-        <div class="p-2.5 space-y-2">
-          <!-- ALWAYS-VISIBLE RACE & WEATHER STRIP -->
-          <div class="bg-f1card border border-f1border rounded-xl px-2.5 py-2 flex items-center justify-between gap-1.5">
-            <div class="text-[11px] font-mono-num leading-tight min-w-0">
-              <div class="font-extrabold text-white">G${Math.min(race.lap, race.totalLaps)}/${race.totalLaps} ${scBadge} <span class="text-[10px] text-purple-300 ml-1">FL ${race.fastestLap.code}</span></div>
-              <div class="text-[10px] text-slate-300 truncate mt-0.5">${weatherIcon} • ${race.weatherTrend || 'Stabile'} • Pioggia ${race.rainThreat ?? 15}%</div>
-            </div>
-            <div class="flex gap-1 shrink-0">
-              ${[0, 1, 2, 4].map(s => `
-                <button onclick="setRaceSpeed(${s})" class="px-2 py-1 rounded-lg text-[10px] font-mono-num font-bold ${race.speed === s ? 'bg-f1red text-white' : 'bg-f1bg text-slate-400 border border-f1border'}">
-                  ${s === 0 ? '⏸' : s + 'x'}
-                </button>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- LATEST RADIO TICKER -->
-          <div class="bg-f1card/90 border border-f1border/80 rounded-lg px-2.5 py-1 text-[10px] text-amber-200 truncate">
-            📡 ${race.radioLog[0] || 'Gara in corso...'}
-          </div>
-
-          <!-- 4 DEDICATED RACE PANELS -->
-          <div class="grid grid-cols-4 gap-1 bg-f1card p-1 rounded-xl border border-f1border">
-            ${panels.map(p => `
-              <button onclick="setRacePanel('${p.id}')" class="py-1.5 px-1 rounded-lg text-[10px] font-extrabold truncate transition ${activePanel === p.id ? 'bg-f1red text-white' : 'text-slate-400 hover:text-slate-200'}">
-                ${p.label}
-              </button>
-            `).join('')}
-          </div>
-
-          ${panelBodyHtml}
-        </div>
-      `;
-    }
-
-    function startRaceAnimationLoop() {
-      stopAllLoops();
-      const race = gameState?.weekend?.race;
-      if (!race || gameState.weekend.phase !== 'race') return;
+      const r = gameState?.weekend?.race;
+      if (!r || gameState.weekend.phase !== 'race') return;
 
       const track = CALENDAR_2026[gameState.round - 1];
       syncTrackCarPositions('fm-race-svg');
       lastAnimTimestamp = performance.now();
 
-      const animateStep = (now) => {
+      const animateRace = (now) => {
         const dt = Math.min(0.1, (now - lastAnimTimestamp) / 1000);
         lastAnimTimestamp = now;
 
-        const r = gameState?.weekend?.race;
-        if (r && r.speed > 0 && gameState.weekend.phase === 'race') {
-          const leaderCar = r.cars.find(c => !c.dnf) || r.cars[0];
-          const paceFactor = r.speed * 0.12;
-          r.lapFraction = Math.min(0.99, (r.lapFraction || 0) + dt * paceFactor);
+        const curR = gameState?.weekend?.race;
+        if (curR && curR.speed > 0 && gameState.weekend.phase === 'race') {
+          const activeCars = curR.cars.filter(c => !c.retired).sort((a, b) => a.pos - b.pos);
+          const leader = activeCars[0];
+          const lapDurationSimSec = Math.max(1.2, 6.2 / curR.speed);
+          const dProg = dt / lapDurationSimSec;
 
-          r.cars.forEach(c => {
-            if (c.dnf) return;
-            c.progressOnLap = ((c.progressOnLap || 0) + dt * paceFactor) % 1;
-            if (c.pitAnim && c.pitAnim.mode !== 'none') {
-              c.pitAnim.t += dt * r.speed * 0.5;
-              if (c.pitAnim.mode === 'pit_in' && c.pitAnim.t >= 1) {
-                c.pitAnim = { mode: 'pit_out', t: 0 };
-              } else if (c.pitAnim.mode === 'pit_out' && c.pitAnim.t >= 1) {
-                c.pitAnim = { mode: 'none', t: 0 };
-              }
-            }
+          if (leader) {
+            leader.progress = (((leader.progress || 0) + dProg) % 1 + 1) % 1;
+            const visualLapSec = Math.max(55, track.baseLap);
+            const scVisualFactor = curR.safetyCar === 'SC' ? 0.25 : 1.0;
 
-            const dot = document.getElementById(`car-dot-${c.driverId}`);
-            if (dot) {
-              const pitCoord = getPitLaneCoord(c);
-              if (pitCoord) {
-                dot.setAttribute('data-pit-mode', c.pitAnim.mode);
-                dot.setAttribute('cx', pitCoord.x.toFixed(1));
-                dot.setAttribute('cy', pitCoord.y.toFixed(1));
+            activeCars.forEach(car => {
+              const dot = document.getElementById(`race-dot-${car.driverId}`);
+              if (car.pitAnim?.mode === 'pit_in' || car.pitAnim?.mode === 'pit_out') {
+                car.pitAnim.t = Math.min(1, (car.pitAnim.t || 0) + dt * 1.4);
+                const pt = getPitLaneCoord(car);
+                if (dot && pt) {
+                  dot.setAttribute('data-pit-mode', car.pitAnim.mode);
+                  dot.setAttribute('cx', pt.x.toFixed(1));
+                  dot.setAttribute('cy', pt.y.toFixed(1));
+                }
               } else {
-                dot.setAttribute('data-pit-mode', 'none');
-                const visProg = computeCarVisualProgress(c, leaderCar, track.baseLap, r.lapFraction || 0);
-                dot.setAttribute('data-track-progress', visProg.toFixed(4));
+                if (dot) dot.setAttribute('data-pit-mode', 'none');
+                if (car.driverId === leader.driverId) {
+                  car.progress = leader.progress;
+                } else {
+                  const cappedGapSec = Math.min(car.gapToLeader || 0, visualLapSec * 0.52) * scVisualFactor;
+                  const lapLag = cappedGapSec / visualLapSec;
+                  car.progress = (((leader.progress - lapLag) % 1) + 1) % 1;
+                }
+                if (dot) dot.setAttribute('data-track-progress', car.progress.toFixed(4));
               }
-            }
-          });
-
-          syncTrackCarPositions('fm-race-svg');
+            });
+            syncTrackCarPositions('fm-race-svg');
+          }
         }
-        animFrameId = requestAnimationFrame(animateStep);
-      };
-      animFrameId = requestAnimationFrame(animateStep);
 
-      // Slower 1x normal pace (5800ms per lap) for thoughtful strategic decisions
-      const intervalMs = race.speed > 0 ? Math.max(700, 5800 / race.speed) : 5800;
+        animFrameId = requestAnimationFrame(animateRace);
+      };
+      animFrameId = requestAnimationFrame(animateRace);
+
+      const ms = r.speed > 0 ? Math.max(220, 4800 / r.speed) : 2000;
       simTimer = setInterval(() => {
         if (gameState?.weekend?.race && gameState.weekend.race.speed > 0 && gameState.weekend.phase === 'race') {
-          simulateRaceLap();
+          tickRaceLap();
         }
-      }, intervalMs);
+      }, ms);
     }
 
-    function renderRaceSummaryView() {
-      const res = gameState.weekend.results;
-      const isSeasonEnd = gameState.round >= 24;
+    function renderRaceView() {
+      const r = gameState.weekend.race;
+      const track = CALENDAR_2026[gameState.round - 1];
+      const orderedCars = [...r.cars].sort((a, b) => {
+        if (a.retired && !b.retired) return 1;
+        if (!a.retired && b.retired) return -1;
+        return a.pos - b.pos;
+      });
+      const leader = orderedCars.find(c => !c.retired) || orderedCars[0];
+      const userCarsFixed = r.cars.filter(c => c.isUser).sort((a, b) => a.gridPos - b.gridPos);
+
+      const dotsHtml = orderedCars.filter(c => !c.retired).map(c => {
+        const t = getTeam(c.teamId);
+        const mode = c.pitAnim?.mode || 'none';
+        const pitPt = (mode === 'pit_in' || mode === 'pit_out') ? getPitLaneCoord(c) : null;
+        return `<circle id="race-dot-${c.driverId}" cx="${pitPt ? pitPt.x.toFixed(1) : '150'}" cy="${pitPt ? pitPt.y.toFixed(1) : '130'}" r="${c.isUser ? 5.2 : 3.6}" fill="${t.color}" stroke="${c.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2" data-pit-mode="${mode}" data-track-progress="${(c.progress || 0).toFixed(4)}"/>`;
+      }).join('');
+
+      const weatherBadge = r.weather === 'wet'
+        ? '<span class="px-2 py-0.5 rounded bg-blue-600/30 border border-blue-400/50 text-blue-200 text-[10px] font-bold">⛈️ BAGNATO</span>'
+        : (r.weather === 'damp'
+          ? '<span class="px-2 py-0.5 rounded bg-emerald-600/30 border border-emerald-400/50 text-emerald-200 text-[10px] font-bold">🌧️ UMIDO</span>'
+          : '<span class="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-amber-200 text-[10px] font-bold">☀️ ASCIUTTO</span>');
+
+      const scBadge = r.safetyCar === 'SC'
+        ? '<span class="px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-extrabold animate-pulse">🚨 SAFETY CAR</span>'
+        : (r.safetyCar === 'VSC'
+          ? '<span class="px-2 py-0.5 rounded bg-amber-500 text-black text-[10px] font-extrabold">⚠️ VSC</span>'
+          : '');
+
+      const alertBannerHtml = r.alertBanner ? `
+        <div class="p-3 rounded-2xl border-2 flex items-start justify-between gap-2 shadow-lg ${r.alertBanner.type === 'rain' ? 'bg-sky-950/90 border-sky-400 text-sky-100' : 'bg-amber-950/90 border-amber-400 text-amber-100'}">
+          <div>
+            <div class="text-xs font-black uppercase tracking-wide">${r.alertBanner.title}</div>
+            <div class="text-[11px] opacity-95 mt-0.5 leading-snug">${r.alertBanner.detail}</div>
+          </div>
+          <button onclick="dismissRaceAlert()" class="px-2 py-1 rounded-lg bg-black/35 text-[10px] font-bold shrink-0">OK</button>
+        </div>
+      ` : '';
+
+      const radioFilter = r.radioFilter || 'all';
+      const filteredLogs = r.logs.filter(line => {
+        if (radioFilter === 'alert') return line.includes('🌧️') || line.includes('⛈️') || line.includes('🌤️') || line.includes('SAFETY CAR') || line.includes('VSC') || line.includes('Bandiera verde');
+        if (radioFilter === 'team') return userCarsFixed.some(uc => line.includes(uc.code));
+        return true;
+      });
 
       return `
-        <div class="p-4 space-y-4">
-          <div class="bg-f1card border border-f1border rounded-2xl p-4">
-            <span class="text-[10px] font-bold uppercase text-f1red">Bandiera a Scacchi</span>
-            <h2 class="text-lg font-extrabold text-white">Risultati GP ${res.trackName}</h2>
-            <p class="text-xs text-emerald-400 font-mono-num mt-1">Incasso gara accreditato: +€${res.raceRevenue.toFixed(1)}M</p>
-          </div>
-
-          <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-1.5 max-h-72 overflow-y-auto no-scrollbar">
-            ${res.classification.map((c, idx) => `
-              <div class="flex items-center justify-between text-xs px-2.5 py-1.5 rounded-xl ${c.isUser ? 'bg-slate-800 font-bold text-white border border-slate-600/50' : 'bg-f1bg text-slate-300'}">
-                <div class="flex items-center gap-2">
-                  <span class="font-mono-num w-5 text-amber-300">${idx + 1}</span>
-                  <span class="w-2.5 h-2.5 rounded-full" style="background:${c.color}"></span>
-                  <span>${c.name}</span>
-                </div>
-                <span class="font-mono-num text-[11px]">${c.dnf ? 'DNF' : `${c.pitsDone} pit`}</span>
+        <div class="p-3.5 space-y-3">
+          <div class="bg-f1card border border-f1border rounded-2xl p-3 flex items-center justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-xs font-mono-num font-black text-white">GIRO ${r.lap}/${r.totalLaps}</span>
+                ${weatherBadge}
+                ${scBadge}
               </div>
-            `).join('')}
+              <div class="text-[10px] text-slate-400 mt-0.5">${track.flag} ${track.name} • Leader: <strong class="text-white">${leader?.code || '-'}</strong></div>
+            </div>
+            <div class="flex items-center gap-1">
+              ${[0, 1, 2, 4, 8].map(s => `
+                <button onclick="setRaceSpeed(${s})" class="px-2 py-1.5 rounded-lg text-[10px] font-mono-num font-bold ${r.speed === s ? 'bg-f1red text-white' : 'bg-f1bg text-slate-400 border border-f1border'}">
+                  ${s === 0 ? '⏸' : s + 'x'}
+                </button>
+              `).join('')}
+              <button onclick="toggleRaceRadio()" class="px-2 py-1.5 rounded-lg text-[10px] font-bold bg-slate-800 text-amber-300 border border-f1border">
+                📻
+              </button>
+            </div>
           </div>
 
-          ${!isSeasonEnd ? `
-            <button onclick="goToNextRound()" class="w-full py-4 rounded-xl bg-f1red hover:bg-red-600 font-extrabold text-sm text-white shadow-lg shadow-f1red/25">
-              PROSSIMO GRAN PREMIO (ROUND ${gameState.round + 1}/24) →
-            </button>
-          ` : `
-            <button onclick="openEndOfSeasonHub()" class="w-full py-4 rounded-xl bg-amber-500 hover:bg-amber-400 font-extrabold text-sm text-slate-950 shadow-lg">
-              CHIUDI STAGIONE ${gameState.season} • VOTAZIONI FIA & MERCATO →
-            </button>
-          `}
+          ${alertBannerHtml}
+
+          ${r.radioOpen ? `
+            <div class="bg-f1card border border-amber-500/40 rounded-2xl p-2.5 space-y-2 max-h-40 overflow-y-auto no-scrollbar">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase text-amber-300">Radio & Notizie Gara</span>
+                <div class="flex gap-1">
+                  ${[
+                    { id: 'all', lbl: 'Tutti' },
+                    { id: 'alert', lbl: 'Meteo/SC' },
+                    { id: 'team', lbl: 'Box' }
+                  ].map(f => `
+                    <button onclick="setRaceRadioFilter('${f.id}')" class="px-1.5 py-0.5 rounded text-[9px] font-bold ${radioFilter === f.id ? 'bg-amber-400 text-black' : 'bg-f1bg text-slate-400'}">${f.lbl}</button>
+                  `).join('')}
+                </div>
+              </div>
+              ${filteredLogs.slice(0, 12).map(l => `<div class="text-[11px] text-slate-200 border-b border-f1border/40 pb-1">${l}</div>`).join('')}
+            </div>
+          ` : ''}
+
+          ${buildCircuitSvgMarkup(track, dotsHtml, 'h-40', 'fm-race-svg')}
+
+          <div class="space-y-2">
+            ${userCarsFixed.map((car, idx) => {
+              const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
+              const pitQueued = car.pitAnim?.mode === 'pit_in' || car.pitAnim?.mode === 'pit_out';
+              return `
+                <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="text-[10px] font-mono-num px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 mr-1">BOX ${idx + 1}</span>
+                      <span class="text-xs font-mono-num font-black text-amber-300">${car.retired ? 'RIT' : 'P' + car.pos}</span>
+                      <span class="text-sm font-extrabold text-white ml-1">${car.name}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 font-mono-num text-[11px]">
+                      <span class="px-1.5 py-0.5 rounded font-extrabold" style="background:${comp.color}; color:${comp.text}">${comp.short} ${Math.round(car.tyreWear)}%</span>
+                      <span class="text-slate-300">Pit:${car.pitStops}</span>
+                    </div>
+                  </div>
+
+                  ${!car.retired ? `
+                    <div class="grid grid-cols-3 gap-1">
+                      ${[
+                        { id: 'conserve', lbl: '🐢 Cons.' },
+                        { id: 'balanced', lbl: '⚖️ Bilanc.' },
+                        { id: 'push', lbl: '🔥 Push' }
+                      ].map(pm => `
+                        <button onclick="setRacePace('${car.driverId}', '${pm.id}')" class="py-1 rounded-lg text-[10px] font-bold border ${car.paceMode === pm.id ? 'bg-sky-600 border-sky-400 text-white' : 'bg-f1bg border-f1border text-slate-400'}">
+                          ${pm.lbl}
+                        </button>
+                      `).join('')}
+                    </div>
+
+                    <div class="flex items-center justify-between gap-1 pt-1 border-t border-f1border/50">
+                      <span class="text-[10px] font-bold text-slate-400">${pitQueued ? '🔧 AI BOX...' : 'PIT:'}</span>
+                      <div class="flex items-center gap-1">
+                        ${['S', 'M', 'H', 'I', 'W'].map(tk => {
+                          const tc = TYRE_COMPOUNDS[tk];
+                          return `
+                            <button onclick="orderPitStop('${car.driverId}', '${tk}')" ${pitQueued ? 'disabled' : ''} class="px-2 py-1 rounded-lg text-[10px] font-extrabold border border-white/20 active:scale-95" style="background:${tc.color}; color:${tc.text}">
+                              ${tc.short}
+                            </button>
+                          `;
+                        }).join('')}
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="bg-f1card border border-f1border rounded-2xl p-2.5 space-y-1">
+            <div class="flex items-center justify-between text-[10px] font-bold uppercase text-slate-400 px-1.5 pb-1 border-b border-f1border/60">
+              <span>Classifica Live (22)</span>
+              <span>Gap / Ultimo Giro</span>
+            </div>
+            ${orderedCars.map((c, idx) => {
+              const tm = getTeam(c.teamId);
+              const tc = TYRE_COMPOUNDS[c.tyre] || TYRE_COMPOUNDS.M;
+              const gapLabel = c.retired ? 'RIT' : (idx === 0 ? 'LEADER' : `+${(c.gapToLeader || 0).toFixed(1)}s`);
+              return `
+                <div class="flex items-center justify-between text-[11px] px-1.5 py-1 rounded-lg ${c.isUser ? 'bg-slate-800/90 font-bold text-white' : 'text-slate-300'}">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="font-mono-num w-4 text-slate-400">${c.retired ? '-' : idx + 1}</span>
+                    <span class="w-2 h-2 rounded-full shrink-0" style="background:${tm.color}"></span>
+                    <span class="font-extrabold">${c.code}</span>
+                    <span class="px-1 rounded text-[9px] font-extrabold" style="background:${tc.color}; color:${tc.text}">${tc.short}</span>
+                  </div>
+                  <div class="flex items-center gap-2 font-mono-num text-[10px]">
+                    <span class="text-slate-400">${gapLabel}</span>
+                    <span class="text-amber-300">${formatLapTime(c.lastLap)}</span>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
         </div>
       `;
     }
 
-    function goToNextRound() {
+    function finishRaceAndSeason() {
       stopAllLoops();
-      gameState.round += 1;
-      gameState.weekend = initWeekendState(gameState.round, gameState.userTeamId, gameState.drivers);
-      gameState.activeTab = 'weekend';
+      const r = gameState.weekend.race;
+      const track = CALENDAR_2026[gameState.round - 1];
+      const ordered = [...r.cars].sort((a, b) => {
+        if (a.retired && !b.retired) return 1;
+        if (!a.retired && b.retired) return -1;
+        return a.pos - b.pos;
+      });
+
+      const ptsTable = gameState.rules?.pointsTop12
+        ? [25, 18, 15, 12, 10, 8, 6, 5, 4, 3, 2, 1]
+        : [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+
+      const classification = ordered.map((c, idx) => {
+        const drv = gameState.drivers.find(d => d.id === c.driverId);
+        const tm = getTeam(c.teamId);
+        const pts = !c.retired && idx < ptsTable.length ? ptsTable[idx] : 0;
+
+        if (drv) {
+          drv.points = (drv.points || 0) + pts;
+          if (!c.retired && idx === 0) drv.wins = (drv.wins || 0) + 1;
+          if (!c.retired && idx < 3) drv.podiums = (drv.podiums || 0) + 1;
+
+          if (c.isUser) {
+            if (!c.retired && idx < 3) adjustDriverMood(drv.id, 8, `Podio a ${track.name} (P${idx + 1})`);
+            else if (!c.retired && idx < 10) adjustDriverMood(drv.id, 3, `A punti a ${track.name} (P${idx + 1})`);
+            else if (!c.retired) adjustDriverMood(drv.id, -3, `Gara difficile fuori dai punti (P${idx + 1})`);
+          }
+        }
+        if (tm) {
+          tm.points = (tm.points || 0) + pts;
+          if (!c.retired && idx === 0) tm.wins = (tm.wins || 0) + 1;
+          if (!c.retired && idx < 3) tm.podiums = (tm.podiums || 0) + 1;
+        }
+
+        return {
+          pos: c.retired ? 'RIT' : idx + 1,
+          driverId: c.driverId,
+          name: c.name,
+          code: c.code,
+          teamId: c.teamId,
+          isUser: c.isUser,
+          pts,
+          bestLap: c.bestLap,
+          pitStops: c.pitStops
+        };
+      });
+
+      const winner = classification[0];
+      if (winner) {
+        pushMediaQuote('Stampa', `${winner.name} trionfa nel GP di ${track.name} con un passo impeccabile.`);
+      }
+
+      gameState.weekend.phase = 'summary';
+      gameState.weekend.results = {
+        round: gameState.round,
+        trackName: track.name,
+        classification
+      };
+
       saveGame();
       renderApp();
     }
 
-    function orderUpgrade(area, tierKey) {
-      const team = getUserTeam();
-      const tier = RND_TIERS[tierKey];
-      if (!tier) return;
-      if (team.budget < tier.cost) {
-        showToast('Budget insufficiente per questo sviluppo!', 'danger');
-        return;
+    function nextRoundOrEndSeason() {
+      stopAllLoops();
+      if (gameState.round < CALENDAR_2026.length) {
+        gameState.round += 1;
+        gameState.weekend = initWeekendState(gameState.round, gameState.userTeamId, gameState.drivers);
+        generatePaddockPressForRound(gameState.round);
+        gameState.activeTab = 'hub';
+        saveGame();
+        renderApp();
+      } else {
+        applyEndOfSeasonProgression();
       }
-      const labels = { aero: 'Aerodinamica', pu: 'Power Unit', chassis: 'Telaio', rel: 'Affidabilità' };
-      team.budget = Number((team.budget - tier.cost).toFixed(1));
-      gameState.pendingUpgrades.push({
-        id: `${area}_${tierKey}_${Date.now()}`,
-        teamId: team.id,
-        area,
-        tier: tierKey,
-        label: `${labels[area]} (${tier.label})`,
-        racesLeft: tier.races,
-        totalRaces: tier.races,
-        gain: tier.gain
+    }
+
+    function applyEndOfSeasonProgression() {
+      const sortedTeams = [...gameState.teams].sort((a, b) => b.points - a.points);
+      const userRank = sortedTeams.findIndex(t => t.id === gameState.userTeamId) + 1;
+      const userTeam = getUserTeam();
+      const prize = Math.max(22, (12 - userRank) * 6.5);
+      userTeam.budget = Number((userTeam.budget + prize).toFixed(1));
+
+      gameState.drivers.forEach(d => {
+        d.age += 1;
+        const pot = d.potential ?? d.ovr;
+        const pointsFactor = Math.min(8, Math.floor((d.points || 0) / 45));
+        const moodFactor = ((d.mood ?? 65) - 65) / 25;
+
+        if (d.age <= 26) {
+          d.potential = Math.min(99, pot + Math.max(0, Math.round(pointsFactor * 0.4 + moodFactor)));
+          if (d.ovr < d.potential) {
+            const growth = Math.max(0, Math.min(3, Math.round(1 + pointsFactor * 0.25 + moodFactor * 0.5)));
+            d.ovr = Math.min(d.potential, d.ovr + growth);
+            d.pace = Math.min(99, d.pace + growth);
+            d.cons = Math.min(99, d.cons + Math.max(0, growth - 1));
+          }
+        } else if (d.age >= 35) {
+          d.potential = Math.max(d.ovr - 2, pot - 1);
+          const decline = d.age >= 39 ? 2 : 1;
+          d.ovr = Math.max(70, d.ovr - decline);
+          d.pace = Math.max(70, d.pace - decline);
+        } else {
+          if (d.ovr < pot && (d.points || 0) >= 80) {
+            d.ovr = Math.min(pot, d.ovr + 1);
+            d.pace = Math.min(99, d.pace + 1);
+          }
+        }
+
+        d.points = 0;
+        d.wins = 0;
+        d.podiums = 0;
+        d.contract = Math.max(1, (d.contract || 1) - 1);
       });
-      gameState.newsFeed.unshift(`⚙️ Avviato sviluppo ${labels[area]} [${tier.label}] (-€${tier.cost.toFixed(1)}M, pronto in ${tier.races} GP).`);
-      showToast(`Sviluppo ${labels[area]} (${tier.label}) avviato!`, 'success');
+
+      gameState.teams.forEach(t => {
+        t.points = 0;
+        t.wins = 0;
+        t.podiums = 0;
+      });
+
+      gameState.season += 1;
+      gameState.round = 1;
+      gameState.weekend = initWeekendState(1, gameState.userTeamId, gameState.drivers);
+      generatePaddockPressForRound(1);
+      gameState.activeTab = 'hub';
+      showToast(`Stagione conclusa! Hai chiuso P${userRank} (€${prize.toFixed(1)}M premio). Benvenuto nel ${gameState.season}!`, 'success');
       saveGame();
       renderApp();
+    }
+
+    function renderRaceSummaryView() {
+      const res = gameState.weekend.results;
+      if (!res) return '';
+      const isLastRound = gameState.round >= CALENDAR_2026.length;
+
+      return `
+        <div class="p-4 space-y-3.5">
+          <div class="bg-f1card border border-f1border rounded-2xl p-4">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Bandiera a Scacchi</span>
+            <h2 class="text-lg font-extrabold text-white mt-0.5">Risultati GP ${res.trackName}</h2>
+          </div>
+
+          <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-1.5">
+            ${res.classification.map(row => {
+              const tm = getTeam(row.teamId);
+              return `
+                <div class="flex items-center justify-between text-xs px-2 py-1.5 rounded-xl ${row.isUser ? 'bg-slate-800 font-bold text-white' : 'text-slate-300'}">
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono-num w-6 text-amber-300">${row.pos}</span>
+                    <span class="w-2.5 h-2.5 rounded-full" style="background:${tm.color}"></span>
+                    <span>${row.name}</span>
+                  </div>
+                  <div class="flex items-center gap-3 font-mono-num text-[11px]">
+                    <span class="text-slate-400">${formatLapTime(row.bestLap)}</span>
+                    <span class="text-emerald-400 font-bold">+${row.pts}</span>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <button onclick="nextRoundOrEndSeason()" class="w-full py-4 rounded-xl bg-f1red hover:bg-red-600 font-extrabold text-sm text-white shadow-lg shadow-f1red/25">
+            ${isLastRound ? `CHIUDI STAGIONE ${gameState.season} →` : `PROSSIMO GRAN PREMIO (GP ${gameState.round + 1}) →`}
+          </button>
+        </div>
+      `;
     }
 
     function renderRndView() {
       const team = getUserTeam();
       const areas = [
-        { key: 'aero', name: 'Aerodinamica', val: team.aero },
-        { key: 'pu', name: 'Power Unit', val: team.pu },
-        { key: 'chassis', name: 'Telaio', val: team.chassis },
-        { key: 'rel', name: 'Affidabilità', val: team.rel }
+        { key: 'aero', label: 'Aerodinamica', val: team.aero, desc: 'Carico in curva e efficienza' },
+        { key: 'pu', label: 'Power Unit', val: team.pu, desc: 'Velocità di punta e potenza' },
+        { key: 'chassis', label: 'Telaio', val: team.chassis, desc: 'Aderenza meccanica e agilità' },
+        { key: 'rel', label: 'Affidabilità', val: team.rel, desc: 'Riduce il rischio di ritiro' }
       ];
 
       return `
         <div class="p-4 space-y-3.5">
           <div class="bg-f1card border border-f1border rounded-2xl p-4 flex items-center justify-between">
             <div>
-              <span class="text-[10px] font-bold uppercase text-f1red">Reparto Ricerca & Sviluppo</span>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Reparto Tecnico</span>
               <h2 class="text-lg font-extrabold text-white">Sviluppo Monoposto</h2>
             </div>
-            <div class="text-right font-mono-num text-xs text-emerald-400 font-extrabold">€${team.budget.toFixed(1)}M</div>
-          </div>
-
-          ${gameState.pendingUpgrades.filter(u => u.teamId === team.id).length > 0 ? `
-            <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2">
-              <div class="text-[10px] font-bold uppercase text-sky-400">Aggiornamenti in Galleria / Officina</div>
-              ${gameState.pendingUpgrades.filter(u => u.teamId === team.id).map(u => `
-                <div class="flex items-center justify-between text-xs bg-f1bg p-2.5 rounded-xl border border-f1border/70">
-                  <span class="font-bold text-white">${u.label} (+${u.gain})</span>
-                  <span class="font-mono-num text-amber-300">Pronto tra ${u.racesLeft} GP</span>
-                </div>
-              `).join('')}
+            <div class="text-right font-mono-num">
+              <div class="text-xs text-slate-400">Budget</div>
+              <div class="text-base font-extrabold text-emerald-400">€${team.budget.toFixed(1)}M</div>
             </div>
-          ` : ''}
+          </div>
 
           ${areas.map(a => `
             <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2.5">
               <div class="flex items-center justify-between">
-                <span class="text-sm font-extrabold text-white">${a.name}</span>
-                <span class="text-sm font-mono-num font-black text-sky-300">${a.val.toFixed(1)}</span>
+                <div>
+                  <div class="text-sm font-extrabold text-white">${a.label}</div>
+                  <div class="text-[11px] text-slate-400">${a.desc}</div>
+                </div>
+                <span class="text-lg font-mono-num font-black text-amber-300">${a.val}</span>
               </div>
               <div class="grid grid-cols-3 gap-1.5">
                 ${Object.values(RND_TIERS).map(tier => `
-                  <button onclick="orderUpgrade('${a.key}', '${tier.id}')" class="p-2 rounded-xl bg-f1bg hover:bg-slate-800 border border-f1border text-left transition">
-                    <div class="text-[11px] font-extrabold text-white">${tier.label}</div>
-                    <div class="text-[10px] font-mono-num text-emerald-400">€${tier.cost.toFixed(1)}M • +${tier.gain}</div>
-                    <div class="text-[9px] text-slate-400">${tier.races} ${tier.races === 1 ? 'GP' : 'GP'}</div>
+                  <button onclick="buyUpgrade('${a.key}', '${tier.id}')" class="p-2 rounded-xl bg-f1bg hover:bg-slate-800 border border-f1border text-left transition">
+                    <div class="text-[11px] font-extrabold text-white">${tier.label} (+${tier.gain})</div>
+                    <div class="text-[10px] font-mono-num text-emerald-400">€${tier.cost.toFixed(1)}M • ${tier.races} GP</div>
                   </button>
                 `).join('')}
               </div>
             </div>
           `).join('')}
+
+          <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-1.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Aggiornamenti in Corso (${gameState.pendingUpgrades.length})</h3>
+            ${gameState.pendingUpgrades.map(u => `
+              <div class="flex items-center justify-between text-xs bg-f1bg px-3 py-2 rounded-xl">
+                <span class="font-bold text-white">${u.area.toUpperCase()} (+${u.gain})</span>
+                <span class="font-mono-num text-amber-300">Arriva tra ${u.racesLeft} GP</span>
+              </div>
+            `).join('')}
+            ${gameState.pendingUpgrades.length === 0 ? `<div class="text-xs text-slate-500">Nessun pacchetto in lavorazione.</div>` : ''}
+          </div>
         </div>
       `;
     }
 
-    function signFreeAgent(agentId, slotIdx) {
+    function buyUpgrade(areaKey, tierId) {
       const team = getUserTeam();
-      const userDrivers = getUserDrivers();
-      const targetDriver = userDrivers[slotIdx];
-      const agentIdx = gameState.freeAgents.findIndex(f => f.id === agentId);
-      const agent = gameState.freeAgents[agentIdx];
-      if (!targetDriver || !agent) return;
-      if (team.budget < agent.salary) {
-        showToast('Budget insufficiente per l’ingaggio!', 'danger');
+      const tier = RND_TIERS[tierId];
+      if (!tier) return;
+      if (team.budget < tier.cost) {
+        showToast('Budget insufficiente per questo aggiornamento!', 'danger');
         return;
       }
-
-      team.budget = Number((team.budget - agent.salary).toFixed(1));
-      gameState.freeAgents.splice(agentIdx, 1);
-      gameState.freeAgents.push({ ...targetDriver, teamId: null });
-
-      const idxInDrivers = gameState.drivers.findIndex(d => d.id === targetDriver.id);
-      if (idxInDrivers >= 0) {
-        gameState.drivers[idxInDrivers] = {
-          ...agent,
-          teamId: team.id,
-          points: targetDriver.points || 0,
-          wins: targetDriver.wins || 0,
-          podiums: targetDriver.podiums || 0
-        };
-      }
-
-      gameState.weekend = initWeekendState(gameState.round, gameState.userTeamId, gameState.drivers);
-      gameState.newsFeed.unshift(`🤝 MERCATO: ${team.name} ingaggia ${agent.name} al posto di ${targetDriver.name}.`);
-      showToast(`${agent.name} è ora un pilota di ${team.name}!`, 'success');
-      saveGame();
-      renderApp();
-    }
-
-    function acceptJobOffer(offerId) {
-      const offerIdx = gameState.jobOffers.findIndex(o => o.id === offerId);
-      if (offerIdx < 0) return;
-      const offer = gameState.jobOffers[offerIdx];
-      gameState.jobOffers.splice(offerIdx, 1);
-      gameState.userTeamId = offer.teamId;
-      const newTeam = getUserTeam();
-      newTeam.budget = Math.max(newTeam.budget, offer.budgetOffer);
-      gameState.weekend = initWeekendState(gameState.round, gameState.userTeamId, gameState.drivers);
-      gameState.newsFeed.unshift(`🔄 CAMBIO PANCHINA: Ora sei il Team Principal di ${newTeam.name}!`);
-      showToast(`Benvenuto in ${newTeam.name}!`, 'success');
+      team.budget = Number((team.budget - tier.cost).toFixed(1));
+      gameState.pendingUpgrades.push({
+        area: areaKey,
+        gain: tier.gain,
+        racesLeft: tier.races
+      });
+      showToast(`Ordine inviato: ${areaKey.toUpperCase()} +${tier.gain} in ${tier.races} GP`, 'success');
       saveGame();
       renderApp();
     }
 
     function renderMarketView() {
+      const team = getUserTeam();
       const userDrivers = getUserDrivers();
+      const otherDrivers = gameState.drivers.filter(d => d.teamId !== gameState.userTeamId).sort((a, b) => b.ovr - a.ovr);
+      const offeredRole = gameState.marketOfferedRole || 'co_lead';
+
       return `
-        <div class="p-4 space-y-4">
-          <div class="bg-f1card border border-f1border rounded-2xl p-4">
-            <span class="text-[10px] font-bold uppercase text-f1red">Paddock & Contratti</span>
-            <h2 class="text-lg font-extrabold text-white">Mercato Piloti & Offerte</h2>
+        <div class="p-4 space-y-3.5">
+          <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Paddock & Contratti</span>
+                <h2 class="text-lg font-extrabold text-white">Mercato Piloti</h2>
+              </div>
+              <div class="text-right font-mono-num text-xs text-emerald-400 font-extrabold">€${team.budget.toFixed(1)}M</div>
+            </div>
+
+            <div>
+              <div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Ruolo Offerto nei Nuovi Contratti:</div>
+              <div class="grid grid-cols-3 gap-1.5">
+                ${[
+                  { id: 'lead', lbl: '1ª Guida' },
+                  { id: 'co_lead', lbl: 'Pari Livello' },
+                  { id: 'support', lbl: '2ª Guida' }
+                ].map(r => `
+                  <button onclick="setMarketOfferedRole('${r.id}')" class="py-1.5 rounded-xl text-[11px] font-extrabold border ${offeredRole === r.id ? 'bg-f1red border-f1red text-white' : 'bg-f1bg border-f1border text-slate-400'}">
+                    ${r.lbl}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
           </div>
 
-          ${gameState.jobOffers.length > 0 ? `
-            <div class="bg-f1card border border-amber-500/50 rounded-2xl p-4 space-y-2.5">
-              <div class="text-xs font-extrabold text-amber-300">📩 Offerte Ricevute come Team Principal</div>
-              ${gameState.jobOffers.map(o => `
-                <div class="bg-f1bg p-3 rounded-xl border border-f1border space-y-2">
-                  <div class="text-sm font-extrabold text-white">${o.teamName} <span class="text-xs font-mono-num text-emerald-400">(€${o.budgetOffer.toFixed(1)}M)</span></div>
-                  <div class="text-xs text-slate-400">${o.note}</div>
-                  <button onclick="acceptJobOffer('${o.id}')" class="w-full py-2 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs">ACCETTA INCARICO</button>
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
-
-          <div class="space-y-2.5">
-            <div class="text-xs font-bold uppercase text-slate-400">Piloti Svincolati Disponibili</div>
-            ${gameState.freeAgents.map(fa => {
-              const mood = getMoodMeta(fa.mood);
+          <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">I Tuoi Piloti Attuali</h3>
+            ${userDrivers.map(d => {
+              const trait = DRIVER_TRAITS[d.trait] || DRIVER_TRAITS.tactician;
               return `
-                <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2.5">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <div class="text-sm font-extrabold text-white">${fa.name} <span class="text-xs font-mono-num text-sky-300">OVR ${fa.ovr}</span></div>
-                      <div class="text-[11px] text-slate-400">Età ${fa.age} • Ingaggio €${fa.salary.toFixed(1)}M • <span class="${mood.color}">${mood.emoji} ${mood.label}</span></div>
-                    </div>
+                <div class="flex items-center justify-between text-xs bg-f1bg p-2.5 rounded-xl border border-f1border/60">
+                  <div>
+                    <div class="font-extrabold text-white">${d.name} <span class="text-[10px] text-amber-300">(${getRoleLabel(d.role)})</span></div>
+                    <div class="text-[10px] text-slate-400">${trait.icon} ${trait.label} • POT ${d.potential ?? d.ovr} • €${d.salary}M/a</div>
                   </div>
-                  <div class="grid grid-cols-2 gap-2">
-                    ${userDrivers.map((ud, idx) => `
-                      <button onclick="signFreeAgent('${fa.id}', ${idx})" class="py-2 px-2.5 rounded-xl bg-f1bg hover:bg-slate-800 border border-f1border text-[11px] font-bold text-slate-200 truncate">
-                        Sostituisci ${ud.code}
-                      </button>
-                    `).join('')}
+                  <button onclick="releaseUserDriver('${d.id}')" class="px-2.5 py-1.5 rounded-lg bg-red-950/80 border border-red-500/40 text-red-200 text-[10px] font-bold">
+                    Svincola
+                  </button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Piloti Sul Mercato</h3>
+            ${otherDrivers.slice(0, 14).map(d => {
+              const curTeam = getTeam(d.teamId);
+              const trait = DRIVER_TRAITS[d.trait] || DRIVER_TRAITS.tactician;
+              const aff = getAffinityScore({ ...d, role: offeredRole }, team, gameState.drivers);
+              const fee = Math.max(2.0, Number((d.salary * 0.75).toFixed(1)));
+              return `
+                <div class="bg-f1bg p-2.5 rounded-xl border border-f1border/60 flex items-center justify-between gap-2">
+                  <div>
+                    <div class="text-xs font-extrabold text-white">${d.name} <span class="font-mono-num text-amber-300">OVR ${d.ovr}</span> <span class="font-mono-num text-[10px] text-sky-300">POT ${d.potential ?? d.ovr}</span></div>
+                    <div class="text-[10px] text-slate-400">${curTeam.short} • ${trait.icon} ${trait.label} • Affinità ${aff}% • €${d.salary}M/a</div>
+                    ${d.transferRequest ? `<div class="text-[9px] text-amber-300 font-bold">Disponibile ad ascoltare offerte</div>` : ''}
                   </div>
+                  <button onclick="signDriverFromMarket('${d.id}', ${fee})" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-extrabold shrink-0">
+                    Ingaggia (€${fee}M)
+                  </button>
                 </div>
               `;
             }).join('')}
@@ -2276,129 +2568,114 @@
       `;
     }
 
-    function renderStandingsView() {
-      const sortedDrivers = [...gameState.drivers].sort((a, b) => b.points - a.points || b.wins - a.wins);
-      const sortedTeams = [...gameState.teams].sort((a, b) => b.points - a.points || b.wins - a.wins);
-
-      return `
-        <div class="p-4 space-y-4">
-          <div class="bg-f1card border border-f1border rounded-2xl p-4">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-f1red mb-2.5">Classifica Costruttori ${gameState.season}</h3>
-            <div class="space-y-1.5">
-              ${sortedTeams.map((t, i) => `
-                <div class="flex items-center justify-between text-xs px-2.5 py-2 rounded-xl ${t.id === gameState.userTeamId ? 'bg-slate-800 font-extrabold text-white' : 'bg-f1bg text-slate-300'}">
-                  <div class="flex items-center gap-2">
-                    <span class="font-mono-num w-5 text-slate-400">${i + 1}</span>
-                    <span class="w-2.5 h-2.5 rounded-full" style="background:${t.color}"></span>
-                    <span>${t.name}</span>
-                  </div>
-                  <span class="font-mono-num font-bold">${t.points} pt</span>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <div class="bg-f1card border border-f1border rounded-2xl p-4">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-sky-400 mb-2.5">Classifica Piloti ${gameState.season}</h3>
-            <div class="space-y-1.5 max-h-80 overflow-y-auto no-scrollbar">
-              ${sortedDrivers.map((d, i) => {
-                const tm = getTeam(d.teamId);
-                const mood = getMoodMeta(d.mood);
-                return `
-                  <div class="flex items-center justify-between text-xs px-2.5 py-2 rounded-xl ${d.teamId === gameState.userTeamId ? 'bg-slate-800 font-bold text-white' : 'bg-f1bg text-slate-300'}">
-                    <div class="flex items-center gap-2">
-                      <span class="font-mono-num w-5 text-slate-400">${i + 1}</span>
-                      <span class="w-2 h-2 rounded-full" style="background:${tm.color}"></span>
-                      <span>${d.name}</span>
-                      <span class="text-[10px]">${mood.emoji}</span>
-                    </div>
-                    <span class="font-mono-num font-bold">${d.points} pt</span>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function openEndOfSeasonHub() {
-      stopAllLoops();
-      gameState.activeTab = 'offseason';
+    function setMarketOfferedRole(roleId) {
+      gameState.marketOfferedRole = roleId;
       saveGame();
       renderApp();
     }
 
-    function applyEndOfSeasonVote(voteChoice) {
-      const sortedTeams = [...gameState.teams].sort((a, b) => b.points - a.points);
-      const prizeMoney = [26.0, 22.0, 19.0, 16.5, 14.0, 11.5, 9.5, 8.0, 6.5, 5.5, 4.5];
+    function releaseUserDriver(driverId) {
+      const uDrivers = getUserDrivers();
+      if (uDrivers.length <= 1) {
+        showToast('Devi mantenere almeno 1 pilota in rosa!', 'danger');
+        return;
+      }
+      const drv = gameState.drivers.find(d => d.id === driverId);
+      if (!drv) return;
+      const fa = gameState.freeAgents.find(x => x.id === drv.id);
+      if (!fa) {
+        gameState.freeAgents.push({ ...drv, teamId: null, role: 'co_lead' });
+      }
+      drv.teamId = 'vcarb';
+      drv.role = 'co_lead';
+      adjustDriverMood(drv.id, -10, 'Svincolato dalla squadra');
+      showToast(`${drv.name} svincolato dalla rosa.`, 'info');
+      saveGame();
+      renderApp();
+    }
 
-      sortedTeams.forEach((t, idx) => {
-        t.budget = Number((t.budget + (prizeMoney[idx] || 4.5)).toFixed(1));
-        const rankDelta = (t.objective - (idx + 1));
-        ['aero', 'pu', 'chassis'].forEach(k => {
-          t[k] = Math.max(70, Math.min(99, Number((t[k] + rankDelta * 0.45).toFixed(1))));
-        });
-        t.points = 0;
-        t.wins = 0;
-        t.podiums = 0;
-      });
-
-      const sortedDrivers = [...gameState.drivers].sort((a, b) => b.points - a.points);
-      sortedDrivers.forEach((d, idx) => {
-        if (idx < 5) d.ovr = Math.min(99, d.ovr + 1);
-        else if (idx > 17) d.ovr = Math.max(72, d.ovr - 1);
-        d.mood = Math.max(35, Math.min(85, Math.round(((d.mood ?? 65) + 65) / 2)));
-        d.points = 0;
-        d.wins = 0;
-        d.podiums = 0;
-        d.contract = Math.max(1, d.contract - 1);
-      });
-
-      if (voteChoice === 'deg') {
-        gameState.rules.extraDegMultiplier = Number(((gameState.rules.extraDegMultiplier || 1.0) * 1.15).toFixed(2));
-        gameState.newsFeed.unshift('🗳️ FIA APPROVATA: Mescola gomme resa ancora più aggressiva (+15% degrado).');
-      } else if (voteChoice === 'points12') {
-        gameState.rules.pointsTop12 = true;
-        gameState.newsFeed.unshift('🗳️ FIA APPROVATA: Punti assegnati fino alla 12ª posizione.');
-      } else {
-        gameState.budgetCap = Number((gameState.budgetCap + 10).toFixed(1));
-        gameState.teams.forEach(t => { t.budget = Number((t.budget + 8.0).toFixed(1)); });
-        gameState.newsFeed.unshift('🗳️ FIA APPROVATA: Budget Cap aumentato di +€10M per la nuova stagione.');
+    function signDriverFromMarket(driverId, fee) {
+      const team = getUserTeam();
+      const uDrivers = getUserDrivers();
+      if (uDrivers.length >= 2) {
+        showToast('Hai già 2 piloti in rosa: svincolane uno prima di ingaggiare.', 'danger');
+        return;
+      }
+      if (team.budget < fee) {
+        showToast('Budget insufficiente per l’ingaggio!', 'danger');
+        return;
       }
 
-      gameState.season += 1;
-      gameState.round = 1;
-      gameState.activeTab = 'hub';
-      gameState.weekend = initWeekendState(1, gameState.userTeamId, gameState.drivers);
+      const offeredRole = gameState.marketOfferedRole || 'co_lead';
+      const drv = gameState.drivers.find(d => d.id === driverId);
+      if (!drv) return;
+
+      if (offeredRole === 'support' && !drv.acceptsSupport && drv.ovr >= 85) {
+        showToast(`${drv.name} rifiuta il ruolo di 2ª Guida! Offrigli 1ª Guida o Pari Livello.`, 'danger');
+        return;
+      }
+
+      const prevTeam = getTeam(drv.teamId);
+      if (prevTeam && prevTeam.id !== team.id) {
+        const replacement = gameState.freeAgents.pop() || { ...INITIAL_DRIVERS[21], id: `fa_${Date.now()}`, name: 'Pilota Riserva', code: 'RSV', number: 99, ovr: 76, potential: 80, pace: 76, cons: 76, tyreMgmt: 76, age: 24, salary: 1.5, mood: 60, trait: 'team_player', preferredDna: 'balanced', acceptsSupport: true };
+        replacement.teamId = prevTeam.id;
+        replacement.role = 'co_lead';
+        gameState.drivers.push(replacement);
+      }
+
+      team.budget = Number((team.budget - fee).toFixed(1));
+      drv.teamId = team.id;
+      drv.role = offeredRole;
+      drv.transferRequest = false;
+      adjustDriverMood(drv.id, 7, `Nuovo contratto con ${team.name} (${getRoleLabel(offeredRole)})`);
+      pushMediaQuote('Mercato', `${drv.name} firma per ${team.name} con ruolo di ${getRoleLabel(offeredRole)}.`);
+      showToast(`${drv.name} ingaggiato in ${team.name}!`, 'success');
       saveGame();
       renderApp();
     }
 
-    function renderOffseasonView() {
-      const sortedTeams = [...gameState.teams].sort((a, b) => b.points - a.points);
+    function renderStandingsView() {
+      const sortedDrivers = [...gameState.drivers].sort((a, b) => (b.points || 0) - (a.points || 0) || b.ovr - a.ovr);
+      const sortedTeams = [...gameState.teams].sort((a, b) => (b.points || 0) - (a.points || 0) || b.aero - a.aero);
+
       return `
-        <div class="p-4 space-y-4">
-          <div class="bg-f1card border border-f1border rounded-2xl p-4">
-            <span class="text-[10px] font-bold uppercase text-amber-300">Chiusura Stagione ${gameState.season}</span>
-            <h2 class="text-lg font-extrabold text-white">Votazione Regolamento FIA & Reset</h2>
-            <p class="text-xs text-slate-400 mt-1">Campione Costruttori: <strong class="text-white">${sortedTeams[0]?.name}</strong>. Scegli la modifica regolamentare per la stagione ${gameState.season + 1}:</p>
+        <div class="p-4 space-y-3.5">
+          <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-f1red">Classifica Costruttori</h3>
+            ${sortedTeams.map((t, idx) => `
+              <div class="flex items-center justify-between text-xs px-2 py-1.5 rounded-xl ${t.id === gameState.userTeamId ? 'bg-slate-800 font-bold text-white' : 'text-slate-300'}">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono-num w-5 text-slate-400">${idx + 1}</span>
+                  <span class="w-2.5 h-2.5 rounded-full" style="background:${t.color}"></span>
+                  <span>${t.name}</span>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-f1bg text-slate-400">${t.hierarchy === '1st_2nd' ? '1ª/2ª' : 'PARI'}</span>
+                </div>
+                <span class="font-mono-num font-extrabold text-amber-300">${t.points || 0} pt</span>
+              </div>
+            `).join('')}
           </div>
 
-          <button onclick="applyEndOfSeasonVote('deg')" class="w-full text-left bg-f1card hover:bg-slate-800 border border-f1border rounded-2xl p-3.5 space-y-1">
-            <div class="text-sm font-extrabold text-amber-300">1. Gomme a Maggiore Degrado (+15%)</div>
-            <div class="text-xs text-slate-400">Stint ancora più corti e strategie pit stop più decisive.</div>
-          </button>
-
-          <button onclick="applyEndOfSeasonVote('points12')" class="w-full text-left bg-f1card hover:bg-slate-800 border border-f1border rounded-2xl p-3.5 space-y-1">
-            <div class="text-sm font-extrabold text-sky-300">2. Punti fino alla 12ª Posizione</div>
-            <div class="text-xs text-slate-400">Premia maggiormente le lotte a centro gruppo.</div>
-          </button>
-
-          <button onclick="applyEndOfSeasonVote('cap')" class="w-full text-left bg-f1card hover:bg-slate-800 border border-f1border rounded-2xl p-3.5 space-y-1">
-            <div class="text-sm font-extrabold text-emerald-400">3. Aumento Budget Cap (+€10M)</div>
-            <div class="text-xs text-slate-400">Più margine di manovra economico per lo sviluppo R&D.</div>
-          </button>
+          <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-1.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-f1red">Classifica Piloti (22)</h3>
+            ${sortedDrivers.map((d, idx) => {
+              const tm = getTeam(d.teamId);
+              const mood = getMoodMeta(d.mood);
+              return `
+                <div class="flex items-center justify-between text-xs px-2 py-1.5 rounded-xl ${d.teamId === gameState.userTeamId ? 'bg-slate-800 font-bold text-white' : 'text-slate-300'}">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="font-mono-num w-5 text-slate-400">${idx + 1}</span>
+                    <span class="w-2 h-2 rounded-full shrink-0" style="background:${tm.color}"></span>
+                    <span class="truncate">${d.name}</span>
+                    <span class="text-[10px]">${mood.emoji}</span>
+                  </div>
+                  <div class="flex items-center gap-2 font-mono-num">
+                    <span class="text-[10px] text-sky-300">POT ${d.potential ?? d.ovr}</span>
+                    <span class="font-extrabold text-amber-300">${d.points || 0} pt</span>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
         </div>
       `;
     }
@@ -2413,38 +2690,32 @@
         return;
       }
 
-      let mainHtml = '';
-      if (gameState.activeTab === 'hub') mainHtml = renderHubView();
-      else if (gameState.activeTab === 'weekend') mainHtml = renderWeekendView();
-      else if (gameState.activeTab === 'rnd') mainHtml = renderRndView();
-      else if (gameState.activeTab === 'market') mainHtml = renderMarketView();
-      else if (gameState.activeTab === 'standings') mainHtml = renderStandingsView();
-      else if (gameState.activeTab === 'offseason') mainHtml = renderOffseasonView();
+      let bodyHtml = '';
+      if (gameState.activeTab === 'hub') bodyHtml = renderHubView();
+      else if (gameState.activeTab === 'weekend') bodyHtml = renderWeekendView();
+      else if (gameState.activeTab === 'rnd') bodyHtml = renderRndView();
+      else if (gameState.activeTab === 'market') bodyHtml = renderMarketView();
+      else if (gameState.activeTab === 'standings') bodyHtml = renderStandingsView();
+      else bodyHtml = renderHubView();
 
       root.innerHTML = `
         ${renderTopHeader()}
-        <main class="flex-1 overflow-y-auto pb-6">${mainHtml}</main>
-        ${gameState.activeTab !== 'offseason' ? renderBottomNav() : ''}
+        <main class="flex-1 overflow-y-auto no-scrollbar pb-20">
+          ${bodyHtml}
+        </main>
+        ${renderBottomNav()}
       `;
 
-      if (gameState.activeTab === 'weekend' && gameState.weekend.phase === 'quali') {
-        stopAllLoops();
-        syncTrackCarPositions('fm-quali-svg');
-        const q = gameState.weekend.quali;
-        const ms = q.speed > 0 ? Math.max(250, 1000 / q.speed) : 1000;
-        simTimer = setInterval(() => {
-          if (gameState?.weekend?.quali && gameState.weekend.quali.speed > 0 && gameState.weekend.phase === 'quali') {
-            tickQualiSecond();
-          }
-        }, ms);
-      } else if (gameState.activeTab === 'weekend' && gameState.weekend.phase === 'race') {
-        startRaceAnimationLoop();
+      if (gameState.activeTab === 'weekend' && gameState.weekend?.phase === 'quali') {
+        startQualiSmoothLoop();
+      } else if (gameState.activeTab === 'weekend' && gameState.weekend?.phase === 'race') {
+        startRaceSmoothLoop();
       } else {
         stopAllLoops();
       }
     }
 
-    (function init() {
+    (function boot() {
       const saved = loadGame();
       if (saved && saved.teams && saved.drivers) {
         gameState = saved;
@@ -2454,3 +2725,5 @@
   </script>
 </body>
 </html>
+    
+          
