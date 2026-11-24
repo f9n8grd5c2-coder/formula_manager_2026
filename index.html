@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0b0e14" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Formula Manager 2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -152,27 +152,135 @@
       minor: { id: 'minor', label: 'Minore', cost: 4.5, races: 1, gain: 1.4, desc: 'Aggiornamento rapido a basso costo' },
       standard: { id: 'standard', label: 'Standard', cost: 9.0, races: 2, gain: 2.8, desc: 'Pacchetto bilanciato su 2 GP' },
       major: { id: 'major', label: 'Evoluzione', cost: 15.5, races: 3, gain: 4.6, desc: 'Grande sviluppo ad alto impatto' }
-    };
+   };
 
-    function formatLapTime(sec) {
-      if (!sec || typeof sec !== 'number' || !isFinite(sec) || sec >= 890 || sec <= 0) return '--:--.---';
-      const totalMs = Math.round(sec * 1000);
-      const mins = Math.floor(totalMs / 60000);
-      const remMs = totalMs % 60000;
-      const wholeSecs = Math.floor(remMs / 1000);
-      const millis = remMs % 1000;
-      return `${mins}:${String(wholeSecs).padStart(2, '0')}.${String(millis).padStart(3, '0')}`; }  function getEstimatedStints(track, rules) { const trackDegMult = track.tyreDeg === 3 ? 1.24 : track.tyreDeg === 2 ? 1.0 : 0.84; const ruleMult = (rules && rules.extraDegMultiplier) ? rules.extraDegMultiplier : 1.0;  const calcRange = (compoundKey) => { const comp = TYRE_COMPOUNDS[compoundKey]; const rate = comp.degRate * trackDegMult * ruleMult; const avgLaps = Math.max(5, Math.round(66 / rate)); const minLaps = Math.max(4, Math.min(Math.max(6, track.laps - 4), avgLaps - 2)); const maxLaps = Math.max(minLaps + 2, Math.min(Math.max(8, track.laps - 3), avgLaps + 2)); return `${minLaps}-${maxLaps}`; };  return { S: calcRange('S'), M: calcRange('M'), H: calcRange('H') }; }  function getMoodMeta(moodValue) { const val = Math.max(0, Math.min(100, Number(moodValue ?? 65))); if (val >= 82) return { label: 'Euforico', emoji: '🔥', color: 'text-emerald-400', bg: 'bg-emerald-950/50 border-emerald-500/40', paceDelta: -0.35, degMult: 0.90 }; if (val >= 62) return { label: 'Motivato', emoji: '😄', color: 'text-sky-300', bg: 'bg-sky-950/40 border-sky-500/35', paceDelta: -0.15, degMult: 0.96 }; if (val >= 42) return { label: 'Neutro', emoji: '😐', color: 'text-slate-300', bg: 'bg-slate-800/70 border-slate-600/40', paceDelta: 0.0, degMult: 1.0 }; if (val >= 22) return { label: 'Teso', emoji: '😟', color: 'text-amber-300', bg: 'bg-amber-950/50 border-amber-500/40', paceDelta: 0.22, degMult: 1.07 }; return { label: 'Frustrato', emoji: '😡', color: 'text-red-400', bg: 'bg-red-950/60 border-red-500/45', paceDelta: 0.45, degMult: 1.15 }; }  function getRoleLabel(role) { if (role === 'lead') return '1ª Guida'; if (role === 'support') return '2ª Guida'; return 'Pari Livello'; }  function getAffinityScore(driver, team, allDrivers = []) { if (!driver \vert{}\vert{} !team) return 65; let score = 62;  if (!driver.preferredDna \vert{}\vert{} driver.preferredDna === 'balanced' \vert{}\vert{} team.dna === 'balanced') { score += 5; } else if (driver.preferredDna === team.dna) { score += 12; } else { score -= 7; }  if (driver.role === 'lead') { score += team.prestige >= 85 ? 8 : 3; } else if (driver.role === 'support') { score += driver.acceptsSupport ? 8 : -16; } else { score += 4; }  const mate = allDrivers.find(d => d.teamId === team.id && d.id !== driver.id); if (mate && gameState?.rivalries) { const riv = getRivalryValue(driver.id, mate.id); if (riv >= 65) score -= 10; else if (riv >= 40) score -= 4; }  score += Math.round(((driver.mood ?? 65) - 65) * 0.25); return Math.max(20, Math.min(99, score)); }  function getRivalryKey(idA, idB) { return [idA, idB].sort().join('__'); }  function getRivalryValue(idA, idB) { if (!gameState?.rivalries \vert{}\vert{} !idA \vert{}\vert{} !idB \vert{}\vert{} idA === idB) return 0; return gameState.rivalries[getRivalryKey(idA, idB)] \vert{}\vert{} 0; }  function bumpRivalry(idA, idB, delta, note = '') { if (!gameState \vert{}\vert{} !idA \vert{}\vert{} !idB \vert{}\vert{} idA === idB) return; gameState.rivalries = gameState.rivalries \vert{}\vert{} {}; const key = getRivalryKey(idA, idB); const prev = gameState.rivalries[key] \vert{}\vert{} 0; const next = Math.max(0, Math.min(100, Math.round(prev + delta))); gameState.rivalries[key] = next;  const dA = gameState.drivers.find(d => d.id === idA); const dB = gameState.drivers.find(d => d.id === idB); if (dA && dB && next - prev >= 8 && note) { pushMediaQuote('Rivalità', `${dA.code} vs ${dB.code} (${next}/100): ${note}`); } }  function pushMediaQuote(sourceTag, text) { if (!gameState) return; gameState.mediaFeed = gameState.mediaFeed \vert{}\vert{} []; gameState.mediaFeed.unshift({ id: `m_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`, round: gameState.round, source: sourceTag, text }); if (gameState.mediaFeed.length > 45) gameState.mediaFeed.length = 45; gameState.newsFeed.unshift(`🗞️ [${sourceTag}] ${text}`); }  function checkTransferRequestStatus(driver) { if (!driver) return; const shouldRequest = (driver.mood ?? 65) <= 28 \vert{}\vert{} (!driver.acceptsSupport && driver.role === 'support'); if (shouldRequest && !driver.transferRequest) { driver.transferRequest = true; if (driver.teamId === gameState.userTeamId) { pushMediaQuote('Pilota', `${driver.name} ha comunicato al muretto di voler valutare altre opzioni sul mercato se la situazione non cambia.`);
-        }
-      } else if (!shouldRequest && (driver.mood ?? 65) >= 55 && driver.role !== 'support') {
-        driver.transferRequest = false;
-      }
+function formatLapTime(sec) {
+  if (!sec || typeof sec !== 'number' || !isFinite(sec) || sec >= 890 || sec <= 0) return '--:--.---';
+  const totalMs = Math.round(sec * 1000);
+  const mins = Math.floor(totalMs / 60000);
+  const remMs = totalMs % 60000;
+  const wholeSecs = Math.floor(remMs / 1000);
+  const millis = remMs % 1000;
+  return `${mins}:${String(wholeSecs).padStart(2, '0')}.${String(millis).padStart(3, '0')}`;
+}
+
+function getEstimatedStints(track, rules) {
+  const trackDegMult = track.tyreDeg === 3 ? 1.24 : track.tyreDeg === 2 ? 1.0 : 0.84;
+  const ruleMult = (rules && rules.extraDegMultiplier) ? rules.extraDegMultiplier : 1.0;
+
+  const calcRange = (compoundKey) => {
+    const comp = TYRE_COMPOUNDS[compoundKey];
+    const rate = comp.degRate * trackDegMult * ruleMult;
+    const avgLaps = Math.max(5, Math.round(66 / rate));
+    const minLaps = Math.max(4, Math.min(Math.max(6, track.laps - 4), avgLaps - 2));
+    const maxLaps = Math.max(minLaps + 2, Math.min(Math.max(8, track.laps - 3), avgLaps + 2));
+    return `${minLaps}-${maxLaps}`;
+  };
+
+  return { S: calcRange('S'), M: calcRange('M'), H: calcRange('H') };
+}
+
+function getMoodMeta(moodValue) {
+  const val = Math.max(0, Math.min(100, Number(moodValue ?? 65)));
+  if (val >= 82) return { label: 'Euforico', emoji: '🔥', color: 'text-emerald-400', bg: 'bg-emerald-950/50 border-emerald-500/40', paceDelta: -0.35, degMult: 0.90 };
+  if (val >= 62) return { label: 'Motivato', emoji: '😄', color: 'text-sky-300', bg: 'bg-sky-950/40 border-sky-500/35', paceDelta: -0.15, degMult: 0.96 };
+  if (val >= 42) return { label: 'Neutro', emoji: '😐', color: 'text-slate-300', bg: 'bg-slate-800/70 border-slate-600/40', paceDelta: 0.0, degMult: 1.0 };
+  if (val >= 22) return { label: 'Teso', emoji: '😟', color: 'text-amber-300', bg: 'bg-amber-950/50 border-amber-500/40', paceDelta: 0.22, degMult: 1.07 };
+  return { label: 'Frustrato', emoji: '😡', color: 'text-red-400', bg: 'bg-red-950/60 border-red-500/45', paceDelta: 0.45, degMult: 1.15 };
+}
+
+function getRoleLabel(role) {
+  if (role === 'lead') return '1ª Guida';
+  if (role === 'support') return '2ª Guida';
+  return 'Pari Livello';
+}
+
+function getAffinityScore(driver, team, allDrivers = []) {
+  if (!driver || !team) return 65;
+  let score = 62;
+
+  if (!driver.preferredDna || driver.preferredDna === 'balanced' || team.dna === 'balanced') {
+    score += 5;
+  } else if (driver.preferredDna === team.dna) {
+    score += 12;
+  } else {
+    score -= 7;
+  }
+
+  if (driver.role === 'lead') {
+    score += team.prestige >= 85 ? 8 : 3;
+  } else if (driver.role === 'support') {
+    score += driver.acceptsSupport ? 8 : -16;
+  } else {
+    score += 4;
+  }
+
+  const mate = allDrivers.find(d => d.teamId === team.id && d.id !== driver.id);
+  if (mate && gameState?.rivalries) {
+    const riv = getRivalryValue(driver.id, mate.id);
+    if (riv >= 65) score -= 10;
+    else if (riv >= 40) score -= 4;
+  }
+
+  score += Math.round(((driver.mood ?? 65) - 65) * 0.25);
+  return Math.max(20, Math.min(99, score));
+}
+
+function getRivalryKey(idA, idB) {
+  return [idA, idB].sort().join('__');
+}
+
+function getRivalryValue(idA, idB) {
+  if (!gameState?.rivalries || !idA || !idB || idA === idB) return 0;
+  return gameState.rivalries[getRivalryKey(idA, idB)] || 0;
+}
+
+function bumpRivalry(idA, idB, delta, note = '') {
+  if (!gameState || !idA || !idB || idA === idB) return;
+  gameState.rivalries = gameState.rivalries || {};
+  const key = getRivalryKey(idA, idB);
+  const prev = gameState.rivalries[key] || 0;
+  const next = Math.max(0, Math.min(100, Math.round(prev + delta)));
+  gameState.rivalries[key] = next;
+
+  const dA = gameState.drivers.find(d => d.id === idA);
+  const dB = gameState.drivers.find(d => d.id === idB);
+  if (dA && dB && next - prev >= 8 && note) {
+    pushMediaQuote('Rivalità', `${dA.code} vs ${dB.code} (${next}/100): ${note}`);
+  }
+}
+
+function pushMediaQuote(sourceTag, text) {
+  if (!gameState) return;
+  gameState.mediaFeed = gameState.mediaFeed || [];
+  gameState.mediaFeed.unshift({
+    id: `m_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    round: gameState.round,
+    source: sourceTag,
+    text
+  });
+  if (gameState.mediaFeed.length > 45) gameState.mediaFeed.length = 45;
+  gameState.newsFeed.unshift(`🗞️ [${sourceTag}] ${text}`);
+}
+
+function checkTransferRequestStatus(driver) {
+  if (!driver) return;
+  const shouldRequest = (driver.mood ?? 65) <= 28 || (!driver.acceptsSupport && driver.role === 'support');
+  if (shouldRequest && !driver.transferRequest) {
+    driver.transferRequest = true;
+    if (driver.teamId === gameState.userTeamId) {
+      pushMediaQuote('Pilota', `${driver.name} ha comunicato al muretto di voler valutare altre opzioni sul mercato se la situazione non cambia.`);
     }
+  } else if (!shouldRequest && (driver.mood ?? 65) >= 55 && driver.role !== 'support') {
+    driver.transferRequest = false;
+  }
+}
 
-    function adjustDriverMood(driverId, delta, reasonText = '') {
-      if (!gameState) return;
-      const driver = gameState.drivers.find(d => d.id === driverId);
-      if (!driver) return;
-      const prev = driver.mood ?? 65;
+function adjustDriverMood(driverId, delta, reasonText = '') {
+  if (!gameState) return;
+  const driver = gameState.drivers.find(d => d.id === driverId);
+  if (!driver) return;
+  const prev = driver.mood ?? 65;
       const next = Math.max(0, Math.min(100, Math.round(prev + delta)));
       driver.mood = next;
       checkTransferRequestStatus(driver);
