@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0b0e14" />
-  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Formula Manager 2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -56,7 +56,7 @@
   <div id="app" class="w-full max-w-md min-h-screen flex flex-col bg-f1bg relative shadow-2xl border-x border-f1border/40"></div>
 
   <script>
-    const STORAGE_KEY = 'formula_manager_2026_save_v7';
+    const STORAGE_KEY = 'formula_manager_2026_save_v8';
 
     const INITIAL_TEAMS = [
       { id: 'ferrari', name: 'Scuderia Rossa', short: 'ROS', color: '#e10600', budget: 148.0, aero: 89, pu: 88, chassis: 88, rel: 86, objective: 2, prestige: 94, dna: 'balanced', hierarchy: 'equal', fanPassion: 96, tpName: 'F. Vasseurini' },
@@ -73,11 +73,11 @@
     ];
 
     const DRIVER_TRAITS = {
-      attacker: { id: 'attacker', label: 'Attaccante', icon: '⚔️', desc: 'Feroce nei duelli e sul giro secco, ma più esigente sulle gomme.' },
-      team_player: { id: 'team_player', label: 'Uomo Squadra', icon: '🤝', desc: 'Accetta più facilmente i ruoli e collabora agli ordini del muretto.' },
+      attacker: { id: 'attacker', label: 'Attaccante', icon: '⚔️', desc: 'Feroce nei duelli e sul giro secco, ma piu esigente sulle gomme.' },
+      team_player: { id: 'team_player', label: 'Uomo Squadra', icon: '🤝', desc: 'Accetta piu facilmente i ruoli e collabora agli ordini del muretto.' },
       tactician: { id: 'tactician', label: 'Tattico', icon: '🧠', desc: 'Lettura pulita del degrado e costanza sul passo gara.' },
-      hothead: { id: 'hothead', label: 'Testa Calda', icon: '🔥', desc: 'Scintille alte in rivalità e reazioni forti se declassato o superato.' },
-      wet_ace: { id: 'wet_ace', label: 'Mago del Bagno', icon: '🌧️', desc: 'Sensibilità superiore sull’asfalto umido o bagnato.' }
+      hothead: { id: 'hothead', label: 'Testa Calda', icon: '🔥', desc: 'Scintille alte in rivalita e reazioni forti se declassato o superato.' },
+      wet_ace: { id: 'wet_ace', label: 'Mago del Bagno', icon: '🌧️', desc: 'Sensibilita superiore su asfalto umido o bagnato.' }
     };
 
     const INITIAL_DRIVERS = [
@@ -114,30 +114,30 @@
     ];
 
     const CALENDAR_2026 = [
-      { round: 1, name: 'Australia', circuit: 'Albert Park', flag: '🇦🇺', laps: 58, baseLap: 79.5, downforce: 7, topSpeed: 7, tyreDeg: 2, rainChance: 0.20, path: 'M 150,130 L 82,130 C 48,130 34,104 52,82 L 84,48 C 102,30 132,36 144,58 L 164,84 C 176,96 196,74 186,52 C 178,34 214,28 242,46 C 268,64 268,104 244,122 C 226,134 192,130 150,130 Z' },
-      { round: 2, name: 'Cina', circuit: 'Shanghai', flag: '🇨🇳', laps: 56, baseLap: 95.0, downforce: 6, topSpeed: 8, tyreDeg: 3, rainChance: 0.15, path: 'M 150,130 L 74,130 C 46,130 38,96 58,72 L 96,42 C 122,24 156,36 152,64 C 148,84 182,92 204,68 L 228,44 C 252,32 270,58 262,94 C 254,124 220,130 150,130 Z' },
-      { round: 3, name: 'Giappone', circuit: 'Suzuka', flag: '🇯🇵', laps: 53, baseLap: 90.5, downforce: 9, topSpeed: 7, tyreDeg: 3, rainChance: 0.25, path: 'M 150,130 L 86,130 C 56,130 48,104 72,90 L 118,74 C 134,68 112,50 86,52 C 62,54 68,28 106,28 C 144,28 158,56 188,68 C 218,80 258,64 264,92 C 270,122 238,130 150,130 Z' },
-      { round: 4, name: 'Bahrain', circuit: 'Sakhir', flag: '🇧🇭', laps: 57, baseLap: 91.2, downforce: 5, topSpeed: 8, tyreDeg: 3, rainChance: 0.02, path: 'M 150,130 L 78,130 L 44,104 L 84,76 L 136,44 L 224,38 L 262,68 L 244,108 L 214,130 Z' },
-      { round: 5, name: 'Arabia Saudita', circuit: 'Jeddah', flag: '🇸🇦', laps: 50, baseLap: 89.8, downforce: 4, topSpeed: 9, tyreDeg: 2, rainChance: 0.02, path: 'M 150,130 L 72,130 C 42,130 38,98 62,80 L 128,46 L 236,38 C 266,42 270,78 248,98 L 218,130 Z' },
-      { round: 6, name: 'Miami', circuit: 'Miami Autodrome', flag: '🇺🇸', laps: 57, baseLap: 89.4, downforce: 6, topSpeed: 8, tyreDeg: 2, rainChance: 0.22, path: 'M 150,130 L 74,130 L 42,108 L 46,56 L 128,36 L 248,38 L 264,74 L 238,104 L 212,130 Z' },
-      { round: 7, name: 'Emilia-Romagna', circuit: 'Imola', flag: '🇮🇹', laps: 63, baseLap: 77.2, downforce: 8, topSpeed: 7, tyreDeg: 2, rainChance: 0.20, path: 'M 150,130 L 76,130 C 44,130 38,96 64,74 L 118,40 C 146,26 172,56 196,62 C 222,68 242,38 262,56 C 276,72 262,116 224,130 Z' },
-      { round: 8, name: 'Monaco', circuit: 'Monte Carlo', flag: '🇲🇨', laps: 78, baseLap: 73.1, downforce: 10, topSpeed: 4, tyreDeg: 1, rainChance: 0.18, path: 'M 150,130 L 74,130 C 44,130 40,94 68,82 L 56,56 C 48,38 78,28 112,38 L 154,52 C 176,58 184,32 222,36 C 258,40 268,78 246,104 L 214,130 Z' },
-      { round: 9, name: 'Spagna', circuit: 'Barcellona', flag: '🇪🇸', laps: 66, baseLap: 75.4, downforce: 8, topSpeed: 7, tyreDeg: 3, rainChance: 0.10, path: 'M 150,130 L 76,130 L 42,106 L 54,48 L 164,34 L 256,48 L 262,92 L 226,118 L 208,130 Z' },
-      { round: 10, name: 'Canada', circuit: 'Montreal', flag: '🇨🇦', laps: 70, baseLap: 74.2, downforce: 5, topSpeed: 9, tyreDeg: 2, rainChance: 0.28, path: 'M 150,130 L 74,130 L 42,104 L 82,42 L 222,40 L 264,76 L 232,114 L 208,130 Z' },
-      { round: 11, name: 'Austria', circuit: 'Red Bull Ring', flag: '🇦🇹', laps: 71, baseLap: 66.8, downforce: 6, topSpeed: 9, tyreDeg: 2, rainChance: 0.25, path: 'M 150,130 L 76,130 L 52,88 L 128,38 L 252,54 L 242,118 L 208,130 Z' },
-      { round: 12, name: 'Gran Bretagna', circuit: 'Silverstone', flag: '🇬🇧', laps: 52, baseLap: 87.9, downforce: 9, topSpeed: 8, tyreDeg: 3, rainChance: 0.35, path: 'M 150,130 L 76,130 C 42,130 42,92 68,72 L 124,36 C 166,24 224,34 256,58 C 272,72 264,114 224,130 Z' },
-      { round: 13, name: 'Belgio', circuit: 'Spa-Francorchamps', flag: '🇧🇪', laps: 44, baseLap: 105.2, downforce: 6, topSpeed: 9, tyreDeg: 3, rainChance: 0.42, path: 'M 150,130 L 74,130 C 42,130 38,94 64,72 L 106,36 C 138,24 166,68 196,64 C 224,60 242,34 262,54 C 274,74 260,118 218,130 Z' },
-      { round: 14, name: 'Ungheria', circuit: 'Hungaroring', flag: '🇭🇺', laps: 70, baseLap: 78.5, downforce: 9, topSpeed: 5, tyreDeg: 2, rainChance: 0.18, path: 'M 150,130 L 74,130 C 42,130 38,94 66,72 L 114,34 C 154,24 188,68 218,64 C 242,60 256,38 266,64 C 274,94 252,124 212,130 Z' },
-      { round: 15, name: 'Olanda', circuit: 'Zandvoort', flag: '🇳🇱', laps: 72, baseLap: 72.4, downforce: 9, topSpeed: 6, tyreDeg: 2, rainChance: 0.32, path: 'M 150,130 L 74,130 C 40,130 38,92 66,70 L 118,34 C 162,24 194,74 224,68 C 246,64 258,42 266,70 C 272,102 248,126 210,130 Z' },
-      { round: 16, name: 'Italia', circuit: 'Monza', flag: '🇮🇹', laps: 53, baseLap: 80.8, downforce: 2, topSpeed: 10, tyreDeg: 2, rainChance: 0.14, path: 'M 150,130 L 74,130 L 42,110 L 52,44 L 248,44 L 260,110 L 222,130 Z' },
-      { round: 17, name: 'Madrid', circuit: 'IFEMA Madrid', flag: '🇪🇸', laps: 57, baseLap: 85.0, downforce: 7, topSpeed: 7, tyreDeg: 2, rainChance: 0.10, path: 'M 150,130 L 76,130 L 42,104 L 78,40 L 188,36 L 258,64 L 244,120 L 210,130 Z' },
-      { round: 18, name: 'Azerbaijan', circuit: 'Baku', flag: '🇦🇿', laps: 51, baseLap: 103.0, downforce: 4, topSpeed: 10, tyreDeg: 1, rainChance: 0.08, path: 'M 150,130 L 74,130 L 44,116 L 46,42 L 168,38 L 174,84 L 256,84 L 254,126 L 214,130 Z' },
-      { round: 19, name: 'Singapore', circuit: 'Marina Bay', flag: '🇸🇬', laps: 62, baseLap: 93.8, downforce: 10, topSpeed: 5, tyreDeg: 2, rainChance: 0.30, path: 'M 150,130 L 74,130 L 42,114 L 46,48 L 122,38 L 134,82 L 216,40 L 260,72 L 240,124 L 210,130 Z' },
-      { round: 20, name: 'Stati Uniti', circuit: 'Austin COTA', flag: '🇺🇸', laps: 56, baseLap: 96.4, downforce: 8, topSpeed: 8, tyreDeg: 3, rainChance: 0.16, path: 'M 150,130 L 74,130 C 42,130 42,92 68,72 L 122,36 C 162,28 186,74 218,64 C 244,56 258,38 266,68 C 272,98 248,124 212,130 Z' },
-      { round: 21, name: 'Messico', circuit: 'Hermanos Rodriguez', flag: '🇲🇽', laps: 71, baseLap: 78.9, downforce: 8, topSpeed: 8, tyreDeg: 2, rainChance: 0.12, path: 'M 150,130 L 74,130 L 44,106 L 62,44 L 178,38 L 252,62 L 232,124 L 208,130 Z' },
-      { round: 22, name: 'Brasile', circuit: 'Interlagos', flag: '🇧🇷', laps: 71, baseLap: 72.1, downforce: 7, topSpeed: 8, tyreDeg: 2, rainChance: 0.34, path: 'M 150,130 L 74,130 L 42,102 L 96,42 L 232,46 L 258,94 L 216,128 L 204,130 Z' },
-      { round: 23, name: 'Las Vegas', circuit: 'Las Vegas Strip', flag: '🇺🇸', laps: 50, baseLap: 94.6, downforce: 3, topSpeed: 10, tyreDeg: 1, rainChance: 0.05, path: 'M 150,130 L 74,130 L 44,114 L 50,40 L 250,40 L 258,114 L 218,130 Z' },
-      { round: 24, name: 'Qatar', circuit: 'Lusail', flag: '🇶🇦', laps: 57, baseLap: 84.3, downforce: 9, topSpeed: 8, tyreDeg: 3, rainChance: 0.02, path: 'M 150,130 L 76,130 C 42,130 42,92 68,72 L 126,34 C 182,24 246,38 262,72 C 272,98 252,126 212,130 Z' }
+      { round: 1, dateLabel: '6-8 Mar', name: 'Australia', circuit: 'Albert Park', flag: '🇦🇺', laps: 58, baseLap: 79.5, downforce: 7, topSpeed: 7, tyreDeg: 2, rainChance: 0.20, hasSprint: false, path: 'M 150,130 L 82,130 C 48,130 34,104 52,82 L 84,48 C 102,30 132,36 144,58 L 164,84 C 176,96 196,74 186,52 C 178,34 214,28 242,46 C 268,64 268,104 244,122 C 226,134 192,130 150,130 Z' },
+      { round: 2, dateLabel: '13-15 Mar', name: 'Cina', circuit: 'Shanghai', flag: '🇨🇳', laps: 56, baseLap: 95.0, downforce: 6, topSpeed: 8, tyreDeg: 3, rainChance: 0.15, hasSprint: true, path: 'M 150,130 L 74,130 C 46,130 38,96 58,72 L 96,42 C 122,24 156,36 152,64 C 148,84 182,92 204,68 L 228,44 C 252,32 270,58 262,94 C 254,124 220,130 150,130 Z' },
+      { round: 3, dateLabel: '27-29 Mar', name: 'Giappone', circuit: 'Suzuka', flag: '🇯🇵', laps: 53, baseLap: 90.5, downforce: 9, topSpeed: 7, tyreDeg: 3, rainChance: 0.25, hasSprint: false, path: 'M 150,130 L 86,130 C 56,130 48,104 72,90 L 118,74 C 134,68 112,50 86,52 C 62,54 68,28 106,28 C 144,28 158,56 188,68 C 218,80 258,64 264,92 C 270,122 238,130 150,130 Z' },
+      { round: 4, dateLabel: '10-12 Apr', name: 'Bahrain', circuit: 'Sakhir', flag: '🇧🇭', laps: 57, baseLap: 91.2, downforce: 5, topSpeed: 8, tyreDeg: 3, rainChance: 0.02, hasSprint: false, path: 'M 150,130 L 78,130 L 44,104 L 84,76 L 136,44 L 224,38 L 262,68 L 244,108 L 214,130 Z' },
+      { round: 5, dateLabel: '17-19 Apr', name: 'Arabia Saudita', circuit: 'Jeddah', flag: '🇸🇦', laps: 50, baseLap: 89.8, downforce: 4, topSpeed: 9, tyreDeg: 2, rainChance: 0.02, hasSprint: false, path: 'M 150,130 L 72,130 C 42,130 38,98 62,80 L 128,46 L 236,38 C 266,42 270,78 248,98 L 218,130 Z' },
+      { round: 6, dateLabel: '1-3 Mag', name: 'Miami', circuit: 'Miami Autodrome', flag: '🇺🇸', laps: 57, baseLap: 89.4, downforce: 6, topSpeed: 8, tyreDeg: 2, rainChance: 0.22, hasSprint: true, path: 'M 150,130 L 74,130 L 42,108 L 46,56 L 128,36 L 248,38 L 264,74 L 238,104 L 212,130 Z' },
+      { round: 7, dateLabel: '15-17 Mag', name: 'Emilia-Romagna', circuit: 'Imola', flag: '🇮🇹', laps: 63, baseLap: 77.2, downforce: 8, topSpeed: 7, tyreDeg: 2, rainChance: 0.20, hasSprint: false, path: 'M 150,130 L 76,130 C 44,130 38,96 64,74 L 118,40 C 146,26 172,56 196,62 C 222,68 242,38 262,56 C 276,72 262,116 224,130 Z' },
+      { round: 8, dateLabel: '22-24 Mag', name: 'Monaco', circuit: 'Monte Carlo', flag: '🇲🇨', laps: 78, baseLap: 73.1, downforce: 10, topSpeed: 4, tyreDeg: 1, rainChance: 0.18, hasSprint: false, path: 'M 150,130 L 74,130 C 44,130 40,94 68,82 L 56,56 C 48,38 78,28 112,38 L 154,52 C 176,58 184,32 222,36 C 258,40 268,78 246,104 L 214,130 Z' },
+      { round: 9, dateLabel: '5-7 Giu', name: 'Spagna', circuit: 'Barcellona', flag: '🇪🇸', laps: 66, baseLap: 75.4, downforce: 8, topSpeed: 7, tyreDeg: 3, rainChance: 0.10, hasSprint: false, path: 'M 150,130 L 76,130 L 42,106 L 54,48 L 164,34 L 256,48 L 262,92 L 226,118 L 208,130 Z' },
+      { round: 10, dateLabel: '12-14 Giu', name: 'Canada', circuit: 'Montreal', flag: '🇨🇦', laps: 70, baseLap: 74.2, downforce: 5, topSpeed: 9, tyreDeg: 2, rainChance: 0.28, hasSprint: true, path: 'M 150,130 L 74,130 L 42,104 L 82,42 L 222,40 L 264,76 L 232,114 L 208,130 Z' },
+      { round: 11, dateLabel: '26-28 Giu', name: 'Austria', circuit: 'Red Bull Ring', flag: '🇦🇹', laps: 71, baseLap: 66.8, downforce: 6, topSpeed: 9, tyreDeg: 2, rainChance: 0.25, hasSprint: false, path: 'M 150,130 L 76,130 L 52,88 L 128,38 L 252,54 L 242,118 L 208,130 Z' },
+      { round: 12, dateLabel: '3-5 Lug', name: 'Gran Bretagna', circuit: 'Silverstone', flag: '🇬🇧', laps: 52, baseLap: 87.9, downforce: 9, topSpeed: 8, tyreDeg: 3, rainChance: 0.35, hasSprint: true, path: 'M 150,130 L 76,130 C 42,130 42,92 68,72 L 124,36 C 166,24 224,34 256,58 C 272,72 264,114 224,130 Z' },
+      { round: 13, dateLabel: '17-19 Lug', name: 'Belgio', circuit: 'Spa-Francorchamps', flag: '🇧🇪', laps: 44, baseLap: 105.2, downforce: 6, topSpeed: 9, tyreDeg: 3, rainChance: 0.42, hasSprint: false, path: 'M 150,130 L 74,130 C 42,130 38,94 64,72 L 106,36 C 138,24 166,68 196,64 C 224,60 242,34 262,54 C 274,74 260,118 218,130 Z' },
+      { round: 14, dateLabel: '24-26 Lug', name: 'Ungheria', circuit: 'Hungaroring', flag: '🇭🇺', laps: 70, baseLap: 78.5, downforce: 9, topSpeed: 5, tyreDeg: 2, rainChance: 0.18, hasSprint: false, path: 'M 150,130 L 74,130 C 42,130 38,94 66,72 L 114,34 C 154,24 188,68 218,64 C 242,60 256,38 266,64 C 274,94 252,124 212,130 Z' },
+      { round: 15, dateLabel: '21-23 Ago', name: 'Olanda', circuit: 'Zandvoort', flag: '🇳🇱', laps: 72, baseLap: 72.4, downforce: 9, topSpeed: 6, tyreDeg: 2, rainChance: 0.32, hasSprint: true, path: 'M 150,130 L 74,130 C 40,130 38,92 66,70 L 118,34 C 162,24 194,74 224,68 C 246,64 258,42 266,70 C 272,102 248,126 210,130 Z' },
+      { round: 16, dateLabel: '4-6 Set', name: 'Italia', circuit: 'Monza', flag: '🇮🇹', laps: 53, baseLap: 80.8, downforce: 2, topSpeed: 10, tyreDeg: 2, rainChance: 0.14, hasSprint: false, path: 'M 150,130 L 74,130 L 42,110 L 52,44 L 248,44 L 260,110 L 222,130 Z' },
+      { round: 17, dateLabel: '11-13 Set', name: 'Madrid', circuit: 'IFEMA Madrid', flag: '🇪🇸', laps: 57, baseLap: 85.0, downforce: 7, topSpeed: 7, tyreDeg: 2, rainChance: 0.10, hasSprint: false, path: 'M 150,130 L 76,130 L 42,104 L 78,40 L 188,36 L 258,64 L 244,120 L 210,130 Z' },
+      { round: 18, dateLabel: '25-27 Set', name: 'Azerbaijan', circuit: 'Baku', flag: '🇦🇿', laps: 51, baseLap: 103.0, downforce: 4, topSpeed: 10, tyreDeg: 1, rainChance: 0.08, hasSprint: false, path: 'M 150,130 L 74,130 L 44,116 L 46,42 L 168,38 L 174,84 L 256,84 L 254,126 L 214,130 Z' },
+      { round: 19, dateLabel: '9-11 Ott', name: 'Singapore', circuit: 'Marina Bay', flag: '🇸🇬', laps: 62, baseLap: 93.8, downforce: 10, topSpeed: 5, tyreDeg: 2, rainChance: 0.30, hasSprint: true, path: 'M 150,130 L 74,130 L 42,114 L 46,48 L 122,38 L 134,82 L 216,40 L 260,72 L 240,124 L 210,130 Z' },
+      { round: 20, dateLabel: '23-25 Ott', name: 'Stati Uniti', circuit: 'Austin COTA', flag: '🇺🇸', laps: 56, baseLap: 96.4, downforce: 8, topSpeed: 8, tyreDeg: 3, rainChance: 0.16, hasSprint: false, path: 'M 150,130 L 74,130 C 42,130 42,92 68,72 L 122,36 C 162,28 186,74 218,64 C 244,56 258,38 266,68 C 272,98 248,124 212,130 Z' },
+      { round: 21, dateLabel: '30 Ott-1 Nov', name: 'Messico', circuit: 'Hermanos Rodriguez', flag: '🇲🇽', laps: 71, baseLap: 78.9, downforce: 8, topSpeed: 8, tyreDeg: 2, rainChance: 0.12, hasSprint: false, path: 'M 150,130 L 74,130 L 44,106 L 62,44 L 178,38 L 252,62 L 232,124 L 208,130 Z' },
+      { round: 22, dateLabel: '6-8 Nov', name: 'Brasile', circuit: 'Interlagos', flag: '🇧🇷', laps: 71, baseLap: 72.1, downforce: 7, topSpeed: 8, tyreDeg: 2, rainChance: 0.34, hasSprint: false, path: 'M 150,130 L 74,130 L 42,102 L 96,42 L 232,46 L 258,94 L 216,128 L 204,130 Z' },
+      { round: 23, dateLabel: '19-21 Nov', name: 'Las Vegas', circuit: 'Las Vegas Strip', flag: '🇺🇸', laps: 50, baseLap: 94.6, downforce: 3, topSpeed: 10, tyreDeg: 1, rainChance: 0.05, hasSprint: false, path: 'M 150,130 L 74,130 L 44,114 L 50,40 L 250,40 L 258,114 L 218,130 Z' },
+      { round: 24, dateLabel: '27-29 Nov', name: 'Qatar', circuit: 'Lusail', flag: '🇶🇦', laps: 57, baseLap: 84.3, downforce: 9, topSpeed: 8, tyreDeg: 3, rainChance: 0.02, hasSprint: false, path: 'M 150,130 L 76,130 C 42,130 42,92 68,72 L 126,34 C 182,24 246,38 262,72 C 272,98 252,126 212,130 Z' }
     ];
 
     const TYRE_COMPOUNDS = {
@@ -152,142 +152,142 @@
       minor: { id: 'minor', label: 'Minore', cost: 4.5, races: 1, gain: 1.4, desc: 'Aggiornamento rapido a basso costo' },
       standard: { id: 'standard', label: 'Standard', cost: 9.0, races: 2, gain: 2.8, desc: 'Pacchetto bilanciato su 2 GP' },
       major: { id: 'major', label: 'Evoluzione', cost: 15.5, races: 3, gain: 4.6, desc: 'Grande sviluppo ad alto impatto' }
-   };
+    };
 
-function formatLapTime(sec) {
-  if (!sec || typeof sec !== 'number' || !isFinite(sec) || sec >= 890 || sec <= 0) return '--:--.---';
-  const totalMs = Math.round(sec * 1000);
-  const mins = Math.floor(totalMs / 60000);
-  const remMs = totalMs % 60000;
-  const wholeSecs = Math.floor(remMs / 1000);
-  const millis = remMs % 1000;
-  return `${mins}:${String(wholeSecs).padStart(2, '0')}.${String(millis).padStart(3, '0')}`;
-}
-
-function getEstimatedStints(track, rules) {
-  const trackDegMult = track.tyreDeg === 3 ? 1.24 : track.tyreDeg === 2 ? 1.0 : 0.84;
-  const ruleMult = (rules && rules.extraDegMultiplier) ? rules.extraDegMultiplier : 1.0;
-
-  const calcRange = (compoundKey) => {
-    const comp = TYRE_COMPOUNDS[compoundKey];
-    const rate = comp.degRate * trackDegMult * ruleMult;
-    const avgLaps = Math.max(5, Math.round(66 / rate));
-    const minLaps = Math.max(4, Math.min(Math.max(6, track.laps - 4), avgLaps - 2));
-    const maxLaps = Math.max(minLaps + 2, Math.min(Math.max(8, track.laps - 3), avgLaps + 2));
-    return `${minLaps}-${maxLaps}`;
-  };
-
-  return { S: calcRange('S'), M: calcRange('M'), H: calcRange('H') };
-}
-
-function getMoodMeta(moodValue) {
-  const val = Math.max(0, Math.min(100, Number(moodValue ?? 65)));
-  if (val >= 82) return { label: 'Euforico', emoji: '🔥', color: 'text-emerald-400', bg: 'bg-emerald-950/50 border-emerald-500/40', paceDelta: -0.35, degMult: 0.90 };
-  if (val >= 62) return { label: 'Motivato', emoji: '😄', color: 'text-sky-300', bg: 'bg-sky-950/40 border-sky-500/35', paceDelta: -0.15, degMult: 0.96 };
-  if (val >= 42) return { label: 'Neutro', emoji: '😐', color: 'text-slate-300', bg: 'bg-slate-800/70 border-slate-600/40', paceDelta: 0.0, degMult: 1.0 };
-  if (val >= 22) return { label: 'Teso', emoji: '😟', color: 'text-amber-300', bg: 'bg-amber-950/50 border-amber-500/40', paceDelta: 0.22, degMult: 1.07 };
-  return { label: 'Frustrato', emoji: '😡', color: 'text-red-400', bg: 'bg-red-950/60 border-red-500/45', paceDelta: 0.45, degMult: 1.15 };
-}
-
-function getRoleLabel(role) {
-  if (role === 'lead') return '1ª Guida';
-  if (role === 'support') return '2ª Guida';
-  return 'Pari Livello';
-}
-
-function getAffinityScore(driver, team, allDrivers = []) {
-  if (!driver || !team) return 65;
-  let score = 62;
-
-  if (!driver.preferredDna || driver.preferredDna === 'balanced' || team.dna === 'balanced') {
-    score += 5;
-  } else if (driver.preferredDna === team.dna) {
-    score += 12;
-  } else {
-    score -= 7;
-  }
-
-  if (driver.role === 'lead') {
-    score += team.prestige >= 85 ? 8 : 3;
-  } else if (driver.role === 'support') {
-    score += driver.acceptsSupport ? 8 : -16;
-  } else {
-    score += 4;
-  }
-
-  const mate = allDrivers.find(d => d.teamId === team.id && d.id !== driver.id);
-  if (mate && gameState?.rivalries) {
-    const riv = getRivalryValue(driver.id, mate.id);
-    if (riv >= 65) score -= 10;
-    else if (riv >= 40) score -= 4;
-  }
-
-  score += Math.round(((driver.mood ?? 65) - 65) * 0.25);
-  return Math.max(20, Math.min(99, score));
-}
-
-function getRivalryKey(idA, idB) {
-  return [idA, idB].sort().join('__');
-}
-
-function getRivalryValue(idA, idB) {
-  if (!gameState?.rivalries || !idA || !idB || idA === idB) return 0;
-  return gameState.rivalries[getRivalryKey(idA, idB)] || 0;
-}
-
-function bumpRivalry(idA, idB, delta, note = '') {
-  if (!gameState || !idA || !idB || idA === idB) return;
-  gameState.rivalries = gameState.rivalries || {};
-  const key = getRivalryKey(idA, idB);
-  const prev = gameState.rivalries[key] || 0;
-  const next = Math.max(0, Math.min(100, Math.round(prev + delta)));
-  gameState.rivalries[key] = next;
-
-  const dA = gameState.drivers.find(d => d.id === idA);
-  const dB = gameState.drivers.find(d => d.id === idB);
-  if (dA && dB && next - prev >= 8 && note) {
-    pushMediaQuote('Rivalità', `${dA.code} vs ${dB.code} (${next}/100): ${note}`);
-  }
-}
-
-function pushMediaQuote(sourceTag, text) {
-  if (!gameState) return;
-  gameState.mediaFeed = gameState.mediaFeed || [];
-  gameState.mediaFeed.unshift({
-    id: `m_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-    round: gameState.round,
-    source: sourceTag,
-    text
-  });
-  if (gameState.mediaFeed.length > 45) gameState.mediaFeed.length = 45;
-  gameState.newsFeed.unshift(`🗞️ [${sourceTag}] ${text}`);
-}
-
-function checkTransferRequestStatus(driver) {
-  if (!driver) return;
-  const shouldRequest = (driver.mood ?? 65) <= 28 || (!driver.acceptsSupport && driver.role === 'support');
-  if (shouldRequest && !driver.transferRequest) {
-    driver.transferRequest = true;
-    if (driver.teamId === gameState.userTeamId) {
-      pushMediaQuote('Pilota', `${driver.name} ha comunicato al muretto di voler valutare altre opzioni sul mercato se la situazione non cambia.`);
+    function formatLapTime(sec) {
+      if (!sec || typeof sec !== 'number' || !isFinite(sec) || sec >= 890 || sec <= 0) return '--:--.---';
+      const totalMs = Math.round(sec * 1000);
+      const mins = Math.floor(totalMs / 60000);
+      const remMs = totalMs % 60000;
+      const wholeSecs = Math.floor(remMs / 1000);
+      const millis = remMs % 1000;
+      return `${mins}:${String(wholeSecs).padStart(2, '0')}.${String(millis).padStart(3, '0')}`;
     }
-  } else if (!shouldRequest && (driver.mood ?? 65) >= 55 && driver.role !== 'support') {
-    driver.transferRequest = false;
-  }
-}
 
-function adjustDriverMood(driverId, delta, reasonText = '') {
-  if (!gameState) return;
-  const driver = gameState.drivers.find(d => d.id === driverId);
-  if (!driver) return;
-  const prev = driver.mood ?? 65;
+    function getEstimatedStints(track, rules) {
+      const trackDegMult = track.tyreDeg === 3 ? 1.24 : track.tyreDeg === 2 ? 1.0 : 0.84;
+      const ruleMult = (rules && rules.extraDegMultiplier) ? rules.extraDegMultiplier : 1.0;
+
+      const calcRange = (compoundKey) => {
+        const comp = TYRE_COMPOUNDS[compoundKey];
+        const rate = comp.degRate * trackDegMult * ruleMult;
+        const avgLaps = Math.max(5, Math.round(66 / rate));
+        const minLaps = Math.max(4, Math.min(Math.max(6, track.laps - 4), avgLaps - 2));
+        const maxLaps = Math.max(minLaps + 2, Math.min(Math.max(8, track.laps - 3), avgLaps + 2));
+        return `${minLaps}-${maxLaps}`;
+      };
+
+      return { S: calcRange('S'), M: calcRange('M'), H: calcRange('H') };
+    }
+
+    function getMoodMeta(moodValue) {
+      const val = Math.max(0, Math.min(100, Number(moodValue ?? 65)));
+      if (val >= 82) return { label: 'Euforico', emoji: '🔥', color: 'text-emerald-400', bg: 'bg-emerald-950/50 border-emerald-500/40', paceDelta: -0.35, degMult: 0.90 };
+      if (val >= 62) return { label: 'Motivato', emoji: '😄', color: 'text-sky-300', bg: 'bg-sky-950/40 border-sky-500/35', paceDelta: -0.15, degMult: 0.96 };
+      if (val >= 42) return { label: 'Neutro', emoji: '😐', color: 'text-slate-300', bg: 'bg-slate-800/70 border-slate-600/40', paceDelta: 0.0, degMult: 1.0 };
+      if (val >= 22) return { label: 'Teso', emoji: '😟', color: 'text-amber-300', bg: 'bg-amber-950/50 border-amber-500/40', paceDelta: 0.22, degMult: 1.07 };
+      return { label: 'Frustrato', emoji: '😡', color: 'text-red-400', bg: 'bg-red-950/60 border-red-500/45', paceDelta: 0.45, degMult: 1.15 };
+    }
+
+    function getRoleLabel(role) {
+      if (role === 'lead') return '1ª Guida';
+      if (role === 'support') return '2ª Guida';
+      return 'Pari Livello';
+    }
+
+    function getAffinityScore(driver, team, allDrivers = []) {
+      if (!driver || !team) return 65;
+      let score = 62;
+
+      if (!driver.preferredDna || driver.preferredDna === 'balanced' || team.dna === 'balanced') {
+        score += 5;
+      } else if (driver.preferredDna === team.dna) {
+        score += 12;
+      } else {
+        score -= 7;
+      }
+
+      if (driver.role === 'lead') {
+        score += team.prestige >= 85 ? 8 : 3;
+      } else if (driver.role === 'support') {
+        score += driver.acceptsSupport ? 8 : -16;
+      } else {
+        score += 4;
+      }
+
+      const mate = allDrivers.find(d => d.teamId === team.id && d.id !== driver.id);
+      if (mate && gameState && gameState.rivalries) {
+        const riv = getRivalryValue(driver.id, mate.id);
+        if (riv >= 65) score -= 10;
+        else if (riv >= 40) score -= 4;
+      }
+
+      score += Math.round(((driver.mood ?? 65) - 65) * 0.25);
+      return Math.max(20, Math.min(99, score));
+    }
+
+    function getRivalryKey(idA, idB) {
+      return [idA, idB].sort().join('__');
+    }
+
+    function getRivalryValue(idA, idB) {
+      if (!gameState || !gameState.rivalries || !idA || !idB || idA === idB) return 0;
+      return gameState.rivalries[getRivalryKey(idA, idB)] || 0;
+    }
+
+    function bumpRivalry(idA, idB, delta, note = '') {
+      if (!gameState || !idA || !idB || idA === idB) return;
+      gameState.rivalries = gameState.rivalries || {};
+      const key = getRivalryKey(idA, idB);
+      const prev = gameState.rivalries[key] || 0;
+      const next = Math.max(0, Math.min(100, Math.round(prev + delta)));
+      gameState.rivalries[key] = next;
+
+      const dA = gameState.drivers.find(d => d.id === idA);
+      const dB = gameState.drivers.find(d => d.id === idB);
+      if (dA && dB && next - prev >= 6 && note) {
+        pushMediaQuote('Rivalita', `${dA.code} vs ${dB.code} (${next}/100): ${note}`);
+      }
+    }
+
+    function pushMediaQuote(sourceTag, text) {
+      if (!gameState) return;
+      gameState.mediaFeed = gameState.mediaFeed || [];
+      gameState.mediaFeed.unshift({
+        id: `m_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        round: gameState.round,
+        source: sourceTag,
+        text
+      });
+      if (gameState.mediaFeed.length > 50) gameState.mediaFeed.length = 50;
+      gameState.newsFeed.unshift(`[${sourceTag}] ${text}`);
+    }
+
+    function checkTransferRequestStatus(driver) {
+      if (!driver) return;
+      const shouldRequest = (driver.mood ?? 65) <= 28 || (!driver.acceptsSupport && driver.role === 'support');
+      if (shouldRequest && !driver.transferRequest) {
+        driver.transferRequest = true;
+        if (driver.teamId === gameState.userTeamId) {
+          pushMediaQuote('Pilota', `${driver.name} ha comunicato al muretto di voler valutare altre opzioni sul mercato se la situazione non cambia.`);
+        }
+      } else if (!shouldRequest && (driver.mood ?? 65) >= 55 && driver.role !== 'support') {
+        driver.transferRequest = false;
+      }
+    }
+
+    function adjustDriverMood(driverId, delta, reasonText = '') {
+      if (!gameState) return;
+      const driver = gameState.drivers.find(d => d.id === driverId);
+      if (!driver) return;
+      const prev = driver.mood ?? 65;
       const next = Math.max(0, Math.min(100, Math.round(prev + delta)));
       driver.mood = next;
       checkTransferRequestStatus(driver);
       const diff = next - prev;
       if (driver.teamId === gameState.userTeamId && Math.abs(diff) >= 2 && reasonText) {
         const sign = diff > 0 ? `+${diff}` : `${diff}`;
-        gameState.newsFeed.unshift(`UMORE ${driver.code} (${sign} -> ${next}/100):${reasonText}`);
+        gameState.newsFeed.unshift(`UMORE ${driver.code} (${sign} -> ${next}/100): ${reasonText}`);
       }
     }
 
@@ -300,22 +300,73 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
       const rivalTeam = sortedTeams.find(t => t.id !== userTeam.id) || sortedTeams[0];
       const rivalDriver = gameState.drivers.find(d => d.teamId === rivalTeam.id);
 
+      const pressureLvl = Math.min(100, Math.max(25, Math.round(userTeam.fanPassion * 0.65 + (11 - userTeam.objective) * 3.5)));
+      gameState.paddockPressure = pressureLvl;
+
       const fanLines = [
-        `I tifosi di ${userTeam.name} chiedono a gran voce un weekend pulito a${track.name} per accendere il campionato.`,
-        `Sugli spalti di ${track.circuit} cresce l'attesa: i fan si aspettano coraggio strategico dal tuo muretto.`
+        `Pressione mediatica al ${pressureLvl}%: i tifosi di ${userTeam.name} chiedono un weekend senza sbavature a ${track.name}.`,
+        `Conferenza stampa pre-GP: i giornalisti incalzano ${userTeam.name} sugli obiettivi a ${track.circuit} (obiettivo Top ${userTeam.objective}).`
       ];
-      pushMediaQuote('Tifosi', fanLines[roundNum % fanLines.length]);
+      pushMediaQuote('Stampa Pre-GP', fanLines[roundNum % fanLines.length]);
 
       if (rivalTeam && rivalDriver) {
-        pushMediaQuote('Team Principal', `${rivalTeam.tpName} (${rivalTeam.name}): "A ${track.name} sarà dura per chiunque, ma credo che il nostro pacchetto sia pronto a dettare il ritmo."`);
-        bumpRivalry(uDrivers[0]?.id, rivalDriver.id, 4, `Scintille pre-GP a ${track.name}`);
+        pushMediaQuote('Team Principal', `${rivalTeam.tpName} (${rivalTeam.name}): "A ${track.name} metteremo pressione a ${userTeam.name} fin dal venerdi."`);
+        bumpRivalry(uDrivers[0]?.id, rivalDriver.id, 4, `Dichiarazioni accese alla vigilia di ${track.name}`);
       }
 
       if (uDrivers.length === 2) {
         const [dA, dB] = uDrivers;
         const internalRiv = getRivalryValue(dA.id, dB.id);
-        if (internalRiv >= 35 || userTeam.hierarchy === 'equal') {
-          pushMediaQuote('Paddock', `Clima acceso in casa ${userTeam.name}: ${dA.code} e${dB.code} si osservano da vicino sul passo gara.`);
+        if (internalRiv >= 30 || userTeam.hierarchy === 'equal') {
+          pushMediaQuote('Paddock', `Riflettori puntati sul box ${userTeam.name}: ${dA.code} e ${dB.code} partono alla pari e vogliono imporsi subito.`);
+        }
+      }
+    }
+
+    function generatePostSessionPress(sessionType, payload = {}) {
+      if (!gameState) return;
+      const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
+      const userTeam = getUserTeam();
+      const uDrivers = getUserDrivers();
+
+      if (sessionType === 'quali' && payload.gridOrder) {
+        const bestUserIdx = payload.gridOrder.findIndex(e => e.teamId === userTeam.id);
+        const bestPos = bestUserIdx >= 0 ? bestUserIdx + 1 : 15;
+        if (bestPos <= 3) {
+          gameState.paddockPressure = Math.max(20, (gameState.paddockPressure || 65) - 8);
+          pushMediaQuote('Stampa Qualifiche', `Exploit ${userTeam.name} a ${track.name}: prima/seconda fila conquistata! Entusiasmo alle stelle nel paddock.`);
+          uDrivers.forEach(d => adjustDriverMood(d.id, 3, 'Ottima qualifica acclamata dalla stampa'));
+        } else if (bestPos > userTeam.objective * 2 + 4) {
+          gameState.paddockPressure = Math.min(100, (gameState.paddockPressure || 65) + 10);
+          pushMediaQuote('Stampa Qualifiche', `Sabato amaro per ${userTeam.name} (miglior piazzamento P${bestPos}): la stampa critica l'assetto scelto.`);
+          uDrivers.forEach(d => adjustDriverMood(d.id, -3, 'Pressione mediatica dopo qualifica deludente'));
+        } else {
+          pushMediaQuote('Stampa Qualifiche', `Qualifiche solide per ${userTeam.name} a ${track.name}: miglior vettura in P${bestPos}, tutto aperto per domenica.`);
+        }
+      }
+
+      if (sessionType === 'race' && payload.classification) {
+        const uRows = payload.classification.filter(r => r.isUser);
+        const bestRow = uRows[0];
+        const bestPos = typeof bestRow?.pos === 'number' ? bestRow.pos : 22;
+
+        if (bestPos === 1) {
+          gameState.paddockPressure = Math.max(15, (gameState.paddockPressure || 65) - 15);
+          pushMediaQuote('Stampa Post-GP', `TRIONFO ${userTeam.name}! ${bestRow.name} domina a ${track.name} e zittisce ogni critica nel paddock.`);
+        } else if (bestPos <= 3) {
+          gameState.paddockPressure = Math.max(20, (gameState.paddockPressure || 65) - 10);
+          pushMediaQuote('Stampa Post-GP', `Podio pesante per ${userTeam.name} con ${bestRow.name} (P${bestPos}): strategia promossa a pieni voti.`);
+        } else if (bestPos <= 10) {
+          pushMediaQuote('Stampa Post-GP', `Zona punti per ${userTeam.name} a ${track.name} (P${bestPos}). Il muretto porta a casa punti preziosi.`);
+        } else {
+          gameState.paddockPressure = Math.min(100, (gameState.paddockPressure || 65) + 12);
+          pushMediaQuote('Stampa Post-GP', `Domenica da dimenticare per ${userTeam.name} fuori dai punti a ${track.name}: sale la pressione sul Team Principal.`);
+        }
+
+        if (uRows.length === 2 && typeof uRows[0].pos === 'number' && typeof uRows[1].pos === 'number') {
+          if (Math.abs(uRows[0].pos - uRows[1].pos) === 1) {
+            bumpRivalry(uRows[0].driverId, uRows[1].driverId, 5, `Arrivo in scia P${uRows[0].pos}-P${uRows[1].pos} a ${track.name}`);
+          }
         }
       }
     }
@@ -438,6 +489,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         userTeamId: selectedTeamId,
         activeTab: 'hub',
         hubMediaFilter: 'all',
+        paddockPressure: 62,
         budgetCap: 150.0,
         rules: {
           pointsTop12: false,
@@ -448,11 +500,12 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         freeAgents,
         rivalries: seedInitialRivalries(drivers),
         pendingUpgrades: [],
-        jobOffers: [],
+        pendingUpgradeConfirm: null,
+        completedRounds: [],
         mediaFeed: [],
         newsFeed: [
           `Benvenuto nel paddock 2026! Hai assunto il ruolo di Team Principal per ${teams.find(t => t.id === selectedTeamId).name}.`,
-          `Nuovo regolamento 2026: Audi e Cadillac debuttano ufficialmente portando la griglia a 22 monoposto.`
+          `Weekend strutturato su Venerdi (FP1-FP2), Sabato (FP3-Qualifiche) e Domenica (Pre-Gara-Gara).`
         ],
         weekend: initWeekendState(1, selectedTeamId, drivers)
       };
@@ -498,11 +551,12 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         plan: 'race',
         fpRunsDone: 0,
         lastError: null,
-        feedback: 'Sessione aperta: regola i 5 parametri d’assetto (Ala, Sospensioni, Freni, Altezza/Gomme, Differenziale) ed esegui i run per affinare il bilanciamento.'
+        feedback: 'Venerdi/Sabato prove libere: regola i 5 parametri di assetto (Ala, Sospensioni, Freni, Altezza/Gomme, Differenziale) ed esegui i run.'
       });
 
       return {
         round: roundNum,
+        day: 'friday',
         phase: 'fp',
         targets: { wing: targetD1.wing, susp: targetD1.susp, brake: targetD1.brake, ride: targetD1.ride, diff: targetD1.diff },
         driverTargets: { d1: targetD1, d2: targetD2 },
@@ -518,6 +572,19 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         race: null,
         results: null
       };
+    }
+
+    function getWeekendDayBadge(weekend) {
+      if (!weekend) return 'VENERDI';
+      if (weekend.phase === 'fp') {
+        if (weekend.session === 1 || weekend.fp?.session === 1) return 'VEN • FP1';
+        if (weekend.fp?.session === 2) return 'VEN • FP2';
+        return 'SAB • FP3';
+      }
+      if (weekend.phase === 'quali') return 'SAB • QUALIFICHE';
+      if (weekend.phase === 'strategy') return 'DOM • PRE-GARA';
+      if (weekend.phase === 'race' || weekend.phase === 'summary') return 'DOM • GARA';
+      return 'WEEKEND';
     }
 
     function selectTeamAndStart(teamId) {
@@ -552,8 +619,8 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         d1.role = 'co_lead';
         d2.role = 'co_lead';
         adjustDriverMood(d1.id, 3, 'Scuderia impostata su pari livello');
-        adjustDriverMood(d2.id, 4, 'Parità di trattamento confermata dal team');
-        pushMediaQuote('Team Principal', `${team.name} annuncia pari opportunità in pista tra ${d1.name} e ${d2.name}.`);
+        adjustDriverMood(d2.id, 4, 'Parita di trattamento confermata dal team');
+        pushMediaQuote('Team Principal', `${team.name} annuncia pari opportunita in pista tra ${d1.name} e ${d2.name}.`);
         showToast('Gerarchia impostata: Pari Livello per entrambi i piloti.', 'info');
       } else {
         applyRoleAssignments(d1.id, 'lead', d2.id, 'support');
@@ -585,20 +652,20 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
       lead.role = leadRole;
       supp.role = suppRole;
 
-      adjustDriverMood(lead.id, 6, `Nominato 1ª Guida in ${team.name}`);
+      adjustDriverMood(lead.id, 6, `Nominato 1a Guida in ${team.name}`);
 
       if (prevSuppRole !== 'support') {
         const penalty = supp.acceptsSupport ? -6 : -18;
-        adjustDriverMood(supp.id, penalty, supp.acceptsSupport ? 'Declassato a 2ª Guida ma disposto a collaborare' : 'Non gradisce il ruolo di 2ª Guida: tensione alta!');
-        bumpRivalry(lead.id, supp.id, supp.acceptsSupport ? 8 : 18, `Gerarchia 1ª/2ª guida in casa ${team.name}`);
+        adjustDriverMood(supp.id, penalty, supp.acceptsSupport ? 'Declassato a 2a Guida ma disposto a collaborare' : 'Non gradisce il ruolo di 2a Guida: tensione alta!');
+        bumpRivalry(lead.id, supp.id, supp.acceptsSupport ? 8 : 18, `Gerarchia 1a/2a guida in casa ${team.name}`);
         if (!supp.acceptsSupport) {
-          pushMediaQuote('Pilota', `${supp.name} mal digerisce il ruolo di 2ª guida in ${team.name} e guarda già al mercato.`);
+          pushMediaQuote('Pilota', `${supp.name} mal digerisce il ruolo di 2a guida in ${team.name} e guarda gia al mercato.`);
         } else {
           pushMediaQuote('Pilota', `${supp.name} accetta il ruolo di supporto per il bene del team, pur volendo farsi trovare pronto.`);
         }
       }
 
-      showToast(`${lead.code} 1ª Guida • ${supp.code} 2ª Guida`, 'info');
+      showToast(`${lead.code} 1a Guida • ${supp.code} 2a Guida`, 'info');
     }
 
     function getPitLaneCoord(car) {
@@ -690,14 +757,14 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
           <div class="bg-f1card border border-f1border rounded-2xl p-4">
             <div class="text-[11px] font-extrabold uppercase tracking-wider text-f1red">Stagione 2026 • Griglia Ufficiale</div>
             <h1 class="text-xl font-black text-white mt-0.5">Formula Manager 2026</h1>
-            <p class="text-xs text-slate-400 mt-1">Scegli la scuderia: gestisci gerarchie piloti, rivalità, potenziale, media, assetti su più run e strategia gara.</p>
+            <p class="text-xs text-slate-400 mt-1">Scegli la scuderia: calendario 24 GP, weekend Ven/Sab/Dom, strategie salvate e modificabili in pausa, media e sviluppo auto.</p>
           </div>
 
           <div class="space-y-2.5 pb-6">
             ${INITIAL_TEAMS.map(t => {
               const tDrivers = INITIAL_DRIVERS.filter(d => d.teamId === t.id);
               const avgPerf = Math.round((t.aero + t.pu + t.chassis) / 3);
-              const hLabel = t.hierarchy === '1st_2nd' ? '1ª / 2ª Guida' : 'Pari Livello';
+              const hLabel = t.hierarchy === '1st_2nd' ? '1a / 2a Guida' : 'Pari Livello';
               return `
                 <button onclick="selectTeamAndStart('${t.id}')" class="w-full text-left bg-f1card hover:bg-slate-800/80 border border-f1border rounded-2xl p-3.5 transition active:scale-[0.99]">
                   <div class="flex items-center justify-between">
@@ -728,12 +795,13 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
     function renderTopHeader() {
       const team = getUserTeam();
       const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[23];
+      const dayTag = getWeekendDayBadge(gameState.weekend);
       return `
         <header class="sticky top-0 z-30 bg-f1bg/95 backdrop-blur border-b border-f1border px-4 py-2.5 flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-6 rounded-full" style="background:${team.color}"></span>
             <div>
-              <div class="text-xs font-extrabold text-white leading-tight">${team.name}</div>
+              <div class="text-xs font-extrabold text-white leading-tight">${team.name} <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 ml-1">${dayTag}</span></div>
               <div class="text-[10px] text-slate-400 font-mono-num">Stagione ${gameState.season} • GP ${gameState.round}/24 ${track.flag}</div>
             </div>
           </div>
@@ -751,23 +819,70 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
     function renderBottomNav() {
       const tabs = [
         { id: 'hub', icon: '🏠', label: 'Paddock' },
-        { id: 'weekend', icon: '🏁', label: 'GP Weekend' },
+        { id: 'weekend', icon: '🏁', label: 'Weekend' },
+        { id: 'calendar', icon: '📅', label: 'Calendario' },
         { id: 'rnd', icon: '⚙️', label: 'Sviluppo' },
         { id: 'market', icon: '🤝', label: 'Mercato' },
         { id: 'standings', icon: '🏆', label: 'Classifiche' }
       ];
       return `
-        <nav class="sticky bottom-0 z-30 bg-f1card/95 backdrop-blur border-t border-f1border grid grid-cols-5 py-1.5 px-1">
+        <nav class="sticky bottom-0 z-30 bg-f1card/95 backdrop-blur border-t border-f1border grid grid-cols-6 py-1.5 px-0.5">
           ${tabs.map(t => {
             const active = gameState.activeTab === t.id;
             return `
               <button onclick="setActiveTab('${t.id}')" class="flex flex-col items-center justify-center py-1 rounded-xl transition ${active ? 'text-f1red font-extrabold' : 'text-slate-400 hover:text-slate-200'}">
-                <span class="text-base leading-none">${t.icon}</span>
-                <span class="text-[10px] mt-1">${t.label}</span>
+                <span class="text-sm leading-none">${t.icon}</span>
+                <span class="text-[9px] mt-1">${t.label}</span>
               </button>
             `;
           }).join('')}
         </nav>
+      `;
+    }
+
+    function renderCalendarView() {
+      const doneList = gameState.completedRounds || [];
+      return `
+        <div class="p-4 space-y-3">
+          <div class="bg-f1card border border-f1border rounded-2xl p-4">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Stagione ${gameState.season} • 24 Gran Premi</span>
+            <h2 class="text-lg font-extrabold text-white mt-0.5">Calendario Annuale</h2>
+            <p class="text-xs text-slate-400 mt-1">Struttura Venerdi (FP1-FP2), Sabato (FP3-Qualifiche), Domenica (Pre-Gara-Gara). Predisposto per future Sprint Race, allenamenti piloti e attivita extra.</p>
+          </div>
+
+          <div class="space-y-2 pb-4">
+            ${CALENDAR_2026.map(tr => {
+              const isCurrent = tr.round === gameState.round;
+              const isDone = doneList.some(x => x.round === tr.round) || tr.round < gameState.round;
+              const statusBadge = isCurrent
+                ? '<span class="px-2 py-0.5 rounded bg-f1red text-white text-[9px] font-extrabold">IN CORSO</span>'
+                : (isDone
+                  ? '<span class="px-2 py-0.5 rounded bg-emerald-900/70 text-emerald-300 text-[9px] font-bold">DISPUTATO</span>'
+                  : '<span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[9px] font-bold">IN PROGRAMMA</span>');
+
+              const winnerInfo = doneList.find(x => x.round === tr.round);
+              return `
+                <div class="bg-f1card border ${isCurrent ? 'border-f1red' : 'border-f1border'} rounded-2xl p-3 space-y-1.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="text-xs font-mono-num font-black text-slate-400">R${String(tr.round).padStart(2, '0')}</span>
+                      <span class="text-base">${tr.flag}</span>
+                      <div class="truncate">
+                        <div class="text-xs font-extrabold text-white truncate">${tr.name} <span class="text-[10px] text-slate-400 font-normal">(${tr.dateLabel})</span></div>
+                        <div class="text-[10px] text-slate-400 truncate">${tr.circuit} • ${tr.laps} Giri • Pioggia ${Math.round(tr.rainChance * 100)}%</div>
+                      </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-1 shrink-0">
+                      ${statusBadge}
+                      ${tr.hasSprint ? '<span class="text-[9px] font-bold text-amber-300">⚡ SPRINT (FUTURO)</span>' : ''}
+                    </div>
+                  </div>
+                  ${winnerInfo ? `<div class="text-[10px] text-emerald-300 font-mono-num border-t border-f1border/50 pt-1">Vincitore: <strong>${winnerInfo.winnerCode}</strong> • Pole/Giro base: ${tr.baseLap}s</div>` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
       `;
     }
 
@@ -778,10 +893,11 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
       const stints = getEstimatedStints(track, gameState.rules);
       const mateRiv = userDrivers.length === 2 ? getRivalryValue(userDrivers[0].id, userDrivers[1].id) : 0;
       const mediaFilter = gameState.hubMediaFilter || 'all';
+      const pressure = gameState.paddockPressure ?? 62;
 
       const filteredMedia = (gameState.mediaFeed || []).filter(m => {
-        if (mediaFilter === 'fans') return m.source === 'Tifosi' || m.source === 'Team Principal';
-        if (mediaFilter === 'rivalry') return m.source === 'Rivalità' || m.source === 'Pilota' || m.source === 'Paddock';
+        if (mediaFilter === 'fans') return m.source.includes('Stampa') || m.source === 'Team Principal';
+        if (mediaFilter === 'rivalry') return m.source === 'Rivalita' || m.source === 'Pilota' || m.source === 'Paddock';
         return true;
       });
 
@@ -790,12 +906,12 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
           <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-3">
             <div class="flex items-center justify-between">
               <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Round ${gameState.round}/24 • DNA ${team.dna.toUpperCase()}</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Round ${gameState.round}/24 • ${track.dateLabel} • DNA ${team.dna.toUpperCase()}</span>
                 <h2 class="text-lg font-extrabold text-white">${track.flag} GP ${track.name}</h2>
                 <div class="text-xs text-slate-400">${track.circuit} • ${track.laps} Giri • Pioggia ${Math.round(track.rainChance * 100)}%</div>
               </div>
               <div class="text-right font-mono-num text-[11px] bg-f1bg px-2.5 py-1.5 rounded-xl border border-f1border">
-                <div class="text-slate-400">Carico <strong class="text-white">${track.downforce}/10</strong></div>
+                <div class="text-slate-400">Pressione <strong class="${pressure >= 75 ? 'text-red-400' : 'text-amber-300'}">${pressure}%</strong></div>
                 <div class="text-slate-400">Degrado <strong class="text-amber-300">${track.tyreDeg}/3</strong></div>
               </div>
             </div>
@@ -808,20 +924,20 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
             </div>
 
             <button onclick="setActiveTab('weekend')" class="w-full py-3.5 rounded-xl bg-f1red hover:bg-red-600 font-extrabold text-sm text-white shadow-lg shadow-f1red/25">
-              ENTRA NEL WEEKEND DI GARA →
+              ENTRA NEL WEEKEND (${getWeekendDayBadge(gameState.weekend)}) →
             </button>
           </div>
 
           <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-3">
             <div class="flex items-center justify-between">
               <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Gerarchia & Profili Piloti</h3>
-              ${userDrivers.length === 2 ? `<span class="text-[10px] font-mono-num text-amber-300">Rivalità Box: ${mateRiv}/100</span>` : ''}
+              ${userDrivers.length === 2 ? `<span class="text-[10px] font-mono-num text-amber-300">Rivalita Box: ${mateRiv}/100</span>` : ''}
             </div>
 
             ${userDrivers.length === 2 ? `
               <div class="grid grid-cols-2 gap-1.5 bg-f1bg p-1 rounded-xl border border-f1border">
                 <button onclick="setTeamHierarchyMode('1st_2nd')" class="py-1.5 rounded-lg text-[11px] font-extrabold transition ${team.hierarchy === '1st_2nd' ? 'bg-f1red text-white' : 'text-slate-400'}">
-                  1ª / 2ª Guida
+                  1a / 2a Guida
                 </button>
                 <button onclick="setTeamHierarchyMode('equal')" class="py-1.5 rounded-lg text-[11px] font-extrabold transition ${team.hierarchy !== '1st_2nd' ? 'bg-sky-600 text-white' : 'text-slate-400'}">
                   Pari Livello
@@ -832,7 +948,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
                 <div class="grid grid-cols-2 gap-1.5">
                   ${userDrivers.map(ud => `
                     <button onclick="setLeadDriverSelection('${ud.id}')" class="py-1.5 px-2 rounded-xl text-[11px] font-bold border ${ud.role === 'lead' ? 'bg-amber-500/20 border-amber-400 text-amber-200' : 'bg-f1bg border-f1border text-slate-400'}">
-                      1ª Guida: ${ud.code}
+                      1a Guida: ${ud.code}
                     </button>
                   `).join('')}
                 </div>
@@ -860,9 +976,9 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
                     <div class="flex flex-wrap items-center justify-between gap-1 text-[10px]">
                       <span class="px-1.5 py-0.5 rounded border ${mood.bg} ${mood.color} font-semibold">${mood.emoji} ${mood.label} (${d.mood ?? 65})</span>
                       <span class="text-slate-300">${trait.icon} ${trait.label}</span>
-                      <span class="font-mono-num text-emerald-300">Affinità ${affinity}%</span>
+                      <span class="font-mono-num text-emerald-300">Affinita ${affinity}%</span>
                     </div>
-                    ${d.transferRequest ? `<div class="text-[10px] text-red-400 font-bold">⚠️ Il pilota ha chiesto di valutare il mercato per il futuro.</div>` : ''}
+                    ${d.transferRequest ? `<div class="text-[10px] text-red-400 font-bold">Il pilota ha chiesto di valutare il mercato per il futuro.</div>` : ''}
                   </div>
                 `;
               }).join('')}
@@ -871,21 +987,21 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
 
           <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-2.5">
             <div class="flex items-center justify-between">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Media, Tifosi & Rivalità</h3>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Paddock, Stampa & Rivalita</h3>
               <div class="flex gap-1">
                 ${[
                   { id: 'all', lbl: 'Tutti' },
-                  { id: 'fans', lbl: 'Media/TP' },
-                  { id: 'rivalry', lbl: 'Rivalità' }
+                  { id: 'fans', lbl: 'Stampa/TP' },
+                  { id: 'rivalry', lbl: 'Rivalita' }
                 ].map(f => `
                   <button onclick="setHubMediaFilter('${f.id}')" class="px-2 py-0.5 rounded text-[10px] font-bold ${mediaFilter === f.id ? 'bg-f1red text-white' : 'bg-f1bg text-slate-400'}">${f.lbl}</button>
                 `).join('')}
               </div>
             </div>
-            <div class="space-y-1.5 max-h-44 overflow-y-auto no-scrollbar">
-              ${filteredMedia.slice(0, 10).map(m => `
+            <div class="space-y-1.5 max-h-48 overflow-y-auto no-scrollbar">
+              ${filteredMedia.slice(0, 12).map(m => `
                 <div class="text-xs text-slate-200 bg-f1bg p-2.5 rounded-xl border border-f1border/50 leading-snug">
-                  <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 mr-1.5">${m.source}</span>
+                  <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 mr-1.5">${m.source} • GP${m.round || gameState.round}</span>
                   <span>${m.text}</span>
                 </div>
               `).join('')}
@@ -902,6 +1018,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
       if (phase === 'quali') return renderQualifyingView();
       if (phase === 'strategy') return renderPreRaceStrategyView();
       if (phase === 'race') return renderRaceView();
+      if (phase === 'live_strategy') return renderLiveRaceStrategyView();
       if (phase === 'summary') return renderRaceSummaryView();
       return '';
     }
@@ -938,6 +1055,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
       const fpData = fp[activeSlot];
       const stints = getEstimatedStints(track, gameState.rules);
       const runsLeft = fp.runsLeftInSession ?? 3;
+      const dayLabel = fp.session === 1 ? 'Venerdi • FP1' : (fp.session === 2 ? 'Venerdi • FP2' : (fp.session === 3 ? 'Sabato • FP3' : 'Sabato • Libere Terminate'));
 
       const planLabels = {
         quali: { title: 'Giro Secco', desc: '+0.28s in Qualifica', badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
@@ -952,8 +1070,8 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         <div class="p-4 space-y-3.5">
           <div class="flex items-center justify-between">
             <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Prove Libere • Run Rimasti: ${runsLeft}/3</span>
-              <h2 class="text-lg font-extrabold text-white">Sessione FP${Math.min(3, fp.session)} di 3</h2>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">${dayLabel} • Run Rimasti: ${runsLeft}/3</span>
+              <h2 class="text-lg font-extrabold text-white">Prove Libere (${Math.min(3, fp.session)}/3)</h2>
             </div>
             <div class="text-right text-[11px] text-slate-400">
               <div>Carico base: <strong class="text-white">${track.downforce}/10</strong></div>
@@ -990,7 +1108,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
               </div>
 
               <div class="bg-f1bg border border-f1border/90 rounded-xl p-2.5 text-xs text-slate-200 leading-relaxed whitespace-normal break-words">
-                <div class="text-[10px] font-bold uppercase text-f1red mb-1">🎙️ Telemetria & Commento ${activeDriver.code} (Run #${fpData.fpRunsDone})</div>
+                <div class="text-[10px] font-bold uppercase text-f1red mb-1">Telemetria & Commento ${activeDriver.code} (Run #${fpData.fpRunsDone})</div>
                 <p>${fpData.feedback}</p>
               </div>
 
@@ -1004,7 +1122,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
                 </div>
                 <div>
                   <div class="flex justify-between text-[11px] mb-0.5">
-                    <span class="text-slate-400">Rigidità Sospensioni</span>
+                    <span class="text-slate-400">Rigidita Sospensioni</span>
                     <span class="font-mono-num font-bold text-white">${fpData.susp} / 10</span>
                   </div>
                   <input type="range" min="1" max="10" value="${fpData.susp}" onchange="updateFpSlider('${activeSlot}', 'susp', this.value)" class="w-full" />
@@ -1018,14 +1136,14 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
                 </div>
                 <div>
                   <div class="flex justify-between text-[11px] mb-0.5">
-                    <span class="text-slate-400">Altezza da Terra & Pressione Gomme</span>
+                    <span class="text-slate-400">Altezza da Terra & Gomme</span>
                     <span class="font-mono-num font-bold text-white">${fpData.ride} / 10</span>
                   </div>
                   <input type="range" min="1" max="10" value="${fpData.ride}" onchange="updateFpSlider('${activeSlot}', 'ride', this.value)" class="w-full" />
                 </div>
                 <div>
                   <div class="flex justify-between text-[11px] mb-0.5">
-                    <span class="text-slate-400">Differenziale & Trazione Uscita</span>
+                    <span class="text-slate-400">Differenziale & Uscita</span>
                     <span class="font-mono-num font-bold text-white">${fpData.diff} / 10</span>
                   </div>
                   <input type="range" min="1" max="10" value="${fpData.diff}" onchange="updateFpSlider('${activeSlot}', 'diff', this.value)" class="w-full" />
@@ -1060,7 +1178,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
               </div>
             `}
             <button onclick="startQualifying()" class="py-3.5 px-3 rounded-xl bg-f1red hover:bg-red-600 active:scale-[0.99] font-bold text-xs text-white shadow-lg">
-              VAI ALLE QUALIFICHE →
+              SABATO • QUALIFICHE →
             </button>
           </div>
         </div>
@@ -1099,43 +1217,24 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         }
 
         const sentences = [];
-        if (diffWing === 0) {
-          sentences.push('Ali bilanciate: carico e velocità di punta sono in linea con il tracciato.');
-        } else if (diffWing < -1) {
-          sentences.push('Poca deportanza nei curvoni: serve alzare l’incidenza delle ali.');
-        } else if (diffWing < 0) {
-          sentences.push('Manca un leggero carico aerodinamico in curva: prova ad aggiungere 1 tacca di ala.');
-        } else if (diffWing > 1) {
-          sentences.push('Ali troppo cariche e penalizzanti sui rettilinei: conviene scaricare l’incidenza.');
-        } else {
-          sentences.push('Leggero eccesso di ala: un piccolo scarico aiuta in allungo.');
-        }
+        if (diffWing === 0) sentences.push('Ali bilanciate: carico e allungo in linea con la pista.');
+        else if (diffWing < -1) sentences.push('Poca deportanza nei curvoni: alza l incidenza delle ali.');
+        else if (diffWing < 0) sentences.push('Manca un leggero carico in curva: aggiungi 1 tacca di ala.');
+        else if (diffWing > 1) sentences.push('Ali troppo cariche sui rettilinei: scarica l incidenza.');
+        else sentences.push('Leggero eccesso di ala: un piccolo scarico aiuta in allungo.');
 
-        if (diffSusp === 0) {
-          sentences.push('Sospensioni ben accordate sui cordoli.');
-        } else if (diffSusp < 0) {
-          sentences.push('Sospensioni troppo morbide: irrigidisci per maggiore reattività.');
-        } else {
-          sentences.push('Sospensioni troppo rigide: ammorbidisci per assorbire meglio i cordoli.');
-        }
+        if (diffSusp === 0) sentences.push('Sospensioni ben accordate sui cordoli.');
+        else if (diffSusp < 0) sentences.push('Sospensioni troppo morbide: irrigidisci per maggiore reattivita.');
+        else sentences.push('Sospensioni troppo rigide: ammorbidisci per assorbire meglio i cordoli.');
 
-        if (diffRide < -1) {
-          sentences.push('Altezza da terra troppo bassa: la vettura tocca il fondo e rischia usura eccessiva.');
-        } else if (diffRide > 1) {
-          sentences.push('Altezza/pressioni troppo alte: si perde efficienza aerodinamica.');
-        }
+        if (diffRide < -1) sentences.push('Altezza da terra troppo bassa: rischio toccate sul fondo.');
+        else if (diffRide > 1) sentences.push('Altezza/pressioni troppo alte: si perde efficienza aerodinamica.');
 
-        if (diffDiff < -1) {
-          sentences.push('Differenziale troppo aperto in uscita curva: chiudilo leggermente per migliorare la trazione.');
-        } else if (diffDiff > 1) {
-          sentences.push('Differenziale troppo chiuso: tende a spingere il muso largo in uscita.');
-        }
+        if (diffDiff < -1) sentences.push('Differenziale troppo aperto in uscita curva: chiudilo leggermente.');
+        else if (diffDiff > 1) sentences.push('Differenziale troppo chiuso: tende a spingere il muso largo in uscita.');
 
-        if (diffBrake < 0) {
-          sentences.push('Freni troppo arretrati: sposta il bilanciamento più avanti in staccata.');
-        } else if (diffBrake > 0) {
-          sentences.push('Freni troppo sbilanciati sull’anteriore: arretra leggermente per evitare bloccaggi.');
-        }
+        if (diffBrake < 0) sentences.push('Freni troppo arretrati: sposta il bilanciamento piu avanti in staccata.');
+        else if (diffBrake > 0) sentences.push('Freni troppo sbilanciati sull anteriore: arretra leggermente.');
 
         data.feedback = sentences.join(' ');
       });
@@ -1145,14 +1244,15 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         if (fp.session < 3) {
           fp.session += 1;
           fp.runsLeftInSession = 3;
-          showToast(`Sessione FP${fp.session - 1} terminata: inizia FP${fp.session} (3 run)!`, 'info');
+          const nextDay = fp.session === 3 ? 'Sabato (FP3)' : 'Venerdi (FP2)';
+          showToast(`Sessione terminata: si passa a ${nextDay} (3 run)!`, 'info');
         } else {
           fp.session = 4;
           fp.runsLeftInSession = 0;
           showToast('Tutte le sessioni di Prove Libere completate!', 'success');
         }
       } else {
-        showToast(`Run completato! Restano ${fp.runsLeftInSession} run in FP${fp.session}.`, 'info');
+        showToast(`Run completato! Restano ${fp.runsLeftInSession} run.`, 'info');
       }
 
       saveGame();
@@ -1188,7 +1288,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
           eliminatedIn: null,
           status: 'BOX',
           runTimer: 0,
-          progress: 0,
+          trackPos: 0,
           selectedTyre: weather === 'wet' ? 'I' : 'S',
           confBonus,
           plan,
@@ -1196,6 +1296,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         };
       });
 
+      gameState.weekend.day = 'saturday';
       gameState.weekend.phase = 'quali';
       gameState.weekend.quali = {
         roundName: 'Q1',
@@ -1235,7 +1336,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
       if (!entry || entry.eliminated || entry.status !== 'BOX') return;
       entry.status = 'OUT_LAP';
       entry.runTimer = 0;
-      entry.progress = 0.02;
+      entry.trackPos = 0.01;
       showToast(`${entry.code} esce dai box con gomma ${TYRE_COMPOUNDS[entry.selectedTyre].name}!`, 'info');
       saveGame();
       renderApp();
@@ -1257,13 +1358,13 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
               entry.selectedTyre = q.weather === 'wet' ? 'I' : 'S';
               entry.status = 'OUT_LAP';
               entry.runTimer = 0;
+              entry.trackPos = 0.01;
             }
           }
         }
       });
 
       const activeCarsOnTrack = q.entries.filter(e => !e.eliminated && e.status !== 'BOX').length;
-
       const currentGrip = q.trackGrip ?? (q.weather === 'wet' ? 54 : 68);
       const gripGain = activeCarsOnTrack * 0.035 * (q.weather === 'wet' ? 0.35 : 1.0);
       const weatherGripDelta = q.weather === 'wet' ? -0.06 : 0.01;
@@ -1277,7 +1378,6 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
           if (entry.runTimer >= 85) {
             entry.status = 'HOT_LAP';
             entry.runTimer = 0;
-            entry.progress = 0.01;
           }
         } else if (entry.status === 'HOT_LAP') {
           if (entry.runTimer >= track.baseLap) {
@@ -1300,13 +1400,12 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
 
             entry.status = 'IN_LAP';
             entry.runTimer = 0;
-            entry.progress = 0.01;
           }
         } else if (entry.status === 'IN_LAP') {
           if (entry.runTimer >= 80) {
             entry.status = 'BOX';
             entry.runTimer = 0;
-            entry.progress = 0;
+            entry.trackPos = 0;
           }
         }
       });
@@ -1315,9 +1414,9 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         q.speed = 0;
         const active = q.entries.filter(e => !e.eliminated).sort((a, b) => a.bestTime - b.bestTime);
         if (q.roundName === 'Q1') {
-          active.slice(16).forEach(e => { e.eliminated = true; e.eliminatedIn = 'Q1'; e.status = 'BOX'; });
+          active.slice(16).forEach(e => { e.eliminated = true; e.eliminatedIn = 'Q1'; e.status = 'BOX'; e.trackPos = 0; });
         } else if (q.roundName === 'Q2') {
-          active.slice(10).forEach(e => { e.eliminated = true; e.eliminatedIn = 'Q2'; e.status = 'BOX'; });
+          active.slice(10).forEach(e => { e.eliminated = true; e.eliminatedIn = 'Q2'; e.status = 'BOX'; e.trackPos = 0; });
         }
       }
 
@@ -1328,7 +1427,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
     function advanceQualiSession() {
       const q = gameState.weekend?.quali;
       if (!q) return;
-      q.entries.forEach(e => { e.status = 'BOX'; e.runTimer = 0; e.progress = 0; });
+      q.entries.forEach(e => { e.status = 'BOX'; e.runTimer = 0; e.trackPos = 0; });
       if (q.roundName === 'Q1') {
         q.roundName = 'Q2';
         q.cutoff = 10;
@@ -1367,9 +1466,9 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
           curQ.entries.forEach(entry => {
             if (entry.eliminated || entry.status === 'BOX') return;
             const segDur = entry.status === 'HOT_LAP' ? track.baseLap : (entry.status === 'OUT_LAP' ? 85 : 80);
-            entry.progress = (((entry.progress || 0) + simSec / segDur) % 1 + 1) % 1;
+            entry.trackPos = (entry.trackPos || 0.01) + (simSec / segDur);
             const dot = document.getElementById(`quali-dot-${entry.driverId}`);
-            if (dot) dot.setAttribute('data-track-progress', entry.progress.toFixed(4));
+            if (dot) dot.setAttribute('data-track-progress', (entry.trackPos % 1).toFixed(4));
           });
           syncTrackCarPositions('fm-quali-svg');
         }
@@ -1396,17 +1495,17 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
 
       const dotsHtml = activeEntries.filter(e => e.status !== 'BOX').map(e => {
         const t = getTeam(e.teamId);
-        return `<circle id="quali-dot-${e.driverId}" cx="150" cy="130" r="${e.isUser ? 5 : 3.5}" fill="${t.color}" stroke="${e.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2" data-track-progress="${(e.progress || 0).toFixed(4)}"/>`;
+        return `<circle id="quali-dot-${e.driverId}" cx="150" cy="130" r="${e.isUser ? 5 : 3.5}" fill="${t.color}" stroke="${e.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2" data-track-progress="${((e.trackPos || 0) % 1).toFixed(4)}"/>`;
       }).join('');
 
       return `
         <div class="p-4 space-y-3">
           <div class="bg-f1card border border-f1border rounded-2xl p-3 flex items-center justify-between">
             <div>
-              <span class="text-[10px] font-bold uppercase text-f1red">Qualifiche • ${q.roundName}</span>
+              <span class="text-[10px] font-bold uppercase text-f1red">Sabato • Qualifiche ${q.roundName}</span>
               <div class="text-xl font-mono-num font-black text-white">${mins}:${secs}</div>
               <div class="text-[10px] text-slate-400 font-mono-num">
-                ${q.weather === 'wet' ? '🌧️ Bagnato' : '☀️ Asciutto'} • Aderenza: <strong class="text-emerald-400">${gripVal}%</strong> • Top ${q.cutoff}
+                ${q.weather === 'wet' ? 'Bagnato' : 'Asciutto'} • Aderenza: <strong class="text-emerald-400">${gripVal}%</strong> • Top ${q.cutoff}
               </div>
             </div>
             <div class="flex gap-1">
@@ -1425,7 +1524,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
               const statusMap = {
                 BOX: 'Ai Box (Pronto)',
                 OUT_LAP: 'Giro di Lancio',
-                HOT_LAP: '🔥 Giro Veloce',
+                HOT_LAP: 'Giro Veloce',
                 IN_LAP: 'Rientro ai Box'
               };
               return `
@@ -1462,7 +1561,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
               </button>
             ` : `
               <button onclick="openPreRaceStrategy()" class="w-full py-3.5 rounded-xl bg-f1red hover:bg-red-600 font-extrabold text-sm text-white shadow-lg shadow-f1red/25">
-                PIANIFICA STRATEGIA PRE-GARA →
+                DOMENICA • STRATEGIA PRE-GARA →
               </button>
             `
           ) : ''}
@@ -1490,10 +1589,16 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
       stopAllLoops();
       const q = gameState.weekend.quali;
       const track = CALENDAR_2026[gameState.round - 1];
-      const active = q.entries.filter(e => !e.eliminated).sort((a, b) => a.bestTime - b.bestTime);
-      const elimQ2 = q.entries.filter(e => e.eliminatedIn === 'Q2').sort((a, b) => a.bestTime - b.bestTime);
-      const elimQ1 = q.entries.filter(e => e.eliminatedIn === 'Q1').sort((a, b) => a.bestTime - b.bestTime);
-      const gridOrder = [...active, ...elimQ2, ...elimQ1];
+      let gridOrder = [];
+      if (q && q.entries) {
+        const active = q.entries.filter(e => !e.eliminated).sort((a, b) => a.bestTime - b.bestTime);
+        const elimQ2 = q.entries.filter(e => e.eliminatedIn === 'Q2').sort((a, b) => a.bestTime - b.bestTime);
+        const elimQ1 = q.entries.filter(e => e.eliminatedIn === 'Q1').sort((a, b) => a.bestTime - b.bestTime);
+        gridOrder = [...active, ...elimQ2, ...elimQ1];
+        generatePostSessionPress('quali', { gridOrder });
+      } else {
+        gridOrder = [...gameState.drivers].sort((a, b) => b.ovr - a.ovr).map(d => ({ driverId: d.id }));
+      }
 
       const makePlanForDriver = (driverId) => {
         const gridIdx = gridOrder.findIndex(e => e.driverId === driverId);
@@ -1502,18 +1607,21 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         const pit1 = Math.max(5, Math.min(track.laps - 8, Math.round(track.laps / (stops + 1))));
         const pit2 = Math.max(pit1 + 6, Math.min(track.laps - 4, Math.round((track.laps * 2) / (stops + 1))));
         const pit3 = Math.max(pit2 + 5, Math.min(track.laps - 2, Math.round((track.laps * 3) / (stops + 1))));
+        const startTyre = track.tyreDeg === 3 ? 'M' : 'S';
+        const stintTyres = [startTyre === 'S' ? 'H' : 'H', 'M', 'S', 'H'];
         return {
           driverId,
           gridPos,
-          startTyre: track.tyreDeg === 3 ? 'M' : 'S',
+          startTyre,
           stopsCount: stops,
           pitLaps: [pit1, pit2, pit3],
-          stintTyres: ['M', 'H', 'S', 'H'],
+          stintTyres,
           initialPace: 'balanced'
         };
       };
 
       const userDrivers = getUserDrivers();
+      gameState.weekend.day = 'sunday';
       gameState.weekend.preRaceStrategy = {
         d1: userDrivers[0] ? makePlanForDriver(userDrivers[0].id) : null,
         d2: userDrivers[1] ? makePlanForDriver(userDrivers[1].id) : null
@@ -1548,6 +1656,14 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
       renderApp();
     }
 
+    function formatPlanSummaryText(startTyre, stopsCount, pitLaps, stintTyres) {
+      let txt = `${startTyre}`;
+      for (let i = 0; i < stopsCount; i++) {
+        txt += ` -> ${stintTyres[i] || 'H'} (G${pitLaps[i] || 15})`;
+      }
+      return txt;
+    }
+
     function renderPreRaceStrategyView() {
       const stratObj = gameState.weekend.preRaceStrategy;
       if (!stratObj) {
@@ -1562,6 +1678,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         const plan = stratObj[slot];
         if (!driver || !plan) return '';
         const mood = getMoodMeta(driver.mood);
+        const summary = formatPlanSummaryText(plan.startTyre, plan.stopsCount, plan.pitLaps, plan.stintTyres);
 
         return `
           <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-3">
@@ -1571,8 +1688,8 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
                 <h3 class="text-sm font-extrabold text-white inline ml-1">${driver.name}</h3>
                 <div class="text-[10px] mt-0.5 ${mood.color}">${mood.emoji} Umore ${mood.label} (${driver.mood ?? 65}/100)</div>
               </div>
-              <span class="text-[10px] font-mono-num px-2 py-1 rounded bg-f1bg border border-f1border text-slate-300">
-                ${plan.stopsCount} ${plan.stopsCount === 1 ? 'Sosta' : 'Soste'}
+              <span class="text-[10px] font-mono-num px-2 py-1 rounded bg-f1bg border border-f1border text-amber-300 font-bold">
+                ${summary}
               </span>
             </div>
 
@@ -1634,9 +1751,9 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
               <div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Ritmo Iniziale al Via</div>
               <div class="grid grid-cols-3 gap-1.5">
                 ${[
-                  { id: 'conserve', lbl: '🐢 Conservativo' },
-                  { id: 'balanced', lbl: '⚖️ Bilanciato' },
-                  { id: 'push', lbl: '🔥 Attacco' }
+                  { id: 'conserve', lbl: 'Conservativo' },
+                  { id: 'balanced', lbl: 'Bilanciato' },
+                  { id: 'push', lbl: 'Attacco' }
                 ].map(p => `
                   <button onclick="updateStrategyField('${slot}', 'initialPace', '${p.id}')" class="py-1.5 rounded-lg text-[11px] font-bold border ${plan.initialPace === p.id ? 'bg-sky-600 border-sky-400 text-white' : 'bg-f1bg border-f1border text-slate-400'}">
                     ${p.lbl}
@@ -1651,7 +1768,7 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
       return `
         <div class="p-4 space-y-3.5">
           <div class="bg-f1card border border-f1border rounded-2xl p-3.5">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Briefing Pre-Gara</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Domenica • Briefing Pre-Gara</span>
             <h2 class="text-lg font-extrabold text-white mt-0.5">Strategia ${track.flag} ${track.name} (${track.laps} Giri)</h2>
             <div class="flex items-center justify-between text-[11px] font-mono-num mt-2 bg-f1bg p-2 rounded-xl border border-f1border/70">
               <span class="text-slate-400">Durata Stint:</span>
@@ -1665,7 +1782,279 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
           ${renderDriverStrategyCard(userDrivers[1], 'd2')}
 
           <button onclick="launchRaceFromStrategy()" class="w-full py-4 rounded-xl bg-f1red hover:bg-red-600 font-extrabold text-sm text-white shadow-lg shadow-f1red/25">
-            🚦 CONFERMA STRATEGIA & SPEGNI I SEMAFORI →
+            SALVA PIANO & SPEGNI I SEMAFORI →
+          </button>
+        </div>
+      `;
+    }
+
+    function openLiveRaceStrategyScreen() {
+      const r = gameState.weekend?.race;
+      if (!r) return;
+      r.speed = 0;
+      stopAllLoops();
+      gameState.weekend.phase = 'live_strategy';
+      gameState.weekend.liveDraft = null;
+      saveGame();
+      renderApp();
+    }
+
+    function closeLiveRaceStrategyScreen(resume = true) {
+      const r = gameState.weekend?.race;
+      if (!r) return;
+      gameState.weekend.phase = 'race';
+      gameState.weekend.liveDraft = null;
+      if (resume && r.speed === 0) {
+        r.speed = 1;
+      }
+      saveGame();
+      renderApp();
+    }
+
+    function ensureLiveDraft() {
+      const r = gameState.weekend?.race;
+      if (!r) return null;
+      if (!gameState.weekend.liveDraft) {
+        const draft = {};
+        r.cars.filter(c => c.isUser).forEach(c => {
+          const remainingPlanned = Math.max(0, (c.plannedStops || 0) - (c.pitStops || 0));
+          const upcomingLaps = [];
+          const upcomingTyres = [];
+          for (let i = c.pitStops || 0; i < (c.plannedStops || 0); i++) {
+            upcomingLaps.push(c.pitLaps?.[i] || Math.min(r.totalLaps - 2, r.lap + 10));
+            upcomingTyres.push(c.stintTyres?.[i] || 'H');
+          }
+          draft[c.driverId] = {
+            remainingStops: remainingPlanned,
+            upcomingLaps,
+            upcomingTyres,
+            paceMode: c.paceMode
+          };
+        });
+        gameState.weekend.liveDraft = draft;
+      }
+      return gameState.weekend.liveDraft;
+    }
+
+    function setLiveDraftStops(driverId, count) {
+      const draft = ensureLiveDraft();
+      const r = gameState.weekend?.race;
+      if (!draft || !draft[driverId] || !r) return;
+      const n = Math.max(0, Math.min(3, parseInt(count, 10) || 0));
+      draft[driverId].remainingStops = n;
+      while (draft[driverId].upcomingLaps.length < n) {
+        const lastLap = draft[driverId].upcomingLaps[draft[driverId].upcomingLaps.length - 1] || r.lap;
+        draft[driverId].upcomingLaps.push(Math.min(r.totalLaps - 1, Math.max(r.lap + 2, lastLap + 12)));
+      }
+      while (draft[driverId].upcomingTyres.length < n) {
+        draft[driverId].upcomingTyres.push('H');
+      }
+      saveGame();
+      renderApp();
+    }
+
+    function setLiveDraftLap(driverId, idx, val) {
+      const draft = ensureLiveDraft();
+      const r = gameState.weekend?.race;
+      if (!draft || !draft[driverId] || !r) return;
+      const minLap = Math.min(r.totalLaps - 1, r.lap + 1);
+      draft[driverId].upcomingLaps[idx] = Math.max(minLap, Math.min(r.totalLaps - 1, parseInt(val, 10) || minLap));
+      saveGame();
+      renderApp();
+    }
+
+    function setLiveDraftTyre(driverId, idx, tyreCode) {
+      const draft = ensureLiveDraft();
+      if (!draft || !draft[driverId]) return;
+      draft[driverId].upcomingTyres[idx] = tyreCode;
+      saveGame();
+      renderApp();
+    }
+
+    function setLiveDraftPace(driverId, mode) {
+      const draft = ensureLiveDraft();
+      if (!draft || !draft[driverId]) return;
+      draft[driverId].paceMode = mode;
+      saveGame();
+      renderApp();
+    }
+
+    function applyLiveStrategyChanges(driverId) {
+      const draft = ensureLiveDraft();
+      const r = gameState.weekend?.race;
+      if (!draft || !draft[driverId] || !r) return;
+      const car = r.cars.find(c => c.driverId === driverId);
+      if (!car) return;
+
+      const dPlan = draft[driverId];
+      const alreadyDone = car.pitStops || 0;
+      const newLaps = [...(car.pitLaps || [])];
+      const newTyres = [...(car.stintTyres || [])];
+
+      for (let k = 0; k < dPlan.remainingStops; k++) {
+        newLaps[alreadyDone + k] = dPlan.upcomingLaps[k];
+        newTyres[alreadyDone + k] = dPlan.upcomingTyres[k];
+      }
+
+      car.plannedStops = alreadyDone + dPlan.remainingStops;
+      car.pitLaps = newLaps;
+      car.stintTyres = newTyres;
+      car.paceMode = dPlan.paceMode;
+
+      const summary = formatPlanSummaryText(car.tyre, dPlan.remainingStops, dPlan.upcomingLaps, dPlan.upcomingTyres);
+      r.logs.unshift(`G${r.lap} • Piano residuo ${car.code} aggiornato: ${summary}.`);
+      showToast(`Piano residuo salvato per ${car.code}!`, 'success');
+      saveGame();
+      renderApp();
+    }
+
+    function pitNowFromLiveStrategy(driverId, tyreCode) {
+      const r = gameState.weekend?.race;
+      if (!r) return;
+      const car = r.cars.find(c => c.driverId === driverId && !c.retired);
+      if (!car) return;
+
+      car.pitAnim = { mode: 'pit_in', t: 0, targetTyre: tyreCode };
+      const alreadyDone = car.pitStops || 0;
+      const remAfterThis = Math.max(0, (car.plannedStops || 0) - (alreadyDone + 1));
+      car.plannedStops = alreadyDone + 1 + remAfterThis;
+      car.stintTyres[alreadyDone] = tyreCode;
+      car.pitLaps[alreadyDone] = r.lap;
+
+      r.logs.unshift(`G${r.lap} • BOX IMMEDIATO per ${car.code} (${TYRE_COMPOUNDS[tyreCode].name}): scala il piano residuo.`);
+      gameState.weekend.liveDraft = null;
+      showToast(`${car.code} richiamato ai box questo giro (${TYRE_COMPOUNDS[tyreCode].short})!`, 'info');
+      saveGame();
+      renderApp();
+    }
+
+    function renderLiveRaceStrategyView() {
+      const r = gameState.weekend?.race;
+      if (!r) return '';
+      const draft = ensureLiveDraft();
+      const ordered = [...r.cars].filter(c => !c.retired).sort((a, b) => a.pos - b.pos);
+      const userCars = r.cars.filter(c => c.isUser).sort((a, b) => a.gridPos - b.gridPos);
+
+      return `
+        <div class="p-4 space-y-3.5">
+          <div class="bg-amber-950/50 border border-amber-400/60 rounded-2xl p-3.5 flex items-center justify-between gap-2">
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-wider text-amber-300">Gara in Pausa • Giro ${r.lap}/${r.totalLaps}</span>
+              <h2 class="text-base font-extrabold text-white">Strategia Live & Telemetria</h2>
+              <p class="text-[10px] text-slate-300 mt-0.5">Qui vedi il piano salvato e decidi se sovrascrivere le soste residue o richiamare subito ai box.</p>
+            </div>
+            <button onclick="closeLiveRaceStrategyScreen(true)" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold shrink-0">
+              ▶ RIPRENDI
+            </button>
+          </div>
+
+          ${userCars.map(car => {
+            const dPlan = draft?.[car.driverId] || { remainingStops: 0, upcomingLaps: [], upcomingTyres: [], paceMode: car.paceMode };
+            const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
+            const carAhead = ordered.find(x => x.pos === car.pos - 1);
+            const carBehind = ordered.find(x => x.pos === car.pos + 1);
+            const gapAhead = carAhead ? `+${Math.max(0.1, car.gapToLeader - carAhead.gapToLeader).toFixed(1)}s` : '-';
+            const gapBehind = carBehind ? `+${Math.max(0.1, carBehind.gapToLeader - car.gapToLeader).toFixed(1)}s` : '-';
+            const savedSummary = formatPlanSummaryText(car.tyre, dPlan.remainingStops, dPlan.upcomingLaps, dPlan.upcomingTyres);
+
+            return `
+              <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-3">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <span class="text-xs font-mono-num font-black text-amber-300">${car.retired ? 'RIT' : 'P' + car.pos}</span>
+                    <span class="text-sm font-extrabold text-white ml-1">${car.name}</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-extrabold font-mono-num" style="background:${comp.color}; color:${comp.text}">
+                    ${comp.short} • Usura ${Math.round(car.tyreWear)}%
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-1.5 text-center font-mono-num bg-f1bg p-2 rounded-xl border border-f1border/70 text-[10px]">
+                  <div><span class="text-slate-400 block">Soste Fatte</span><strong class="text-white">${car.pitStops}</strong></div>
+                  <div><span class="text-slate-400 block">Davanti</span><strong class="text-sky-300">${gapAhead}</strong></div>
+                  <div><span class="text-slate-400 block">Dietro</span><strong class="text-slate-200">${gapBehind}</strong></div>
+                </div>
+
+                <div class="text-[11px] font-mono-num bg-slate-900/90 px-2.5 py-1.5 rounded-xl border border-f1border/60 text-amber-300">
+                  Piano residuo attuale: <strong>${savedSummary}</strong>
+                </div>
+
+                ${!car.retired ? `
+                  <div>
+                    <div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Soste Ancora da Fare</div>
+                    <div class="grid grid-cols-4 gap-1">
+                      ${[0, 1, 2, 3].map(cnt => `
+                        <button onclick="setLiveDraftStops('${car.driverId}', ${cnt})" class="py-1 rounded-lg text-[11px] font-mono-num font-bold border ${dPlan.remainingStops === cnt ? 'bg-f1red border-f1red text-white' : 'bg-f1bg border-f1border text-slate-400'}">
+                          ${cnt} Pit
+                        </button>
+                      `).join('')}
+                    </div>
+                  </div>
+
+                  <div class="space-y-1.5">
+                    ${Array.from({ length: dPlan.remainingStops }).map((_, idx) => {
+                      const tKey = dPlan.upcomingTyres[idx] || 'H';
+                      return `
+                        <div class="flex items-center justify-between bg-f1bg p-2 rounded-xl border border-f1border/70">
+                          <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-bold text-amber-300">PROSSIMO PIT ${idx + 1}</span>
+                            <span class="text-[10px] text-slate-400">Giro</span>
+                            <input type="number" min="${Math.min(r.totalLaps - 1, r.lap + 1)}" max="${r.totalLaps - 1}" value="${dPlan.upcomingLaps[idx] || r.lap + 10}" onchange="setLiveDraftLap('${car.driverId}', ${idx}, this.value)" class="w-14 bg-f1card border border-f1border rounded-lg px-1.5 py-1 text-xs font-mono-num text-white text-center"/>
+                          </div>
+                          <div class="flex gap-1">
+                            ${['S', 'M', 'H', 'I', 'W'].map(tk => {
+                              const tc = TYRE_COMPOUNDS[tk];
+                              return `
+                                <button onclick="setLiveDraftTyre('${car.driverId}', ${idx}, '${tk}')" class="w-6 h-6 rounded-full text-[10px] font-extrabold border ${tKey === tk ? 'border-white scale-110' : 'border-transparent opacity-50'}" style="background:${tc.color}; color:${tc.text}">
+                                  ${tc.short}
+                                </button>
+                              `;
+                            }).join('')}
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+
+                  <div>
+                    <div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Ritmo Pilota</div>
+                    <div class="grid grid-cols-3 gap-1">
+                      ${[
+                        { id: 'conserve', lbl: 'Conservativo' },
+                        { id: 'balanced', lbl: 'Bilanciato' },
+                        { id: 'push', lbl: 'Attacco' }
+                      ].map(pm => `
+                        <button onclick="setLiveDraftPace('${car.driverId}', '${pm.id}')" class="py-1.5 rounded-lg text-[10px] font-bold border ${dPlan.paceMode === pm.id ? 'bg-sky-600 border-sky-400 text-white' : 'bg-f1bg border-f1border text-slate-400'}">
+                          ${pm.lbl}
+                        </button>
+                      `).join('')}
+                    </div>
+                  </div>
+
+                  <button onclick="applyLiveStrategyChanges('${car.driverId}')" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs">
+                    SALVA PIANO RESIDUO PER ${car.code}
+                  </button>
+
+                  <div class="pt-2 border-t border-f1border/60 flex items-center justify-between gap-1">
+                    <span class="text-[10px] font-bold text-f1red">PIT QUESTO GIRO:</span>
+                    <div class="flex gap-1">
+                      ${['S', 'M', 'H', 'I', 'W'].map(tk => {
+                        const tc = TYRE_COMPOUNDS[tk];
+                        return `
+                          <button onclick="pitNowFromLiveStrategy('${car.driverId}', '${tk}')" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold border border-white/25" style="background:${tc.color}; color:${tc.text}">
+                            ${tc.short}
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('')}
+
+          <button onclick="closeLiveRaceStrategyScreen(true)" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-extrabold text-sm text-white">
+            RIPRENDI LA GARA ORA →
           </button>
         </div>
       `;
@@ -1673,10 +2062,12 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
     function launchRaceFromStrategy() {
       stopAllLoops();
       const track = CALENDAR_2026[gameState.round - 1];
-      const q = gameState.weekend.quali;
-      const stratObj = gameState.weekend.preRaceStrategy;
+      const stratObj = gameState.weekend.preRaceStrategy || {};
       const userDrivers = getUserDrivers();
+      const d1 = userDrivers[0];
+      const d2 = userDrivers[1];
 
+      const q = gameState.weekend.quali;
       let gridOrder = [];
       if (q && q.entries) {
         const active = q.entries.filter(e => !e.eliminated).sort((a, b) => a.bestTime - b.bestTime);
@@ -1687,94 +2078,93 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         gridOrder = [...gameState.drivers].sort((a, b) => b.ovr - a.ovr).map(d => ({ driverId: d.id }));
       }
 
-      const initialWeather = q?.weather === 'wet' ? 'wet' : (Math.random() < track.rainChance * 0.45 ? 'damp' : 'dry');
+      const weather = q?.weather || (Math.random() < track.rainChance ? 'wet' : 'dry');
 
-      const cars = gridOrder.map((entry, idx) => {
-        const driver = gameState.drivers.find(d => d.id === entry.driverId) || gameState.drivers[idx];
+      const cars = gridOrder.map((gEntry, idx) => {
+        const driver = gameState.drivers.find(d => d.id === gEntry.driverId) || gameState.drivers[idx];
         const team = getTeam(driver.teamId);
-        const isUser = driver.teamId === gameState.userTeamId;
-        const slotKey = userDrivers[0]?.id === driver.id ? 'd1' : (userDrivers[1]?.id === driver.id ? 'd2' : null);
-        const userPlan = slotKey ? stratObj?.[slotKey] : null;
-        const fpSlot = slotKey ? gameState.weekend.fp?.[slotKey] : null;
+        const isUser = team.id === gameState.userTeamId;
+        const gridPos = idx + 1;
 
-        const startTyre = initialWeather === 'wet'
-          ? 'W'
-          : (initialWeather === 'damp'
-            ? 'I'
-            : (userPlan?.startTyre || (track.tyreDeg === 3 ? 'M' : 'S')));
+        let tyre = weather === 'wet' ? 'I' : (track.tyreDeg === 3 ? 'M' : 'S');
+        let paceMode = 'balanced';
+        let plannedStops = track.tyreDeg === 3 ? 2 : 1;
+        let pitLaps = [Math.round(track.laps * 0.42), Math.round(track.laps * 0.74), Math.round(track.laps * 0.90)];
+        let stintTyres = ['H', 'M', 'S', 'H'];
 
-        const plannedStops = userPlan
-          ? userPlan.stopsCount
-          : (track.tyreDeg === 3 ? 2 : (track.laps >= 68 ? 2 : 1));
+        if (isUser) {
+          const sObj = d1?.id === driver.id ? stratObj.d1 : (d2?.id === driver.id ? stratObj.d2 : null);
+          if (sObj) {
+            if (weather !== 'wet') tyre = sObj.startTyre || tyre;
+            paceMode = sObj.initialPace || 'balanced';
+            plannedStops = sObj.stopsCount ?? plannedStops;
+            pitLaps = [...(sObj.pitLaps || pitLaps)];
+            stintTyres = [...(sObj.stintTyres || stintTyres)];
+          }
+        } else {
+          if (weather !== 'wet') {
+            tyre = idx < 10 ? 'S' : (track.tyreDeg === 3 ? 'M' : 'H');
+          }
+          if (driver.trait === 'attacker') paceMode = 'push';
+          else if (driver.trait === 'tactician' || driver.trait === 'team_player') paceMode = 'conserve';
+        }
 
-        const pitLap1 = userPlan?.pitLaps?.[0] || Math.max(5, Math.min(track.laps - 7, Math.round(track.laps / (plannedStops + 1))));
-        const pitLap2 = userPlan?.pitLaps?.[1] || Math.max(pitLap1 + 6, Math.min(track.laps - 4, Math.round((track.laps * 2) / (plannedStops + 1))));
-        const pitLap3 = userPlan?.pitLaps?.[2] || Math.max(pitLap2 + 5, Math.min(track.laps - 2, Math.round((track.laps * 3) / (plannedStops + 1))));
-
+        const initialGap = Number((idx * 0.45).toFixed(2));
         return {
           driverId: driver.id,
           name: driver.name,
           code: driver.code,
           number: driver.number,
-          teamId: driver.teamId,
+          teamId: team.id,
           isUser,
-          gridPos: idx + 1,
-          pos: idx + 1,
+          gridPos,
+          pos: gridPos,
           lap: 1,
-          progress: Math.max(0.01, (1 - idx * 0.012 + 1) % 1),
-          gapToLeader: idx * 0.35,
-          lastLap: 0,
-          bestLap: 999,
-          tyre: startTyre,
+          progress: 0,
+          visualProgress: 0,
+          totalRaceTime: initialGap,
+          gapToLeader: initialGap,
+          lastLapTime: 0,
+          bestLapTime: 999,
+          tyre,
           tyreWear: 0,
-          pitStops: 0,
+          paceMode,
           plannedStops,
-          pitLaps: [pitLap1, pitLap2, pitLap3],
-          stintTyres: userPlan?.stintTyres || ['H', 'M', 'H', 'S'],
-          paceMode: isUser ? (userPlan?.initialPace || 'balanced') : 'balanced',
-          fpPlan: fpSlot?.plan || 'race',
-          confBonus: isUser ? ((fpSlot?.confidence || 45) / 100) : 0.65,
-          retired: false,
-          pitAnim: { mode: 'none', t: 0, targetTyre: null }
+          pitLaps,
+          stintTyres,
+          pitStops: 0,
+          pitAnim: null,
+          retired: false
         };
       });
 
-      const banner = initialWeather === 'wet'
-        ? { type: 'rain', title: 'PIOGGIA IN CORSO', detail: 'Asfalto bagnato al via: monitora mescole Intermedie e Wet.' }
-        : (initialWeather === 'damp'
-          ? { type: 'rain', title: 'ASFALTO UMIDO', detail: 'Possibile finestra per gomme Intermedie se l’umidità sale.' }
-          : null);
-
+      gameState.weekend.day = 'sunday';
       gameState.weekend.phase = 'race';
+      gameState.weekend.liveDraft = null;
       gameState.weekend.race = {
         lap: 1,
         totalLaps: track.laps,
-        weather: initialWeather,
-        safetyCar: 'NONE',
-        scLapsLeft: 0,
+        weather,
+        safetyCar: 'none',
         speed: 1,
-        radioOpen: false,
-        radioFilter: 'all',
-        alertBanner: banner,
+        fastestLap: { driverId: null, code: '-', time: 999 },
+        cars,
         logs: [
-          `Semafori spenti a ${track.name}! Meteo iniziale: ${initialWeather === 'wet' ? 'Bagnato' : initialWeather === 'damp' ? 'Umido' : 'Asciutto'}.`
-        ],
-        cars
+          `Semafori spenti a ${track.name} (${track.laps} giri)! Meteo: ${weather === 'wet' ? 'Bagnato' : 'Asciutto'}.`,
+          `Strategia pre-gara salvata e attiva: premi STRATEGIA per mettere in pausa e ispezionare/modificare il piano.`
+        ]
       };
 
       saveGame();
       renderApp();
     }
 
-    function dismissRaceAlert() {
-      if (!gameState?.weekend?.race) return;
-      gameState.weekend.race.alertBanner = null;
-      renderApp();
-    }
-
     function setRaceSpeed(spd) {
-      if (!gameState.weekend?.race) return;
-      gameState.weekend.race.speed = spd;
+      const r = gameState.weekend?.race;
+      if (!r) return;
+      r.speed = spd;
+      if (spd === 0) stopAllLoops();
+      else startRaceSmoothLoop();
       saveGame();
       renderApp();
     }
@@ -1785,458 +2175,207 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
       const car = r.cars.find(c => c.driverId === driverId && !c.retired);
       if (!car) return;
       car.paceMode = mode;
-      const lbl = mode === 'push' ? 'Attacco' : mode === 'conserve' ? 'Conservativo' : 'Bilanciato';
-      r.logs.unshift(`G${r.lap} • ${car.code}: ritmo impostato su ${lbl}.`);
       saveGame();
       renderApp();
     }
 
-    function orderPitStop(driverId, tyreCode) {
-      const r = gameState.weekend?.race;
-      if (!r) return;
-      const car = r.cars.find(c => c.driverId === driverId && !c.retired);
-      if (!car) return;
-      car.pitAnim = { mode: 'pit_in', t: 0, targetTyre: tyreCode };
-      r.logs.unshift(`G${r.lap} • BOX BOX per ${car.code} -> gomme ${TYRE_COMPOUNDS[tyreCode].name}!`);
-      saveGame();
-      renderApp();
-    }
+    function computeVisualRaceProgresses(cars) {
+      const active = cars.filter(c => !c.retired).sort((a, b) => a.pos - b.pos);
+      if (!active.length) return new Map();
+      const leader = active[0];
+      const map = new Map();
 
-    function toggleRaceRadio() {
-      if (!gameState.weekend?.race) return;
-      gameState.weekend.race.radioOpen = !gameState.weekend.race.radioOpen;
-      renderApp();
-    }
+      let prevVis = leader.progress || 0;
+      map.set(leader.driverId, prevVis);
 
-    function setRaceRadioFilter(flt) {
-      if (!gameState.weekend?.race) return;
-      gameState.weekend.race.radioFilter = flt;
-      renderApp();
-    }
-
-    function computeCarLapSeconds(car, race, track) {
-      const driver = gameState.drivers.find(d => d.id === car.driverId);
-      const team = getTeam(car.teamId);
-      const moodMeta = getMoodMeta(driver?.mood ?? 65);
-      const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
-      const carPerf = (team.aero * 0.40 + team.pu * 0.36 + team.chassis * 0.24);
-      const carDelta = (90 - carPerf) * 0.085;
-      const driverDelta = (90 - (driver?.pace ?? 82)) * 0.055;
-      const paceDelta = car.paceMode === 'push' ? -0.42 : (car.paceMode === 'conserve' ? 0.45 : 0);
-      const wearDelta = (car.tyreWear / 100) * 2.25;
-      const setupDelta = car.isUser ? -(car.confBonus * 0.35) - (car.fpPlan === 'race' ? 0.22 : 0) : -0.18;
-
-      let weatherDelta = 0;
-      if (race.weather === 'wet') {
-        if (comp.wet === 2) weatherDelta = -0.3;
-        else if (comp.wet === 1) weatherDelta = 0.6;
-        else weatherDelta = driver?.trait === 'wet_ace' ? 5.8 : 8.2;
-      } else if (race.weather === 'damp') {
-        if (comp.wet === 1) weatherDelta = -0.2;
-        else if (comp.wet === 2) weatherDelta = 1.8;
-        else weatherDelta = 1.4;
-      } else {
-        if (comp.wet > 0) weatherDelta = 3.8;
+      for (let i = 1; i < active.length; i++) {
+        const cur = active[i];
+        const gapSec = Math.max(0, (cur.gapToLeader || 0) - (leader.gapToLeader || 0));
+        const rawVis = (leader.progress || 0) - (gapSec * 0.011);
+        const minSeparation = 0.016;
+        const clampedVis = Math.min(rawVis, prevVis - minSeparation);
+        map.set(cur.driverId, clampedVis);
+        prevVis = clampedVis;
       }
-
-      const scDelta = race.safetyCar === 'SC' ? 14.0 : (race.safetyCar === 'VSC' ? 6.5 : 0);
-      const noise = (Math.random() - 0.5) * 0.32;
-      return Math.max(58.0, track.baseLap + carDelta + driverDelta + paceDelta + wearDelta + setupDelta + moodMeta.paceDelta + comp.paceBonus + weatherDelta + scDelta + noise);
+      return map;
     }
 
-    function tickRaceLap() {
+    function simulateRaceLapStep() {
       const r = gameState.weekend?.race;
       if (!r || gameState.weekend.phase !== 'race') return;
       const track = CALENDAR_2026[gameState.round - 1];
+      const degMult = (gameState.rules && gameState.rules.extraDegMultiplier) ? gameState.rules.extraDegMultiplier : 1.0;
 
-      if (r.safetyCar !== 'NONE') {
-        r.scLapsLeft -= 1;
-        if (r.scLapsLeft <= 0) {
-          const wasSC = r.safetyCar === 'SC';
-          r.safetyCar = 'NONE';
-          r.alertBanner = {
-            type: 'sc',
-            title: 'BANDIERA VERDE • GARA RIPRESA',
-            detail: wasSC ? 'Safety Car rientrata ai box: via libera al sorpasso!' : 'Virtual Safety Car terminata: ritmo pieno ristabilito.'
-          };
-          r.logs.unshift(`🟢 G${r.lap} • Bandiera verde! ${wasSC ? 'Safety Car rientrata.' : 'VSC terminata.'}`);
-        }
-      } else if (r.lap > 3 && r.lap < r.totalLaps - 2) {
-        const roll = Math.random();
-        if (roll < 0.045) {
-          r.safetyCar = 'VSC';
-          r.scLapsLeft = 2;
-          r.alertBanner = {
-            type: 'sc',
-            title: '⚠️ VIRTUAL SAFETY CAR (VSC)',
-            detail: 'Ritmo ridotto in pista: finestra pit stop vantaggiosa per risparmiare tempo.'
-          };
-          r.logs.unshift(`🟡 G${r.lap} • VIRTUAL SAFETY CAR in pista! Pit stop più economici.`);
-        } else if (roll < 0.075) {
-          r.safetyCar = 'SC';
-          r.scLapsLeft = 3;
-          r.alertBanner = {
-            type: 'sc',
-            title: '🚨 SAFETY CAR IN PISTA',
-            detail: 'Gruppo compattato dietro la Safety Car: pit stop strategici a rischio minimo!'
-          };
-          r.logs.unshift(`🚨 G${r.lap} • SAFETY CAR in pista! Gruppo compattato.`);
-        }
+      if (r.safetyCar === 'none' && Math.random() < 0.045) {
+        r.safetyCar = Math.random() < 0.55 ? 'VSC' : 'SC';
+        r.logs.unshift(`G${r.lap} • ${r.safetyCar === 'SC' ? 'SAFETY CAR in pista!' : 'VIRTUAL SAFETY CAR!'}`);
+      } else if (r.safetyCar !== 'none' && Math.random() < 0.34) {
+        r.logs.unshift(`G${r.lap} • Bandiera verde, ${r.safetyCar} rientrato.`);
+        r.safetyCar = 'none';
       }
 
-      if (Math.random() < track.rainChance * 0.085) {
-        if (r.weather === 'dry') {
-          r.weather = 'damp';
-          r.alertBanner = {
-            type: 'rain',
-            title: '🌧️ ARRIVA LA PIOGGIA • ASFALTO UMIDO',
-            detail: 'Gocce sul tracciato: valuta le gomme Intermedie (I) se la pista si bagna ulteriormente.'
-          };
-          r.logs.unshift(`🌧️ G${r.lap} • Meteo in cambiamento: asfalto umido su alcuni settori!`);
-        } else if (r.weather === 'damp') {
-          r.weather = 'wet';
-          r.alertBanner = {
-            type: 'rain',
-            title: '⛈️ PIOGGIA INTENSA • PISTA BAGNATA',
-            detail: 'Asfalto bagnato: mescole Intermedie o Wet obbligatorie per evitare crolli di prestazione!'
-          };
-          r.logs.unshift(`⛈️ G${r.lap} • Pioggia decisa sul circuito! Valuta gomme Intermedie o Wet.`);
-        }
-      } else if (r.weather !== 'dry' && Math.random() < 0.09) {
-        r.weather = r.weather === 'wet' ? 'damp' : 'dry';
-        r.alertBanner = {
-          type: 'rain',
-          title: r.weather === 'dry' ? '☀️ PISTA IN ASCIUGATURA (SLICK)' : '🌤️ PIOGGIA IN ATTENUAZIONE',
-          detail: r.weather === 'dry' ? 'Traiettoria asciutta: le gomme slick tornano rapidamente più veloci.' : 'Pioggia in calo: asfalto ancora umido.'
-        };
-        r.logs.unshift(`🌤️ G${r.lap} • Il meteo migliora: ${r.weather === 'dry' ? 'pista asciutta' : 'asfalto umido'}.`);
+      if (track.rainChance > 0 && Math.random() < track.rainChance * 0.14) {
+        r.weather = r.weather === 'wet' ? 'dry' : 'wet';
+        r.logs.unshift(`G${r.lap} • Cambio meteo: pista ora ${r.weather === 'wet' ? 'BAGNATA' : 'ASCIUTTA'}!`);
       }
 
       const activeCars = r.cars.filter(c => !c.retired);
-      const leaderBefore = [...activeCars].sort((a, b) => a.gapToLeader - b.gapToLeader)[0];
-      const leaderLapSec = leaderBefore ? computeCarLapSeconds(leaderBefore, r, track) : track.baseLap;
 
       activeCars.forEach(car => {
         const driver = gameState.drivers.find(d => d.id === car.driverId);
         const team = getTeam(car.teamId);
-        const moodMeta = getMoodMeta(driver?.mood ?? 65);
+        const moodMeta = getMoodMeta(driver.mood ?? 65);
         const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
-        const trackDegMult = track.tyreDeg === 3 ? 1.24 : track.tyreDeg === 2 ? 1.0 : 0.84;
-        const ruleDegMult = gameState.rules?.extraDegMultiplier || 1.0;
-        const paceDegMult = car.paceMode === 'push' ? 1.32 : (car.paceMode === 'conserve' ? 0.72 : 1.0);
-        const traitDegMult = driver?.trait === 'attacker' ? 1.08 : (driver?.trait === 'tactician' ? 0.92 : 1.0);
-        const mgmtFactor = Math.max(0.75, 1.15 - ((driver?.tyreMgmt ?? 82) - 70) * 0.004);
-        const fpTyreFactor = car.isUser && car.fpPlan === 'tyre' ? 0.86 : 1.0;
 
-        car.tyreWear = Math.min(100, car.tyreWear + comp.degRate * trackDegMult * ruleDegMult * paceDegMult * traitDegMult * mgmtFactor * fpTyreFactor * moodMeta.degMult);
-
-        if (!car.isUser && car.pitAnim.mode === 'none') {
-          const nextStopIdx = car.pitStops;
-          const scheduledLap = car.pitLaps?.[nextStopIdx];
-          const needWetSwap = (r.weather === 'wet' && comp.wet === 0) || (r.weather === 'dry' && comp.wet > 0);
-          if (needWetSwap || car.tyreWear >= 76 || (scheduledLap && r.lap >= scheduledLap && car.pitStops < car.plannedStops)) {
-            let nextTyre = car.stintTyres?.[nextStopIdx] || (car.tyre === 'S' ? 'M' : 'H');
-            if (r.weather === 'wet') nextTyre = 'I';
-            else if (r.weather === 'dry' && TYRE_COMPOUNDS[nextTyre]?.wet > 0) nextTyre = car.tyreWear > 55 ? 'H' : 'M';
-            car.pitAnim = { mode: 'pit_in', t: 0, targetTyre: nextTyre };
-          }
-        }
-
-        if (car.pitAnim.mode === 'pit_in') {
-          car.pitStops += 1;
-          car.tyre = car.pitAnim.targetTyre || 'H';
-          car.tyreWear = 0;
-          car.pitAnim = { mode: 'pit_out', t: 0.25, targetTyre: null };
-          const pitLoss = r.safetyCar === 'SC' ? 11.5 : (r.safetyCar === 'VSC' ? 16.0 : 21.5);
-          car.gapToLeader += pitLoss;
-          if (car.isUser) {
-            r.logs.unshift(`🔧 G${r.lap} • ${car.code} monta gomme ${TYRE_COMPOUNDS[car.tyre].name} (Sosta #${car.pitStops}).`);
-          }
-        } else if (car.pitAnim.mode === 'pit_out') {
-          car.pitAnim = { mode: 'none', t: 0, targetTyre: null };
-        }
-
-        const lapSec = computeCarLapSeconds(car, r, track);
-        car.lastLap = lapSec;
-        if (lapSec < car.bestLap) car.bestLap = lapSec;
-
-        if (car.driverId !== leaderBefore?.driverId) {
-          const deltaVsLeader = (lapSec - leaderLapSec) * (r.safetyCar === 'SC' ? 0.25 : 1.0);
-          car.gapToLeader = Math.max(0.2, car.gapToLeader + deltaVsLeader);
-        } else {
-          car.gapToLeader = 0;
-        }
-
-        if (Math.random() < 0.0032 * (110 - (team.rel ?? 82)) * 0.045) {
+        const relPerf = team.rel;
+        const paceFactor = car.paceMode === 'push' ? 1.25 : (car.paceMode === 'conserve' ? 0.78 : 1.0);
+        const relPenalty = (100 - relPerf) * 0.0007 * paceFactor;
+        if (car.lap > 2 && Math.random() < 0.004 + relPenalty) {
           car.retired = true;
-          r.logs.unshift(`💥 G${r.lap} • RITIRO per ${car.code} (${team.name}) per problema tecnico!`);
-          if (car.isUser) {
-            adjustDriverMood(car.driverId, -6, 'Ritiro tecnico in gara');
+          r.logs.unshift(`G${r.lap} • RITIRO per ${car.name} (${team.name})!`);
+          return;
+        }
+
+        const carPerf = (team.aero * 0.40 + team.pu * 0.36 + team.chassis * 0.24);
+        const carDelta = (90 - carPerf) * 0.075;
+        const driverDelta = (90 - (driver.pace * 0.6 + driver.cons * 0.4)) * 0.055;
+        const roleBonus = driver.role === 'lead' ? -0.08 : (driver.role === 'support' ? 0.06 : 0);
+        const paceDelta = car.paceMode === 'push' ? -0.35 : (car.paceMode === 'conserve' ? 0.32 : 0);
+        const wearPenalty = Math.max(0, (car.tyreWear - 45) * 0.022);
+
+        let weatherPenalty = 0;
+        if (r.weather === 'wet' && comp.wet === 0) weatherPenalty = driver.trait === 'wet_ace' ? 5.8 : 8.2;
+        if (r.weather === 'dry' && comp.wet > 0) weatherPenalty = 4.0;
+
+        let scMult = 1.0;
+        if (r.safetyCar === 'SC') scMult = 1.32;
+        else if (r.safetyCar === 'VSC') scMult = 1.16;
+
+        const rawLapTime = (track.baseLap + carDelta + driverDelta + roleBonus + paceDelta + moodMeta.paceDelta + comp.paceBonus + wearPenalty + weatherPenalty + (Math.random() - 0.5) * 0.45) * scMult;
+        const lapTime = Math.max(55, Number(rawLapTime.toFixed(3)));
+        car.lastLapTime = lapTime;
+        if (lapTime < car.bestLapTime) car.bestLapTime = lapTime;
+        if (r.safetyCar === 'none' && lapTime < r.fastestLap.time) {
+          r.fastestLap = { driverId: car.driverId, code: car.code, time: lapTime };
+        }
+
+        car.totalRaceTime = Number((car.totalRaceTime + lapTime).toFixed(3));
+        car.lap += 1;
+
+        const traitDegMod = driver.trait === 'attacker' ? 1.12 : (driver.trait === 'tactician' ? 0.90 : 1.0);
+        const tyreSkillMod = Math.max(0.75, 1.15 - ((driver.tyreMgmt ?? 82) - 70) * 0.008);
+        const trackDegMult = track.tyreDeg === 3 ? 1.24 : (track.tyreDeg === 2 ? 1.0 : 0.84);
+        const wearGain = comp.degRate * trackDegMult * degMult * paceFactor * moodMeta.degMult * traitDegMod * tyreSkillMod * (r.safetyCar !== 'none' ? 0.45 : 1.0);
+        car.tyreWear = Math.min(100, Number((car.tyreWear + wearGain).toFixed(1)));
+
+        const wantsPitNow = car.pitAnim?.mode === 'pit_in';
+        const hasScheduledStop = (car.pitStops || 0) < (car.plannedStops || 0);
+        const scheduledLap = car.pitLaps?.[car.pitStops || 0] || 999;
+        const dueByPlan = hasScheduledStop && car.lap >= scheduledLap;
+        const emergencyWear = !car.isUser && car.tyreWear >= 82 && car.lap < r.totalLaps - 2;
+        const emergencyWeather = !car.isUser && ((r.weather === 'wet' && comp.wet === 0) || (r.weather === 'dry' && comp.wet > 0)) && car.lap < r.totalLaps - 1;
+
+        if ((wantsPitNow || dueByPlan || emergencyWear || emergencyWeather) && car.lap < r.totalLaps) {
+          car.pitStops = (car.pitStops || 0) + 1;
+          car.totalRaceTime = Number((car.totalRaceTime + (r.safetyCar === 'SC' ? 14.5 : 21.5)).toFixed(3));
+          car.tyreWear = 0;
+
+          let nextTyre = car.pitAnim?.targetTyre || car.stintTyres?.[car.pitStops - 1] || 'H';
+          if (!car.pitAnim?.targetTyre) {
+            if (r.weather === 'wet') nextTyre = 'I';
+            else if (!car.isUser) {
+              const remLaps = r.totalLaps - car.lap;
+              nextTyre = remLaps > 22 ? 'H' : (remLaps > 11 ? 'M' : 'S');
+            }
           }
+          car.tyre = nextTyre;
+          car.pitAnim = { mode: 'pit_out', t: 0 };
+          r.logs.unshift(`G${car.lap} • Pit #${car.pitStops} per ${car.code} -> gomme ${TYRE_COMPOUNDS[nextTyre].name} (${dueByPlan ? 'da piano' : 'box'}).`);
         }
       });
 
-      const remaining = r.cars.filter(c => !c.retired);
-      if (remaining.length > 0) {
-        remaining.sort((a, b) => a.gapToLeader - b.gapToLeader);
-        const minGap = remaining[0].gapToLeader;
-        remaining.forEach((c, idx) => {
-          c.gapToLeader = Number((c.gapToLeader - minGap).toFixed(2));
-          c.pos = idx + 1;
-        });
-      }
+      const stillRunning = r.cars.filter(c => !c.retired).sort((a, b) => {
+        if (b.lap !== a.lap) return b.lap - a.lap;
+        return a.totalRaceTime - b.totalRaceTime;
+      });
+      const leaderTime = stillRunning[0]?.totalRaceTime || 0;
+      stillRunning.forEach((c, i) => {
+        c.pos = i + 1;
+        c.gapToLeader = Number(Math.max(0, c.totalRaceTime - leaderTime).toFixed(1));
+      });
 
-      const uCars = r.cars.filter(c => c.isUser && !c.retired);
-      if (uCars.length === 2 && Math.abs(uCars[0].gapToLeader - uCars[1].gapToLeader) < 0.8 && r.lap > 4) {
-        bumpRivalry(uCars[0].driverId, uCars[1].driverId, 1.5, `Ruota a ruota in casa ${getUserTeam().name}`);
-      }
+      const currentMinLap = Math.min(...stillRunning.map(c => c.lap));
+      r.lap = Math.min(r.totalLaps, currentMinLap);
 
-      if (r.lap >= r.totalLaps) {
-        finishRaceAndSeason();
-        return;
+      if (currentMinLap > r.totalLaps) {
+        finishRaceAndAwardPoints();
       }
-
-      r.lap += 1;
-      saveGame();
-      renderApp();
     }
 
     function startRaceSmoothLoop() {
       stopAllLoops();
       const r = gameState?.weekend?.race;
-      if (!r || gameState.weekend.phase !== 'race') return;
+      if (!r || gameState.weekend.phase !== 'race' || r.speed === 0) return;
 
-      const track = CALENDAR_2026[gameState.round - 1];
-      syncTrackCarPositions('fm-race-svg');
       lastAnimTimestamp = performance.now();
-
       const animateRace = (now) => {
         const dt = Math.min(0.1, (now - lastAnimTimestamp) / 1000);
         lastAnimTimestamp = now;
 
         const curR = gameState?.weekend?.race;
         if (curR && curR.speed > 0 && gameState.weekend.phase === 'race') {
-          const activeCars = curR.cars.filter(c => !c.retired).sort((a, b) => a.pos - b.pos);
-          const leader = activeCars[0];
-          const lapDurationSimSec = Math.max(1.2, 6.2 / curR.speed);
-          const dProg = dt / lapDurationSimSec;
+          const lapAdv = dt * curR.speed * 0.22;
+          let completedLapTriggered = false;
 
-          if (leader) {
-            leader.progress = (((leader.progress || 0) + dProg) % 1 + 1) % 1;
-            const visualLapSec = Math.max(55, track.baseLap);
-            const scVisualFactor = curR.safetyCar === 'SC' ? 0.25 : 1.0;
-
-            activeCars.forEach(car => {
-              const dot = document.getElementById(`race-dot-${car.driverId}`);
-              if (car.pitAnim?.mode === 'pit_in' || car.pitAnim?.mode === 'pit_out') {
-                car.pitAnim.t = Math.min(1, (car.pitAnim.t || 0) + dt * 1.4);
-                const pt = getPitLaneCoord(car);
-                if (dot && pt) {
-                  dot.setAttribute('data-pit-mode', car.pitAnim.mode);
-                  dot.setAttribute('cx', pt.x.toFixed(1));
-                  dot.setAttribute('cy', pt.y.toFixed(1));
-                }
-              } else {
-                if (dot) dot.setAttribute('data-pit-mode', 'none');
-                if (car.driverId === leader.driverId) {
-                  car.progress = leader.progress;
-                } else {
-                  const cappedGapSec = Math.min(car.gapToLeader || 0, visualLapSec * 0.52) * scVisualFactor;
-                  const lapLag = cappedGapSec / visualLapSec;
-                  car.progress = (((leader.progress - lapLag) % 1) + 1) % 1;
-                }
-                if (dot) dot.setAttribute('data-track-progress', car.progress.toFixed(4));
+          curR.cars.forEach(c => {
+            if (c.retired) return;
+            c.progress = (c.progress || 0) + lapAdv;
+            if (c.pitAnim) {
+              c.pitAnim.t = Math.min(1, (c.pitAnim.t || 0) + dt * curR.speed * 0.75);
+              if (c.pitAnim.t >= 1 && c.pitAnim.mode === 'pit_out') {
+                c.pitAnim = null;
               }
-            });
-            syncTrackCarPositions('fm-race-svg');
+            }
+            if (c.progress >= 1) {
+              c.progress -= 1;
+              if (c.isUser || c.pos <= 3) completedLapTriggered = true;
+            }
+          });
+
+          const visMap = computeVisualRaceProgresses(curR.cars);
+          curR.cars.forEach(c => {
+            if (c.retired) return;
+            const vp = visMap.get(c.driverId) ?? c.progress;
+            c.visualProgress = vp;
+
+            const pitCoords = getPitLaneCoord(c);
+            const dot = document.getElementById(`race-dot-${c.driverId}`);
+            if (dot) {
+              if (pitCoords) {
+                dot.setAttribute('data-pit-mode', c.pitAnim.mode);
+                dot.setAttribute('cx', pitCoords.x.toFixed(1));
+                dot.setAttribute('cy', pitCoords.y.toFixed(1));
+              } else {
+                dot.setAttribute('data-pit-mode', 'none');
+                dot.setAttribute('data-track-progress', vp.toFixed(4));
+              }
+            }
+          });
+          syncTrackCarPositions('fm-race-svg');
+
+          if (completedLapTriggered) {
+            simulateRaceLapStep();
+            saveGame();
+            renderApp();
+            return;
           }
         }
-
         animFrameId = requestAnimationFrame(animateRace);
       };
       animFrameId = requestAnimationFrame(animateRace);
-
-      const ms = r.speed > 0 ? Math.max(220, 4800 / r.speed) : 2000;
-      simTimer = setInterval(() => {
-        if (gameState?.weekend?.race && gameState.weekend.race.speed > 0 && gameState.weekend.phase === 'race') {
-          tickRaceLap();
-        }
-      }, ms);
     }
 
     function renderRaceView() {
-      const r = gameState.weekend.race;
-      const track = CALENDAR_2026[gameState.round - 1];
-      const orderedCars = [...r.cars].sort((a, b) => {
-        if (a.retired && !b.retired) return 1;
-        if (!a.retired && b.retired) return -1;
-        return a.pos - b.pos;
-      });
-      const leader = orderedCars.find(c => !c.retired) || orderedCars[0];
-      const userCarsFixed = r.cars.filter(c => c.isUser).sort((a, b) => a.gridPos - b.gridPos);
-
-      const dotsHtml = orderedCars.filter(c => !c.retired).map(c => {
-        const t = getTeam(c.teamId);
-        const mode = c.pitAnim?.mode || 'none';
-        const pitPt = (mode === 'pit_in' || mode === 'pit_out') ? getPitLaneCoord(c) : null;
-        return `<circle id="race-dot-${c.driverId}" cx="${pitPt ? pitPt.x.toFixed(1) : '150'}" cy="${pitPt ? pitPt.y.toFixed(1) : '130'}" r="${c.isUser ? 5.2 : 3.6}" fill="${t.color}" stroke="${c.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.2" data-pit-mode="${mode}" data-track-progress="${(c.progress || 0).toFixed(4)}"/>`;
-      }).join('');
-
-      const weatherBadge = r.weather === 'wet'
-        ? '<span class="px-2 py-0.5 rounded bg-blue-600/30 border border-blue-400/50 text-blue-200 text-[10px] font-bold">⛈️ BAGNATO</span>'
-        : (r.weather === 'damp'
-          ? '<span class="px-2 py-0.5 rounded bg-emerald-600/30 border border-emerald-400/50 text-emerald-200 text-[10px] font-bold">🌧️ UMIDO</span>'
-          : '<span class="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-amber-200 text-[10px] font-bold">☀️ ASCIUTTO</span>');
-
-      const scBadge = r.safetyCar === 'SC'
-        ? '<span class="px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-extrabold animate-pulse">🚨 SAFETY CAR</span>'
-        : (r.safetyCar === 'VSC'
-          ? '<span class="px-2 py-0.5 rounded bg-amber-500 text-black text-[10px] font-extrabold">⚠️ VSC</span>'
-          : '');
-
-      const alertBannerHtml = r.alertBanner ? `
-        <div class="p-3 rounded-2xl border-2 flex items-start justify-between gap-2 shadow-lg ${r.alertBanner.type === 'rain' ? 'bg-sky-950/90 border-sky-400 text-sky-100' : 'bg-amber-950/90 border-amber-400 text-amber-100'}">
-          <div>
-            <div class="text-xs font-black uppercase tracking-wide">${r.alertBanner.title}</div>
-            <div class="text-[11px] opacity-95 mt-0.5 leading-snug">${r.alertBanner.detail}</div>
-          </div>
-          <button onclick="dismissRaceAlert()" class="px-2 py-1 rounded-lg bg-black/35 text-[10px] font-bold shrink-0">OK</button>
-        </div>
-      ` : '';
-
-      const radioFilter = r.radioFilter || 'all';
-      const filteredLogs = r.logs.filter(line => {
-        if (radioFilter === 'alert') return line.includes('🌧️') || line.includes('⛈️') || line.includes('🌤️') || line.includes('SAFETY CAR') || line.includes('VSC') || line.includes('Bandiera verde');
-        if (radioFilter === 'team') return userCarsFixed.some(uc => line.includes(uc.code));
-        return true;
-      });
-
-      return `
-        <div class="p-3.5 space-y-3">
-          <div class="bg-f1card border border-f1border rounded-2xl p-3 flex items-center justify-between gap-2">
-            <div>
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="text-xs font-mono-num font-black text-white">GIRO ${r.lap}/${r.totalLaps}</span>
-                ${weatherBadge}
-                ${scBadge}
-              </div>
-              <div class="text-[10px] text-slate-400 mt-0.5">${track.flag} ${track.name} • Leader: <strong class="text-white">${leader?.code || '-'}</strong></div>
-            </div>
-            <div class="flex items-center gap-1">
-              ${[0, 1, 2, 4, 8].map(s => `
-                <button onclick="setRaceSpeed(${s})" class="px-2 py-1.5 rounded-lg text-[10px] font-mono-num font-bold ${r.speed === s ? 'bg-f1red text-white' : 'bg-f1bg text-slate-400 border border-f1border'}">
-                  ${s === 0 ? '⏸' : s + 'x'}
-                </button>
-              `).join('')}
-              <button onclick="toggleRaceRadio()" class="px-2 py-1.5 rounded-lg text-[10px] font-bold bg-slate-800 text-amber-300 border border-f1border">
-                📻
-              </button>
-            </div>
-          </div>
-
-          ${alertBannerHtml}
-
-          ${r.radioOpen ? `
-            <div class="bg-f1card border border-amber-500/40 rounded-2xl p-2.5 space-y-2 max-h-40 overflow-y-auto no-scrollbar">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold uppercase text-amber-300">Radio & Notizie Gara</span>
-                <div class="flex gap-1">
-                  ${[
-                    { id: 'all', lbl: 'Tutti' },
-                    { id: 'alert', lbl: 'Meteo/SC' },
-                    { id: 'team', lbl: 'Box' }
-                  ].map(f => `
-                    <button onclick="setRaceRadioFilter('${f.id}')" class="px-1.5 py-0.5 rounded text-[9px] font-bold ${radioFilter === f.id ? 'bg-amber-400 text-black' : 'bg-f1bg text-slate-400'}">${f.lbl}</button>
-                  `).join('')}
-                </div>
-              </div>
-              ${filteredLogs.slice(0, 12).map(l => `<div class="text-[11px] text-slate-200 border-b border-f1border/40 pb-1">${l}</div>`).join('')}
-            </div>
-          ` : ''}
-
-          ${buildCircuitSvgMarkup(track, dotsHtml, 'h-40', 'fm-race-svg')}
-
-          <div class="space-y-2">
-            ${userCarsFixed.map((car, idx) => {
-              const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
-              const pitQueued = car.pitAnim?.mode === 'pit_in' || car.pitAnim?.mode === 'pit_out';
-              return `
-                <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-2">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <span class="text-[10px] font-mono-num px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 mr-1">BOX ${idx + 1}</span>
-                      <span class="text-xs font-mono-num font-black text-amber-300">${car.retired ? 'RIT' : 'P' + car.pos}</span>
-                      <span class="text-sm font-extrabold text-white ml-1">${car.name}</span>
-                    </div>
-                    <div class="flex items-center gap-1.5 font-mono-num text-[11px]">
-                      <span class="px-1.5 py-0.5 rounded font-extrabold" style="background:${comp.color}; color:${comp.text}">${comp.short} ${Math.round(car.tyreWear)}%</span>
-                      <span class="text-slate-300">Pit:${car.pitStops}</span>
-                    </div>
-                  </div>
-
-                  ${!car.retired ? `
-                    <div class="grid grid-cols-3 gap-1">
-                      ${[
-                        { id: 'conserve', lbl: '🐢 Cons.' },
-                        { id: 'balanced', lbl: '⚖️ Bilanc.' },
-                        { id: 'push', lbl: '🔥 Push' }
-                      ].map(pm => `
-                        <button onclick="setRacePace('${car.driverId}', '${pm.id}')" class="py-1 rounded-lg text-[10px] font-bold border ${car.paceMode === pm.id ? 'bg-sky-600 border-sky-400 text-white' : 'bg-f1bg border-f1border text-slate-400'}">
-                          ${pm.lbl}
-                        </button>
-                      `).join('')}
-                    </div>
-
-                    <div class="flex items-center justify-between gap-1 pt-1 border-t border-f1border/50">
-                      <span class="text-[10px] font-bold text-slate-400">${pitQueued ? '🔧 AI BOX...' : 'PIT:'}</span>
-                      <div class="flex items-center gap-1">
-                        ${['S', 'M', 'H', 'I', 'W'].map(tk => {
-                          const tc = TYRE_COMPOUNDS[tk];
-                          return `
-                            <button onclick="orderPitStop('${car.driverId}', '${tk}')" ${pitQueued ? 'disabled' : ''} class="px-2 py-1 rounded-lg text-[10px] font-extrabold border border-white/20 active:scale-95" style="background:${tc.color}; color:${tc.text}">
-                              ${tc.short}
-                            </button>
-                          `;
-                        }).join('')}
-                      </div>
-                    </div>
-                  ` : ''}
-                </div>
-              `;
-            }).join('')}
-          </div>
-
-          <div class="bg-f1card border border-f1border rounded-2xl p-2.5 space-y-1">
-            <div class="flex items-center justify-between text-[10px] font-bold uppercase text-slate-400 px-1.5 pb-1 border-b border-f1border/60">
-              <span>Classifica Live (22)</span>
-              <span>Gap / Ultimo Giro</span>
-            </div>
-            ${orderedCars.map((c, idx) => {
-              const tm = getTeam(c.teamId);
-              const tc = TYRE_COMPOUNDS[c.tyre] || TYRE_COMPOUNDS.M;
-              const gapLabel = c.retired ? 'RIT' : (idx === 0 ? 'LEADER' : `+${(c.gapToLeader || 0).toFixed(1)}s`);
-              return `
-                <div class="flex items-center justify-between text-[11px] px-1.5 py-1 rounded-lg ${c.isUser ? 'bg-slate-800/90 font-bold text-white' : 'text-slate-300'}">
-                  <div class="flex items-center gap-1.5 min-w-0">
-                    <span class="font-mono-num w-4 text-slate-400">${c.retired ? '-' : idx + 1}</span>
-                    <span class="w-2 h-2 rounded-full shrink-0" style="background:${tm.color}"></span>
-                    <span class="font-extrabold">${c.code}</span>
-                    <span class="px-1 rounded text-[9px] font-extrabold" style="background:${tc.color}; color:${tc.text}">${tc.short}</span>
-                  </div>
-                  <div class="flex items-center gap-2 font-mono-num text-[10px]">
-                    <span class="text-slate-400">${gapLabel}</span>
-                    <span class="text-amber-300">${formatLapTime(c.lastLap)}</span>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-      `;
-    }
-
-    function finishRaceAndSeason() {
-      stopAllLoops();
       const r = gameState.weekend.race;
       const track = CALENDAR_2026[gameState.round - 1];
       const ordered = [...r.cars].sort((a, b) => {
@@ -2244,176 +2383,323 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
         if (!a.retired && b.retired) return -1;
         return a.pos - b.pos;
       });
+      const userCars = r.cars.filter(c => c.isUser).sort((a, b) => a.gridPos - b.gridPos);
+      const visMap = computeVisualRaceProgresses(r.cars);
 
-      const ptsTable = gameState.rules?.pointsTop12
-        ? [25, 18, 15, 12, 10, 8, 6, 5, 4, 3, 2, 1]
-        : [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
-
-      const classification = ordered.map((c, idx) => {
-        const drv = gameState.drivers.find(d => d.id === c.driverId);
-        const tm = getTeam(c.teamId);
-        const pts = !c.retired && idx < ptsTable.length ? ptsTable[idx] : 0;
-
-        if (drv) {
-          drv.points = (drv.points || 0) + pts;
-          if (!c.retired && idx === 0) drv.wins = (drv.wins || 0) + 1;
-          if (!c.retired && idx < 3) drv.podiums = (drv.podiums || 0) + 1;
-
-          if (c.isUser) {
-            if (!c.retired && idx < 3) adjustDriverMood(drv.id, 8, `Podio a ${track.name} (P${idx + 1})`);
-            else if (!c.retired && idx < 10) adjustDriverMood(drv.id, 3, `A punti a ${track.name} (P${idx + 1})`);
-            else if (!c.retired) adjustDriverMood(drv.id, -3, `Gara difficile fuori dai punti (P${idx + 1})`);
-          }
-        }
-        if (tm) {
-          tm.points = (tm.points || 0) + pts;
-          if (!c.retired && idx === 0) tm.wins = (tm.wins || 0) + 1;
-          if (!c.retired && idx < 3) tm.podiums = (tm.podiums || 0) + 1;
-        }
-
-        return {
-          pos: c.retired ? 'RIT' : idx + 1,
-          driverId: c.driverId,
-          name: c.name,
-          code: c.code,
-          teamId: c.teamId,
-          isUser: c.isUser,
-          pts,
-          bestLap: c.bestLap,
-          pitStops: c.pitStops
-        };
-      });
-
-      const winner = classification[0];
-      if (winner) {
-        pushMediaQuote('Stampa', `${winner.name} trionfa nel GP di ${track.name} con un passo impeccabile.`);
-      }
-
-      gameState.weekend.phase = 'summary';
-      gameState.weekend.results = {
-        round: gameState.round,
-        trackName: track.name,
-        classification
-      };
-
-      saveGame();
-      renderApp();
-    }
-
-    function nextRoundOrEndSeason() {
-      stopAllLoops();
-      if (gameState.round < CALENDAR_2026.length) {
-        gameState.round += 1;
-        gameState.weekend = initWeekendState(gameState.round, gameState.userTeamId, gameState.drivers);
-        generatePaddockPressForRound(gameState.round);
-        gameState.activeTab = 'hub';
-        saveGame();
-        renderApp();
-      } else {
-        applyEndOfSeasonProgression();
-      }
-    }
-
-    function applyEndOfSeasonProgression() {
-      const sortedTeams = [...gameState.teams].sort((a, b) => b.points - a.points);
-      const userRank = sortedTeams.findIndex(t => t.id === gameState.userTeamId) + 1;
-      const userTeam = getUserTeam();
-      const prize = Math.max(22, (12 - userRank) * 6.5);
-      userTeam.budget = Number((userTeam.budget + prize).toFixed(1));
-
-      gameState.drivers.forEach(d => {
-        d.age += 1;
-        const pot = d.potential ?? d.ovr;
-        const pointsFactor = Math.min(8, Math.floor((d.points || 0) / 45));
-        const moodFactor = ((d.mood ?? 65) - 65) / 25;
-
-        if (d.age <= 26) {
-          d.potential = Math.min(99, pot + Math.max(0, Math.round(pointsFactor * 0.4 + moodFactor)));
-          if (d.ovr < d.potential) {
-            const growth = Math.max(0, Math.min(3, Math.round(1 + pointsFactor * 0.25 + moodFactor * 0.5)));
-            d.ovr = Math.min(d.potential, d.ovr + growth);
-            d.pace = Math.min(99, d.pace + growth);
-            d.cons = Math.min(99, d.cons + Math.max(0, growth - 1));
-          }
-        } else if (d.age >= 35) {
-          d.potential = Math.max(d.ovr - 2, pot - 1);
-          const decline = d.age >= 39 ? 2 : 1;
-          d.ovr = Math.max(70, d.ovr - decline);
-          d.pace = Math.max(70, d.pace - decline);
-        } else {
-          if (d.ovr < pot && (d.points || 0) >= 80) {
-            d.ovr = Math.min(pot, d.ovr + 1);
-            d.pace = Math.min(99, d.pace + 1);
-          }
-        }
-
-        d.points = 0;
-        d.wins = 0;
-        d.podiums = 0;
-        d.contract = Math.max(1, (d.contract || 1) - 1);
-      });
-
-      gameState.teams.forEach(t => {
-        t.points = 0;
-        t.wins = 0;
-        t.podiums = 0;
-      });
-
-      gameState.season += 1;
-      gameState.round = 1;
-      gameState.weekend = initWeekendState(1, gameState.userTeamId, gameState.drivers);
-      generatePaddockPressForRound(1);
-      gameState.activeTab = 'hub';
-      showToast(`Stagione conclusa! Hai chiuso P${userRank} (€${prize.toFixed(1)}M premio). Benvenuto nel ${gameState.season}!`, 'success');
-      saveGame();
-      renderApp();
-    }
-
-    function renderRaceSummaryView() {
-      const res = gameState.weekend.results;
-      if (!res) return '';
-      const isLastRound = gameState.round >= CALENDAR_2026.length;
+      const dotsHtml = r.cars.filter(c => !c.retired).map(c => {
+        const t = getTeam(c.teamId);
+        const vp = visMap.get(c.driverId) ?? c.progress ?? 0;
+        const pitCoords = getPitLaneCoord(c);
+        const cx = pitCoords ? pitCoords.x.toFixed(1) : '150';
+        const cy = pitCoords ? pitCoords.y.toFixed(1) : '130';
+        const pitMode = pitCoords ? c.pitAnim.mode : 'none';
+        return `<circle id="race-dot-${c.driverId}" cx="${cx}" cy="${cy}" r="${c.isUser ? 5.2 : 3.6}" fill="${t.color}" stroke="${c.isUser ? '#ffffff' : '#0b0e14'}" stroke-width="1.3" data-pit-mode="${pitMode}" data-track-progress="${vp.toFixed(4)}"/>`;
+      }).join('');
 
       return `
-        <div class="p-4 space-y-3.5">
-          <div class="bg-f1card border border-f1border rounded-2xl p-4">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Bandiera a Scacchi</span>
-            <h2 class="text-lg font-extrabold text-white mt-0.5">Risultati GP ${res.trackName}</h2>
+        <div class="p-4 space-y-3">
+          <div class="bg-f1card border border-f1border rounded-2xl p-3 flex items-center justify-between gap-2">
+            <div>
+              <span class="text-[10px] font-bold uppercase text-f1red">${track.flag} ${track.name} • Giro ${Math.min(r.lap, r.totalLaps)}/${r.totalLaps}</span>
+              <div class="text-xs font-bold text-white mt-0.5">
+                ${r.weather === 'wet' ? 'Bagnato' : 'Asciutto'}
+                ${r.safetyCar !== 'none' ? `<span class="ml-1 px-1.5 py-0.5 rounded bg-amber-500 text-black text-[10px] font-black">${r.safetyCar}</span>` : ''}
+              </div>
+              <div class="text-[10px] text-slate-400 font-mono-num">Giro veloce: ${r.fastestLap.code} (${formatLapTime(r.fastestLap.time)})</div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button onclick="openLiveRaceStrategyScreen()" class="px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-[10px] font-black">
+                📋 STRATEGIA
+              </button>
+              ${[0, 1, 2, 4].map(s => `
+                <button onclick="setRaceSpeed(${s})" class="px-2 py-1.5 rounded-lg text-[10px] font-mono-num font-bold ${r.speed === s ? 'bg-f1red text-white' : 'bg-f1bg text-slate-400 border border-f1border'}">
+                  ${s === 0 ? '⏸' : s + 'x'}
+                </button>
+              `).join('')}
+            </div>
           </div>
 
-          <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-1.5">
-            ${res.classification.map(row => {
-              const tm = getTeam(row.teamId);
+          ${buildCircuitSvgMarkup(track, dotsHtml, 'h-36', 'fm-race-svg')}
+
+          <div class="space-y-2">
+            ${userCars.map(car => {
+              const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
+              const remStops = Math.max(0, (car.plannedStops || 0) - (car.pitStops || 0));
+              const nextPitLap = remStops > 0 ? (car.pitLaps?.[car.pitStops || 0] || '-') : 'Fine';
+              const nextTyre = remStops > 0 ? (car.stintTyres?.[car.pitStops || 0] || '-') : '-';
               return `
-                <div class="flex items-center justify-between text-xs px-2 py-1.5 rounded-xl ${row.isUser ? 'bg-slate-800 font-bold text-white' : 'text-slate-300'}">
-                  <div class="flex items-center gap-2">
-                    <span class="font-mono-num w-6 text-amber-300">${row.pos}</span>
-                    <span class="w-2.5 h-2.5 rounded-full" style="background:${tm.color}"></span>
-                    <span>${row.name}</span>
+                <div class="bg-f1card border border-f1border rounded-xl p-2.5 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="text-xs font-mono-num font-black text-amber-300">${car.retired ? 'RIT' : 'P' + car.pos}</span>
+                      <span class="text-xs font-extrabold text-white ml-1">${car.name}</span>
+                      <span class="text-[10px] text-slate-400 font-mono-num ml-1">(${car.pitStops}/${car.plannedStops} pit • prox G${nextPitLap}->${nextTyre})</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-extrabold font-mono-num" style="background:${comp.color}; color:${comp.text}">
+                      ${comp.short} ${Math.round(car.tyreWear)}%
+                    </span>
                   </div>
-                  <div class="flex items-center gap-3 font-mono-num text-[11px]">
-                    <span class="text-slate-400">${formatLapTime(row.bestLap)}</span>
-                    <span class="text-emerald-400 font-bold">+${row.pts}</span>
-                  </div>
+                  ${!car.retired ? `
+                    <div class="grid grid-cols-3 gap-1">
+                      ${[
+                        { id: 'conserve', lbl: 'Conserva' },
+                        { id: 'balanced', lbl: 'Bilanciato' },
+                        { id: 'push', lbl: 'Attacco' }
+                      ].map(pm => `
+                        <button onclick="setRacePace('${car.driverId}', '${pm.id}')" class="py-1 rounded-lg text-[10px] font-bold border ${car.paceMode === pm.id ? 'bg-sky-600 border-sky-400 text-white' : 'bg-f1bg border-f1border text-slate-400'}">
+                          ${pm.lbl}
+                        </button>
+                      `).join('')}
+                    </div>
+                  ` : ''}
                 </div>
               `;
             }).join('')}
           </div>
 
-          <button onclick="nextRoundOrEndSeason()" class="w-full py-4 rounded-xl bg-f1red hover:bg-red-600 font-extrabold text-sm text-white shadow-lg shadow-f1red/25">
-            ${isLastRound ? `CHIUDI STAGIONE ${gameState.season} →` : `PROSSIMO GRAN PREMIO (GP ${gameState.round + 1}) →`}
+          <div class="bg-f1card border border-f1border rounded-2xl p-2.5 max-h-52 overflow-y-auto no-scrollbar space-y-1">
+            ${ordered.map((c, idx) => {
+              const comp = TYRE_COMPOUNDS[c.tyre] || TYRE_COMPOUNDS.M;
+              const prevCar = idx > 0 ? ordered[idx - 1] : null;
+              const intervalText = c.retired
+                ? 'RIT'
+                : (idx === 0 ? 'LEADER' : `+${c.gapToLeader.toFixed(1)}s (+${Math.max(0.1, c.gapToLeader - (prevCar?.gapToLeader || 0)).toFixed(1)}s)`);
+              return `
+                <div class="flex items-center justify-between text-[11px] px-2 py-1 rounded-lg ${c.isUser ? 'bg-slate-800/90 font-bold text-white' : 'text-slate-200'}">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="font-mono-num w-4 text-slate-400">${c.retired ? 'R' : idx + 1}</span>
+                    <span class="w-2 h-2 rounded-full shrink-0" style="background:${getTeam(c.teamId).color}"></span>
+                    <span class="font-bold">${c.code}</span>
+                    <span class="px-1 rounded text-[9px] font-extrabold" style="background:${comp.color}; color:${comp.text}">${comp.short}</span>
+                  </div>
+                  <span class="font-mono-num text-[10px] text-slate-300">${intervalText}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="bg-f1card border border-f1border rounded-2xl p-2.5 max-h-24 overflow-y-auto no-scrollbar space-y-1">
+            ${r.logs.slice(0, 6).map(line => `<div class="text-[11px] text-slate-300">${line}</div>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function finishRaceAndAwardPoints() {
+      stopAllLoops();
+      const r = gameState.weekend.race;
+      const track = CALENDAR_2026[gameState.round - 1];
+      const ptsTable = gameState.rules?.pointsTop12
+        ? [25, 18, 15, 12, 10, 8, 6, 5, 4, 3, 2, 1]
+        : [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+
+      const ordered = [...r.cars].sort((a, b) => {
+        if (a.retired && !b.retired) return 1;
+        if (!a.retired && b.retired) return -1;
+        return a.pos - b.pos;
+      });
+
+      const classification = ordered.map((c, idx) => {
+        const posNum = c.retired ? 'RIT' : idx + 1;
+        const pts = (!c.retired && idx < ptsTable.length) ? ptsTable[idx] : 0;
+        const driver = gameState.drivers.find(d => d.id === c.driverId);
+        const team = getTeam(c.teamId);
+
+        if (driver && team) {
+          driver.points = (driver.points || 0) + pts;
+          team.points = (team.points || 0) + pts;
+          if (!c.retired && idx === 0) {
+            driver.wins = (driver.wins || 0) + 1;
+            team.wins = (team.wins || 0) + 1;
+          }
+          if (!c.retired && idx < 3) {
+            driver.podiums = (driver.podiums || 0) + 1;
+            team.podiums = (team.podiums || 0) + 1;
+          }
+
+          if (c.isUser) {
+            if (!c.retired && idx <= 2) adjustDriverMood(driver.id, 6, `Podio in gara a ${track.name}`);
+            else if (!c.retired && idx <= 9) adjustDriverMood(driver.id, 2, `A punti a ${track.name}`);
+            else adjustDriverMood(driver.id, -4, `Gara difficile fuori dai punti a ${track.name}`);
+          }
+        }
+
+        return {
+          driverId: c.driverId,
+          pos: posNum,
+          name: c.name,
+          code: c.code,
+          teamId: c.teamId,
+          isUser: c.isUser,
+          pitStops: c.pitStops,
+          bestLap: c.bestLapTime,
+          pts
+        };
+      });
+
+      const winnerRow = classification[0];
+      gameState.completedRounds = gameState.completedRounds || [];
+      if (!gameState.completedRounds.some(x => x.round === gameState.round)) {
+        gameState.completedRounds.push({
+          round: gameState.round,
+          name: track.name,
+          winnerCode: winnerRow?.code || '-'
+        });
+      }
+
+      gameState.weekend.results = classification;
+      gameState.weekend.phase = 'summary';
+      generatePostSessionPress('race', { classification });
+      saveGame();
+      renderApp();
+    }
+
+    function renderRaceSummaryView() {
+      const res = gameState.weekend.results || [];
+      const track = CALENDAR_2026[gameState.round - 1];
+      const postQuotes = (gameState.mediaFeed || []).filter(m => m.round === gameState.round && m.source.includes('Post-GP')).slice(0, 2);
+
+      return `
+        <div class="p-4 space-y-3.5">
+          <div class="bg-f1card border border-f1border rounded-2xl p-4">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Bandiera a Scacchi • Post-Gara</span>
+            <h2 class="text-lg font-extrabold text-white mt-0.5">${track.flag} Risultati GP ${track.name}</h2>
+          </div>
+
+          ${postQuotes.length > 0 ? `
+            <div class="bg-f1card border border-amber-500/40 rounded-2xl p-3 space-y-1.5">
+              <div class="text-[10px] font-extrabold uppercase text-amber-300">Reazioni Stampa & Paddock</div>
+              ${postQuotes.map(q => `<div class="text-xs text-slate-200 leading-snug">${q.text}</div>`).join('')}
+            </div>
+          ` : ''}
+
+          <div class="bg-f1card border border-f1border rounded-2xl p-3 max-h-64 overflow-y-auto no-scrollbar space-y-1">
+            ${res.map(row => `
+              <div class="flex items-center justify-between text-xs px-2 py-1.5 rounded-lg ${row.isUser ? 'bg-slate-800/90 font-bold text-white' : 'text-slate-200'}">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono-num w-6 text-amber-300">${row.pos}</span>
+                  <span class="w-2 h-2 rounded-full" style="background:${getTeam(row.teamId).color}"></span>
+                  <span>${row.name}</span>
+                </div>
+                <div class="flex items-center gap-3 font-mono-num">
+                  <span class="text-[10px] text-slate-400">${row.pitStops} pit</span>
+                  <span class="text-emerald-400 font-bold">+${row.pts}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <button onclick="advanceToNextRound()" class="w-full py-4 rounded-xl bg-f1red hover:bg-red-600 font-extrabold text-sm text-white shadow-lg shadow-f1red/25">
+            ${gameState.round < 24 ? `PROSSIMO GP (${gameState.round + 1}/24) →` : 'CHIUDI STAGIONE 2026 →'}
           </button>
         </div>
       `;
     }
 
+    function advanceToNextRound() {
+      const team = getUserTeam();
+      const gpBonus = Math.max(2.5, (12 - team.objective) * 0.55);
+      team.budget = Number((team.budget + gpBonus).toFixed(1));
+
+      const remaining = [];
+      (gameState.pendingUpgrades || []).forEach(upg => {
+        upg.racesLeft -= 1;
+        if (upg.racesLeft <= 0) {
+          team[upg.area] = Number((team[upg.area] + upg.gain).toFixed(1));
+          gameState.newsFeed.unshift(`AGGIORNAMENTO CONSEGNATO: +${upg.gain} ${upg.area.toUpperCase()} per ${team.name}!`);
+        } else {
+          remaining.push(upg);
+        }
+      });
+      gameState.pendingUpgrades = remaining;
+      gameState.pendingUpgradeConfirm = null;
+
+      if (gameState.round >= 24) {
+        alert(`Stagione 2026 completata! ${team.name} chiude con ${team.points} punti.`);
+        resetCareer();
+        return;
+      }
+
+      gameState.round += 1;
+      gameState.weekend = initWeekendState(gameState.round, gameState.userTeamId, gameState.drivers);
+      gameState.activeTab = 'hub';
+      generatePaddockPressForRound(gameState.round);
+      saveGame();
+      renderApp();
+    }
+
+    function requestUpgradeConfirm(area, tierKey) {
+      const team = getUserTeam();
+      const tier = RND_TIERS[tierKey];
+      if (!team || !tier) return;
+      if (team.budget < tier.cost) {
+        showToast('Budget insufficiente per questo pacchetto!', 'danger');
+        return;
+      }
+      gameState.pendingUpgradeConfirm = {
+        area,
+        tierKey,
+        label: tier.label,
+        cost: tier.cost,
+        races: tier.races,
+        gain: tier.gain,
+        refund50: Number((tier.cost * 0.5).toFixed(1))
+      };
+      saveGame();
+      renderApp();
+    }
+
+    function cancelUpgradeConfirm() {
+      gameState.pendingUpgradeConfirm = null;
+      saveGame();
+      renderApp();
+    }
+
+    function confirmAndBuyUpgrade() {
+      const pending = gameState.pendingUpgradeConfirm;
+      const team = getUserTeam();
+      if (!pending || !team || team.budget < pending.cost) return;
+
+      team.budget = Number((team.budget - pending.cost).toFixed(1));
+      gameState.pendingUpgrades = gameState.pendingUpgrades || [];
+      gameState.pendingUpgrades.push({
+        id: `upg_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        area: pending.area,
+        tierLabel: pending.label,
+        cost: pending.cost,
+        racesLeft: pending.races,
+        gain: pending.gain
+      });
+      gameState.pendingUpgradeConfirm = null;
+      showToast(`Confermato ${pending.label} (${pending.area.toUpperCase()}) in arrivo in ${pending.races} GP!`, 'success');
+      saveGame();
+      renderApp();
+    }
+
+    function cancelPendingUpgradeWithRefund(upgradeId) {
+      const team = getUserTeam();
+      const list = gameState.pendingUpgrades || [];
+      const idx = list.findIndex(u => u.id === upgradeId);
+      if (idx < 0 || !team) return;
+
+      const item = list[idx];
+      const refund = Number((item.cost * 0.5).toFixed(1));
+      team.budget = Number((team.budget + refund).toFixed(1));
+      list.splice(idx, 1);
+      showToast(`Sviluppo annullato: rimborsato il 50% (€${refund.toFixed(1)}M).`, 'info');
+      saveGame();
+      renderApp();
+    }
+
     function renderRndView() {
       const team = getUserTeam();
+      const pendingList = gameState.pendingUpgrades || [];
+      const confirmBox = gameState.pendingUpgradeConfirm;
       const areas = [
-        { key: 'aero', label: 'Aerodinamica', val: team.aero, desc: 'Carico in curva e efficienza' },
-        { key: 'pu', label: 'Power Unit', val: team.pu, desc: 'Velocità di punta e potenza' },
-        { key: 'chassis', label: 'Telaio', val: team.chassis, desc: 'Aderenza meccanica e agilità' },
-        { key: 'rel', label: 'Affidabilità', val: team.rel, desc: 'Riduce il rischio di ritiro' }
+        { key: 'aero', label: 'Aerodinamica', val: team.aero },
+        { key: 'pu', label: 'Power Unit', val: team.pu },
+        { key: 'chassis', label: 'Telaio', val: team.chassis },
+        { key: 'rel', label: 'Affidabilita', val: team.rel }
       ];
 
       return `
@@ -2421,247 +2707,187 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
           <div class="bg-f1card border border-f1border rounded-2xl p-4 flex items-center justify-between">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Reparto Tecnico</span>
-              <h2 class="text-lg font-extrabold text-white">Sviluppo Monoposto</h2>
+              <h2 class="text-lg font-extrabold text-white">Sviluppo Vettura</h2>
             </div>
             <div class="text-right font-mono-num">
-              <div class="text-xs text-slate-400">Budget</div>
-              <div class="text-base font-extrabold text-emerald-400">€${team.budget.toFixed(1)}M</div>
+              <div class="text-sm font-black text-emerald-400">€${team.budget.toFixed(1)}M</div>
+              <div class="text-[10px] text-slate-400">Rimborso annullo: 50%</div>
             </div>
           </div>
 
-          ${areas.map(a => `
+          ${confirmBox ? `
+            <div class="bg-amber-950/60 border border-amber-400 rounded-2xl p-3.5 space-y-2.5">
+              <div class="text-xs font-black uppercase text-amber-300">Conferma Aggiornamento Auto</div>
+              <div class="text-xs text-slate-100 leading-snug">
+                Vuoi avviare <strong>${confirmBox.label} (${confirmBox.area.toUpperCase()})</strong> per <strong>+${confirmBox.gain}</strong> in <strong>${confirmBox.races} GP</strong>?
+              </div>
+              <div class="text-[11px] font-mono-num text-amber-200">
+                Costo: <strong>€${confirmBox.cost.toFixed(1)}M</strong> • Se annulli poi recuperi il 50% (<strong>€${confirmBox.refund50.toFixed(1)}M</strong>).
+              </div>
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <button onclick="cancelUpgradeConfirm()" class="py-2 rounded-xl bg-slate-800 text-slate-200 text-xs font-bold">
+                  Annulla
+                </button>
+                <button onclick="confirmAndBuyUpgrade()" class="py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold">
+                  Conferma Ordine
+                </button>
+              </div>
+            </div>
+          ` : ''}
+
+          ${areas.map(ar => `
             <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2.5">
               <div class="flex items-center justify-between">
-                <div>
-                  <div class="text-sm font-extrabold text-white">${a.label}</div>
-                  <div class="text-[11px] text-slate-400">${a.desc}</div>
-                </div>
-                <span class="text-lg font-mono-num font-black text-amber-300">${a.val}</span>
+                <span class="text-sm font-extrabold text-white">${ar.label}</span>
+                <span class="text-sm font-mono-num font-black text-sky-300">${ar.val.toFixed(1)}</span>
               </div>
               <div class="grid grid-cols-3 gap-1.5">
                 ${Object.values(RND_TIERS).map(tier => `
-                  <button onclick="buyUpgrade('${a.key}', '${tier.id}')" class="p-2 rounded-xl bg-f1bg hover:bg-slate-800 border border-f1border text-left transition">
-                    <div class="text-[11px] font-extrabold text-white">${tier.label} (+${tier.gain})</div>
-                    <div class="text-[10px] font-mono-num text-emerald-400">€${tier.cost.toFixed(1)}M • ${tier.races} GP</div>
+                  <button onclick="requestUpgradeConfirm('${ar.key}', '${tier.id}')" class="p-2 rounded-xl bg-f1bg hover:bg-slate-800 border border-f1border text-left transition">
+                    <div class="text-[11px] font-extrabold text-white">${tier.label}</div>
+                    <div class="text-[10px] font-mono-num text-emerald-400">€${tier.cost}M • +${tier.gain}</div>
+                    <div class="text-[9px] text-slate-400">${tier.races} GP</div>
                   </button>
                 `).join('')}
               </div>
             </div>
           `).join('')}
 
-          <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-1.5">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Aggiornamenti in Corso (${gameState.pendingUpgrades.length})</h3>
-            ${gameState.pendingUpgrades.map(u => `
-              <div class="flex items-center justify-between text-xs bg-f1bg px-3 py-2 rounded-xl">
-                <span class="font-bold text-white">${u.area.toUpperCase()} (+${u.gain})</span>
-                <span class="font-mono-num text-amber-300">Arriva tra ${u.racesLeft} GP</span>
-              </div>
-            `).join('')}
-            ${gameState.pendingUpgrades.length === 0 ? `<div class="text-xs text-slate-500">Nessun pacchetto in lavorazione.</div>` : ''}
+          <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Sviluppi in Corso (${pendingList.length})</h3>
+            ${pendingList.length === 0 ? `<div class="text-xs text-slate-500">Nessun aggiornamento in lavorazione.</div>` : ''}
+            ${pendingList.map(u => {
+              const refundAmt = (u.cost * 0.5).toFixed(1);
+              return `
+                <div class="flex items-center justify-between gap-2 text-xs bg-f1bg p-2.5 rounded-xl border border-f1border/70">
+                  <div>
+                    <div class="font-bold text-white">${u.area.toUpperCase()} • ${u.tierLabel} (+${u.gain})</div>
+                    <div class="text-[10px] text-amber-300 font-mono-num">Arrivo tra ${u.racesLeft} GP • Pagato €${u.cost.toFixed(1)}M</div>
+                  </div>
+                  <button onclick="cancelPendingUpgradeWithRefund('${u.id}')" class="px-2.5 py-1.5 rounded-lg bg-red-950 hover:bg-red-900 border border-red-500/50 text-red-200 text-[10px] font-extrabold shrink-0">
+                    Annulla (+€${refundAmt}M)
+                  </button>
+                </div>
+              `;
+            }).join('')}
           </div>
         </div>
       `;
     }
 
-    function buyUpgrade(areaKey, tierId) {
+    function signFreeAgent(agentId, replaceDriverId) {
       const team = getUserTeam();
-      const tier = RND_TIERS[tierId];
-      if (!tier) return;
-      if (team.budget < tier.cost) {
-        showToast('Budget insufficiente per questo aggiornamento!', 'danger');
+      const agentIdx = (gameState.freeAgents || []).findIndex(a => a.id === agentId);
+      const oldIdx = gameState.drivers.findIndex(d => d.id === replaceDriverId && d.teamId === team.id);
+      if (agentIdx < 0 || oldIdx < 0) return;
+
+      const agent = gameState.freeAgents[agentIdx];
+      const oldDriver = gameState.drivers[oldIdx];
+      const signingFee = Number((agent.salary * 0.4).toFixed(1));
+
+      if (team.budget < signingFee) {
+        showToast('Budget insufficiente per la firma!', 'danger');
         return;
       }
-      team.budget = Number((team.budget - tier.cost).toFixed(1));
-      gameState.pendingUpgrades.push({
-        area: areaKey,
-        gain: tier.gain,
-        racesLeft: tier.races
+
+      team.budget = Number((team.budget - signingFee).toFixed(1));
+      gameState.freeAgents.splice(agentIdx, 1);
+
+      const newDriverObj = {
+        ...agent,
+        teamId: team.id,
+        role: oldDriver.role || 'co_lead',
+        points: 0,
+        wins: 0,
+        podiums: 0
+      };
+
+      gameState.drivers[oldIdx] = newDriverObj;
+      gameState.freeAgents.push({
+        ...oldDriver,
+        teamId: null,
+        role: 'co_lead'
       });
-      showToast(`Ordine inviato: ${areaKey.toUpperCase()} +${tier.gain} in ${tier.races} GP`, 'success');
+
+      pushMediaQuote('Mercato', `${newDriverObj.name} firma con ${team.name} al posto di ${oldDriver.name}!`);
+      showToast(`${newDriverObj.name} ingaggiato per €${signingFee}M!`, 'success');
       saveGame();
       renderApp();
     }
 
     function renderMarketView() {
       const team = getUserTeam();
-      const userDrivers = getUserDrivers();
-      const otherDrivers = gameState.drivers.filter(d => d.teamId !== gameState.userTeamId).sort((a, b) => b.ovr - a.ovr);
-      const offeredRole = gameState.marketOfferedRole || 'co_lead';
+      const uDrivers = getUserDrivers();
+      const agents = gameState.freeAgents || [];
 
       return `
         <div class="p-4 space-y-3.5">
-          <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-2.5">
-            <div class="flex items-center justify-between">
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Paddock & Contratti</span>
-                <h2 class="text-lg font-extrabold text-white">Mercato Piloti</h2>
-              </div>
-              <div class="text-right font-mono-num text-xs text-emerald-400 font-extrabold">€${team.budget.toFixed(1)}M</div>
-            </div>
-
+          <div class="bg-f1card border border-f1border rounded-2xl p-4 flex items-center justify-between">
             <div>
-              <div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Ruolo Offerto nei Nuovi Contratti:</div>
-              <div class="grid grid-cols-3 gap-1.5">
-                ${[
-                  { id: 'lead', lbl: '1ª Guida' },
-                  { id: 'co_lead', lbl: 'Pari Livello' },
-                  { id: 'support', lbl: '2ª Guida' }
-                ].map(r => `
-                  <button onclick="setMarketOfferedRole('${r.id}')" class="py-1.5 rounded-xl text-[11px] font-extrabold border ${offeredRole === r.id ? 'bg-f1red border-f1red text-white' : 'bg-f1bg border-f1border text-slate-400'}">
-                    ${r.lbl}
-                  </button>
-                `).join('')}
-              </div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-f1red">Paddock & Contratti</span>
+              <h2 class="text-lg font-extrabold text-white">Mercato Piloti</h2>
             </div>
+            <div class="text-right font-mono-num text-sm font-black text-emerald-400">€${team.budget.toFixed(1)}M</div>
           </div>
 
-          <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">I Tuoi Piloti Attuali</h3>
-            ${userDrivers.map(d => {
-              const trait = DRIVER_TRAITS[d.trait] || DRIVER_TRAITS.tactician;
-              return `
-                <div class="flex items-center justify-between text-xs bg-f1bg p-2.5 rounded-xl border border-f1border/60">
+          ${agents.map(fa => {
+            const fee = (fa.salary * 0.4).toFixed(1);
+            const trait = DRIVER_TRAITS[fa.trait] || DRIVER_TRAITS.tactician;
+            return `
+              <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2.5">
+                <div class="flex items-center justify-between">
                   <div>
-                    <div class="font-extrabold text-white">${d.name} <span class="text-[10px] text-amber-300">(${getRoleLabel(d.role)})</span></div>
-                    <div class="text-[10px] text-slate-400">${trait.icon} ${trait.label} • POT ${d.potential ?? d.ovr} • €${d.salary}M/a</div>
+                    <div class="text-sm font-extrabold text-white">#${fa.number} ${fa.name} <span class="text-[10px] text-slate-400">(${fa.age}a)</span></div>
+                    <div class="text-[10px] text-slate-400">${trait.icon} ${trait.label} • Ingaggio €${fa.salary}M/anno • Costo firma €${fee}M</div>
                   </div>
-                  <button onclick="releaseUserDriver('${d.id}')" class="px-2.5 py-1.5 rounded-lg bg-red-950/80 border border-red-500/40 text-red-200 text-[10px] font-bold">
-                    Svincola
-                  </button>
+                  <div class="font-mono-num text-xs font-black text-sky-300">OVR ${fa.ovr}</div>
                 </div>
-              `;
-            }).join('')}
-          </div>
-
-          <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Piloti Sul Mercato</h3>
-            ${otherDrivers.slice(0, 14).map(d => {
-              const curTeam = getTeam(d.teamId);
-              const trait = DRIVER_TRAITS[d.trait] || DRIVER_TRAITS.tactician;
-              const aff = getAffinityScore({ ...d, role: offeredRole }, team, gameState.drivers);
-              const fee = Math.max(2.0, Number((d.salary * 0.75).toFixed(1)));
-              return `
-                <div class="bg-f1bg p-2.5 rounded-xl border border-f1border/60 flex items-center justify-between gap-2">
-                  <div>
-                    <div class="text-xs font-extrabold text-white">${d.name} <span class="font-mono-num text-amber-300">OVR ${d.ovr}</span> <span class="font-mono-num text-[10px] text-sky-300">POT ${d.potential ?? d.ovr}</span></div>
-                    <div class="text-[10px] text-slate-400">${curTeam.short} • ${trait.icon} ${trait.label} • Affinità ${aff}% • €${d.salary}M/a</div>
-                    ${d.transferRequest ? `<div class="text-[9px] text-amber-300 font-bold">Disponibile ad ascoltare offerte</div>` : ''}
-                  </div>
-                  <button onclick="signDriverFromMarket('${d.id}', ${fee})" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-extrabold shrink-0">
-                    Ingaggia (€${fee}M)
-                  </button>
+                <div class="grid grid-cols-2 gap-2">
+                  ${uDrivers.map(ud => `
+                    <button onclick="signFreeAgent('${fa.id}', '${ud.id}')" class="py-1.5 px-2 rounded-xl bg-f1bg hover:bg-slate-800 border border-f1border text-[10px] font-bold text-slate-200">
+                      Sostituisci ${ud.code}
+                    </button>
+                  `).join('')}
                 </div>
-              `;
-            }).join('')}
-          </div>
+              </div>
+            `;
+          }).join('')}
         </div>
       `;
     }
 
-    function setMarketOfferedRole(roleId) {
-      gameState.marketOfferedRole = roleId;
-      saveGame();
-      renderApp();
-    }
-
-    function releaseUserDriver(driverId) {
-      const uDrivers = getUserDrivers();
-      if (uDrivers.length <= 1) {
-        showToast('Devi mantenere almeno 1 pilota in rosa!', 'danger');
-        return;
-      }
-      const drv = gameState.drivers.find(d => d.id === driverId);
-      if (!drv) return;
-      const fa = gameState.freeAgents.find(x => x.id === drv.id);
-      if (!fa) {
-        gameState.freeAgents.push({ ...drv, teamId: null, role: 'co_lead' });
-      }
-      drv.teamId = 'vcarb';
-      drv.role = 'co_lead';
-      adjustDriverMood(drv.id, -10, 'Svincolato dalla squadra');
-      showToast(`${drv.name} svincolato dalla rosa.`, 'info');
-      saveGame();
-      renderApp();
-    }
-
-    function signDriverFromMarket(driverId, fee) {
-      const team = getUserTeam();
-      const uDrivers = getUserDrivers();
-      if (uDrivers.length >= 2) {
-        showToast('Hai già 2 piloti in rosa: svincolane uno prima di ingaggiare.', 'danger');
-        return;
-      }
-      if (team.budget < fee) {
-        showToast('Budget insufficiente per l’ingaggio!', 'danger');
-        return;
-      }
-
-      const offeredRole = gameState.marketOfferedRole || 'co_lead';
-      const drv = gameState.drivers.find(d => d.id === driverId);
-      if (!drv) return;
-
-      if (offeredRole === 'support' && !drv.acceptsSupport && drv.ovr >= 85) {
-        showToast(`${drv.name} rifiuta il ruolo di 2ª Guida! Offrigli 1ª Guida o Pari Livello.`, 'danger');
-        return;
-      }
-
-      const prevTeam = getTeam(drv.teamId);
-      if (prevTeam && prevTeam.id !== team.id) {
-        const replacement = gameState.freeAgents.pop() || { ...INITIAL_DRIVERS[21], id: `fa_${Date.now()}`, name: 'Pilota Riserva', code: 'RSV', number: 99, ovr: 76, potential: 80, pace: 76, cons: 76, tyreMgmt: 76, age: 24, salary: 1.5, mood: 60, trait: 'team_player', preferredDna: 'balanced', acceptsSupport: true };
-        replacement.teamId = prevTeam.id;
-        replacement.role = 'co_lead';
-        gameState.drivers.push(replacement);
-      }
-
-      team.budget = Number((team.budget - fee).toFixed(1));
-      drv.teamId = team.id;
-      drv.role = offeredRole;
-      drv.transferRequest = false;
-      adjustDriverMood(drv.id, 7, `Nuovo contratto con ${team.name} (${getRoleLabel(offeredRole)})`);
-      pushMediaQuote('Mercato', `${drv.name} firma per ${team.name} con ruolo di ${getRoleLabel(offeredRole)}.`);
-      showToast(`${drv.name} ingaggiato in ${team.name}!`, 'success');
-      saveGame();
-      renderApp();
-    }
-
     function renderStandingsView() {
-      const sortedDrivers = [...gameState.drivers].sort((a, b) => (b.points || 0) - (a.points || 0) || b.ovr - a.ovr);
-      const sortedTeams = [...gameState.teams].sort((a, b) => (b.points || 0) - (a.points || 0) || b.aero - a.aero);
+      const sortedDrivers = [...gameState.drivers].sort((a, b) => (b.points || 0) - (a.points || 0) || (b.wins || 0) - (a.wins || 0));
+      const sortedTeams = [...gameState.teams].sort((a, b) => (b.points || 0) - (a.points || 0) || (b.wins || 0) - (a.wins || 0));
 
       return `
-        <div class="p-4 space-y-3.5">
-          <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-f1red">Classifica Costruttori</h3>
+        <div class="p-4 space-y-4">
+          <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-1.5">
+            <h2 class="text-sm font-extrabold uppercase tracking-wider text-amber-300">Classifica Costruttori</h2>
             ${sortedTeams.map((t, idx) => `
-              <div class="flex items-center justify-between text-xs px-2 py-1.5 rounded-xl ${t.id === gameState.userTeamId ? 'bg-slate-800 font-bold text-white' : 'text-slate-300'}">
+              <div class="flex items-center justify-between text-xs py-1 px-2 rounded-lg ${t.id === gameState.userTeamId ? 'bg-slate-800/90 font-extrabold text-white' : 'text-slate-200'}">
                 <div class="flex items-center gap-2">
                   <span class="font-mono-num w-5 text-slate-400">${idx + 1}</span>
                   <span class="w-2.5 h-2.5 rounded-full" style="background:${t.color}"></span>
                   <span>${t.name}</span>
-                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-f1bg text-slate-400">${t.hierarchy === '1st_2nd' ? '1ª/2ª' : 'PARI'}</span>
                 </div>
-                <span class="font-mono-num font-extrabold text-amber-300">${t.points || 0} pt</span>
+                <span class="font-mono-num font-bold text-emerald-400">${t.points || 0} pt</span>
               </div>
             `).join('')}
           </div>
 
           <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-1.5">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-f1red">Classifica Piloti (22)</h3>
+            <h2 class="text-sm font-extrabold uppercase tracking-wider text-sky-300">Classifica Piloti</h2>
             ${sortedDrivers.map((d, idx) => {
               const tm = getTeam(d.teamId);
-              const mood = getMoodMeta(d.mood);
               return `
-                <div class="flex items-center justify-between text-xs px-2 py-1.5 rounded-xl ${d.teamId === gameState.userTeamId ? 'bg-slate-800 font-bold text-white' : 'text-slate-300'}">
-                  <div class="flex items-center gap-2 min-w-0">
+                <div class="flex items-center justify-between text-xs py-1 px-2 rounded-lg ${d.teamId === gameState.userTeamId ? 'bg-slate-800/90 font-bold text-white' : 'text-slate-200'}">
+                  <div class="flex items-center gap-2">
                     <span class="font-mono-num w-5 text-slate-400">${idx + 1}</span>
-                    <span class="w-2 h-2 rounded-full shrink-0" style="background:${tm.color}"></span>
-                    <span class="truncate">${d.name}</span>
-                    <span class="text-[10px]">${mood.emoji}</span>
+                    <span class="w-2 h-2 rounded-full" style="background:${tm.color}"></span>
+                    <span>${d.name}</span>
                   </div>
-                  <div class="flex items-center gap-2 font-mono-num">
-                    <span class="text-[10px] text-sky-300">POT ${d.potential ?? d.ovr}</span>
-                    <span class="font-extrabold text-amber-300">${d.points || 0} pt</span>
-                  </div>
+                  <span class="font-mono-num font-bold text-amber-300">${d.points || 0} pt</span>
                 </div>
               `;
             }).join('')}
@@ -2675,14 +2901,19 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
       if (!root) return;
 
       if (!gameState) {
-        stopAllLoops();
-        root.innerHTML = renderTeamSelectScreen();
-        return;
+        const saved = loadGame();
+        if (saved && saved.teams && saved.drivers) {
+          gameState = saved;
+        } else {
+          root.innerHTML = renderTeamSelectScreen();
+          return;
+        }
       }
 
       let bodyHtml = '';
       if (gameState.activeTab === 'hub') bodyHtml = renderHubView();
       else if (gameState.activeTab === 'weekend') bodyHtml = renderWeekendView();
+      else if (gameState.activeTab === 'calendar') bodyHtml = renderCalendarView();
       else if (gameState.activeTab === 'rnd') bodyHtml = renderRndView();
       else if (gameState.activeTab === 'market') bodyHtml = renderMarketView();
       else if (gameState.activeTab === 'standings') bodyHtml = renderStandingsView();
@@ -2690,28 +2921,28 @@ function adjustDriverMood(driverId, delta, reasonText = '') {
 
       root.innerHTML = `
         ${renderTopHeader()}
-        <main class="flex-1 overflow-y-auto no-scrollbar pb-20">
+        <main class="flex-1 overflow-y-auto pb-4">
           ${bodyHtml}
         </main>
         ${renderBottomNav()}
       `;
 
-      if (gameState.activeTab === 'weekend' && gameState.weekend?.phase === 'quali') {
-        startQualiSmoothLoop();
-      } else if (gameState.activeTab === 'weekend' && gameState.weekend?.phase === 'race') {
-        startRaceSmoothLoop();
+      if (gameState.activeTab === 'weekend') {
+        if (gameState.weekend.phase === 'quali') {
+          startQualiSmoothLoop();
+        } else if (gameState.weekend.phase === 'race') {
+          startRaceSmoothLoop();
+        } else {
+          stopAllLoops();
+        }
       } else {
         stopAllLoops();
       }
     }
 
-    (function boot() {
-      const saved = loadGame();
-      if (saved && saved.teams && saved.drivers) {
-        gameState = saved;
-      }
+    window.addEventListener('DOMContentLoaded', () => {
       renderApp();
-    })();
+    });
   </script>
 </body>
 </html>
