@@ -544,10 +544,82 @@ function renderStandingsView() {
   `;
 }
 
-function renderFpPhase(w, uDrivers) {
+// =========================================================
+// SVG PISTA CON PUNTINI FLUIDI E CORSIA BOX
+// =========================================================
+function renderLiveTrackMapSvg(track, dots) {
+  const pathPoints = getCachedTrackPoints(track.round, track.path);
+  const pitStartX = 82;
+  const pitEndX = 148;
+  const pitY = 144;
+
+  const renderedDots = dots.map(d => {
+    let cx = 115;
+    let cy = pitY;
+    if (d.inPit) {
+      const pFrac = Math.max(0, Math.min(1, d.pitProgress ?? 0.5));
+      cx = pitStartX + (pitEndX - pitStartX) * pFrac;
+      cy = pitY;
+    } else if (pathPoints.length > 0) {
+      const prog = ((d.trackProgress % 1) + 1) % 1;
+      const idx = Math.min(pathPoints.length - 1, Math.floor(prog * pathPoints.length));
+      cx = pathPoints[idx].x;
+      cy = pathPoints[idx].y;
+    }
+    const r = d.isUser ? 5.2 : 3.6;
+    const stroke = d.isUser ? '#ffffff' : '#0b0e14';
+    const sw = d.isUser ? 1.6 : 1.0;
+    return `
+      <g>
+        <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}" fill="${d.color}" stroke="${stroke}" stroke-width="${sw}" />
+        ${d.isUser ? `<text x="${(cx + 6).toFixed(1)}" y="${(cy + 3).toFixed(1)}" fill="#ffffff" font-size="8" font-weight="800" font-family="JetBrains Mono, monospace">${d.code}</text>` : ''}
+      </g>
+    `;
+  }).join('');
+
+  return `
+    <svg viewBox="0 0 300 162" class="w-full h-36 bg-f1bg rounded-xl border border-f1border/70 p-1">
+      <path d="${track.path}" fill="none" stroke="#1e293b" stroke-width="10" stroke-linejoin="round" />
+      <path d="${track.path}" fill="none" stroke="#475569" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" />
+      <line x1="${pitStartX}" y1="130" x2="${pitStartX}" y2="${pitY}" stroke="#64748b" stroke-width="2" />
+      <line x1="${pitStartX}" y1="${pitY}" x2="${pitEndX}" y2="${pitY}" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" />
+      <line x1="${pitEndX}" y1="${pitY}" x2="${pitEndX}" y2="130" stroke="#64748b" stroke-width="2" />
+      <text x="115" y="156" text-anchor="middle" fill="#64748b" font-size="7" font-weight="700">PIT LANE</text>
+      <line x1="150" y1="122" x2="150" y2="138" stroke="#e10600" stroke-width="2.5" />
+      ${renderedDots}
+    </svg>
+  `;
+}
+
+const __trackSampleCache = {};
+function getCachedTrackPoints(roundKey, pathD) {
+  if (__trackSampleCache[roundKey]) return __trackSampleCache[roundKey];
+  try {
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const tempSvg = document.createElementNS(svgNS, 'svg');
+    const tempPath = document.createElementNS(svgNS, 'path');
+    tempPath.setAttribute('d', pathD);
+    tempSvg.appendChild(tempPath);
+    const totalLen = tempPath.getTotalLength();
+    const samples = [];
+    const steps = 160;
+    for (let i = 0; i < steps; i++) {
+      const pt = tempPath.getPointAtLength((i / steps) * totalLen);
+      samples.push({ x: pt.x, y: pt.y });
+    }
+    __trackSampleCache[roundKey] = samples;
+    return samples;
+  } catch (e) {
+    return [];
+  }
+}
+
+// =========================================================
+// PROVE LIBERE (FEEDBACK DA ENTRAMBI I PILOTI OGNI RUN)
+// =========================================================
+function renderFpPhase(w, track, uDrivers) {
   const slot = w.fp.activeSlot || 'd1';
   const setup = w.fp[slot] || w.fp.d1;
-  const drv = slot === 'd1' ? uDrivers[0] : uDrivers[1];
   const maxSessions = w.hasSprint ? 2 : 3;
   const sliders = [
     { key: 'wing', label: 'Ala / Carico Aero' },
@@ -562,17 +634,29 @@ function renderFpPhase(w, uDrivers) {
       <div class="flex items-center justify-between">
         <div>
           <div class="text-xs font-extrabold uppercase tracking-wider text-sky-300">Prove Libere FP${w.fp.session}/${maxSessions}</div>
-          <div class="text-[11px] font-mono-num text-slate-400">Run rimasti: ${w.fp.runsLeftInSession} • Feeling ${drv?.code || ''}: <strong class="text-emerald-400">${setup?.confidence || 0}%</strong></div>
+          <div class="text-[11px] font-mono-num text-slate-400">Run rimasti: ${w.fp.runsLeftInSession} (girano entrambi i piloti)</div>
         </div>
         <div class="flex gap-1 bg-f1bg p-1 rounded-xl border border-f1border">
           ${uDrivers.map((ud, i) => {
             const k = i === 0 ? 'd1' : 'd2';
-            return `<button onclick="setFpActiveSlot('${k}')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold ${slot === k ? 'bg-f1red text-white' : 'text-slate-400'}">${ud.code}</button>`;
+            const conf = w.fp[k]?.confidence ?? 35;
+            return `<button onclick="setFpActiveSlot('${k}')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold ${slot === k ? 'bg-f1red text-white' : 'text-slate-400'}">${ud.code} (${conf}%)</button>`;
           }).join('')}
         </div>
       </div>
 
-      <div class="text-xs bg-f1bg p-2.5 rounded-xl border border-f1border/70 text-slate-200">${setup?.feedback || ''}</div>
+      <div class="space-y-1.5">
+        ${uDrivers.map((ud, i) => {
+          const k = i === 0 ? 'd1' : 'd2';
+          const st = w.fp[k];
+          return `
+            <div class="text-[11px] bg-f1bg px-2.5 py-2 rounded-xl border ${slot === k ? 'border-sky-500/60' : 'border-f1border/70'} text-slate-200 flex items-center justify-between gap-2">
+              <span>${st?.feedback || ''}</span>
+              <span class="font-mono-num font-black text-emerald-400 shrink-0">${st?.confidence ?? 35}%</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
 
       <div class="space-y-2.5">
         ${sliders.map(sl => `
@@ -588,7 +672,7 @@ function renderFpPhase(w, uDrivers) {
 
       <div class="grid grid-cols-2 gap-2 pt-1">
         <button onclick="runFpStint()" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-extrabold text-xs text-white">
-          ▶ ESEGUI RUN (${w.fp.runsLeftInSession})
+          ▶ RUN ENTRAMBI (${w.fp.runsLeftInSession})
         </button>
         <button onclick="advanceFpSession()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-f1border font-extrabold text-xs text-white">
           ${w.fp.session < maxSessions ? `AVANTI A FP${w.fp.session + 1} →` : 'VAI ALLE QUALIFICHE →'}
@@ -598,57 +682,309 @@ function renderFpPhase(w, uDrivers) {
   `;
 }
 
-function renderPreRaceStrategy(w, track, uDrivers) {
-  const strat = w.preRaceStrategy || {
-    d1: { tyre: 'M', push: 'balanced', pitLap: Math.round(track.laps * 0.45) },
-    d2: { tyre: 'H', push: 'balanced', pitLap: Math.round(track.laps * 0.52) }
-  };
+// =========================================================
+// QUALIFICHE Q1 / Q2 / Q3 IN TEMPO REALE
+// =========================================================
+function renderLiveQualiPhase(w, track) {
+  const q = w.quali;
+  if (!q) return '';
+  const mins = Math.floor(q.timeLeftSec / 60);
+  const secs = Math.floor(q.timeLeftSec % 60);
+  const clockStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  const stageObj = QUALI_STAGES[q.stageIndex] || QUALI_STAGES[0];
+  const activeDrivers = getSortedQualiActive(q);
+  const userParticipants = q.participants.filter(p => p.isUser);
+  const dots = activeDrivers.map(p => ({
+    code: p.code,
+    color: p.teamColor,
+    isUser: p.isUser,
+    inPit: p.status === 'pit',
+    pitProgress: p.pitProgress,
+    trackProgress: p.trackProgress
+  }));
+
   return `
-    <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-3">
-      <div class="text-xs font-extrabold uppercase tracking-wider text-amber-300">Strategia Pre-Gara</div>
-      ${uDrivers.map((ud, idx) => {
-        const sk = idx === 0 ? 'd1' : 'd2';
-        const st = strat[sk];
-        return `
-          <div class="bg-f1bg p-3 rounded-xl border border-f1border/70 space-y-2">
-            <div class="flex justify-between text-xs font-extrabold text-white">
-              <span>${ud.name} (${ud.code})</span>
-              <span class="font-mono-num text-sky-300">Gomma iniziale: ${st.tyre} • Box Giro ${st.pitLap}</span>
-            </div>
-            <div class="grid grid-cols-3 gap-1.5">
-              ${['S', 'M', 'H'].map(c => `
-                <button onclick="setPreRaceChoice('${sk}', 'tyre', '${c}')" class="py-1.5 rounded-lg text-xs font-black border ${st.tyre === c ? 'border-white bg-slate-700 text-white' : 'border-f1border bg-f1card text-slate-400'}">${c}</button>
-              `).join('')}
-            </div>
-            <div class="flex items-center justify-between text-[11px] font-mono-num text-slate-300">
-              <span>Giro Sosta: ${st.pitLap} / ${track.laps}</span>
-              <input type="range" min="5" max="${Math.max(8, track.laps - 4)}" value="${st.pitLap}" onchange="setPreRaceChoice('${sk}', 'pitLap', this.value)" class="w-36" />
-            </div>
+    <div class="space-y-3">
+      <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-f1red text-white">${q.stageLabel}</span>
+            <span class="text-xs font-extrabold text-white ml-1.5">${q.isWet ? '🌧️ Bagnato' : '☀️ Asciutto'}</span>
           </div>
-        `;
-      }).join('')}
-      <button onclick="startLiveRace()" class="w-full py-3 rounded-xl bg-f1red hover:bg-red-600 font-black text-sm text-white">
-        🚦 SEMAFORI VERDI — AL VIA DEL GP!
-      </button>
+          <div class="font-mono-num text-base font-black text-amber-300">⏱️ ${clockStr}</div>
+        </div>
+
+        ${renderLiveTrackMapSvg(track, dots)}
+
+        <div class="flex items-center justify-between gap-1">
+          <div class="flex gap-1">
+            ${[
+              { s: 0, l: '⏸' },
+              { s: 1, l: 'x1' },
+              { s: 2, l: 'x2' },
+              { s: 4, l: 'x4' },
+              { s: 8, l: 'x8' }
+            ].map(btn => {
+              const isAct = (btn.s === 0 && q.paused) || (!q.paused && q.speed === btn.s);
+              return `<button onclick="setQualiSpeed(${btn.s})" class="px-2.5 py-1 rounded-lg text-[11px] font-mono-num font-extrabold ${isAct ? 'bg-f1red text-white' : 'bg-f1bg text-slate-300 border border-f1border'}">${btn.l}</button>`;
+            }).join('')}
+          </div>
+          ${!q.stageFinished ? `
+            <button onclick="skipToEndOfCurrentQualiStage()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-f1border text-[10px] font-extrabold text-slate-200">
+              Fine ${q.stageLabel} ⏭
+            </button>
+          ` : ''}
+        </div>
+
+        <div class="text-[11px] bg-f1bg px-2.5 py-1.5 rounded-xl border border-f1border/70 text-slate-300 truncate">
+          ${q.events[0] || ''}
+        </div>
+      </div>
+
+      ${q.stageFinished ? `
+        <button onclick="advanceToNextQualiStage()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-black text-xs text-white shadow-lg">
+          ${q.allFinished ? 'VAI ALLA STRATEGIA PRE-GARA →' : `PROSEGUI A ${QUALI_STAGES[q.stageIndex + 1]?.label} →`}
+        </button>
+      ` : `
+        <div class="space-y-2">
+          ${userParticipants.map(up => {
+            const isElim = !!up.eliminatedIn;
+            return `
+              <div class="bg-f1card border ${isElim ? 'border-slate-700 opacity-60' : 'border-f1border'} rounded-2xl p-3 space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-extrabold text-white">${up.name} (${up.code})</span>
+                  <span class="font-mono-num text-amber-300 font-bold">
+                    ${isElim ? `Eliminato (${up.eliminatedIn})` : `${up.status.toUpperCase()} • ${formatLapTime(up.bestLapSec)}`}
+                  </span>
+                </div>
+                ${up.lastErrorNote ? `<div class="text-[10px] text-red-400 font-bold">${up.lastErrorNote}</div>` : ''}
+                ${!isElim ? `
+                  <div class="grid grid-cols-2 gap-2">
+                    <div class="flex gap-1">
+                      ${(q.isWet ? ['I', 'W'] : ['S', 'M', 'H']).map(c => `
+                        <button onclick="setQualiDriverChoice('${up.driverId}', 'tyre', '${c}')" class="flex-1 py-1 rounded-lg text-[10px] font-black border ${up.tyre === c ? 'bg-slate-700 border-white text-white' : 'bg-f1bg border-f1border text-slate-400'}">${c}</button>
+                      `).join('')}
+                    </div>
+                    <div class="flex gap-1">
+                      ${[
+                        { id: 'safe', l: 'Prud.' },
+                        { id: 'balanced', l: 'Bil.' },
+                        { id: 'push', l: 'Rischio' }
+                      ].map(rk => `
+                        <button onclick="setQualiDriverChoice('${up.driverId}', 'risk', '${rk.id}')" class="flex-1 py-1 rounded-lg text-[10px] font-extrabold border ${up.risk === rk.id ? 'bg-amber-500/25 border-amber-400 text-amber-200' : 'bg-f1bg border-f1border text-slate-400'}">${rk.l}</button>
+                      `).join('')}
+                    </div>
+                  </div>
+                  ${up.status === 'pit' ? `
+                    <button onclick="sendQualiDriverOut('${up.driverId}')" class="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-extrabold text-white">
+                      🚀 MANDA IN PISTA PER GIRO VELOCE
+                    </button>
+                  ` : `
+                    <button onclick="abortQualiDriverToPit('${up.driverId}')" class="w-full py-1.5 rounded-xl bg-slate-800 text-[11px] font-bold text-slate-300">
+                      Richiama ai Box
+                    </button>
+                  `}
+                ` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `}
+
+      <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-1">
+        <div class="flex justify-between text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+          <span>Classifica ${q.stageLabel}</span>
+          <span>Taglio Top ${stageObj.advanceCount}</span>
+        </div>
+        ${activeDrivers.map((p, idx) => {
+          const isCutoff = idx >= stageObj.advanceCount;
+          return `
+            <div class="flex items-center justify-between text-xs bg-f1bg px-2.5 py-1.5 rounded-lg ${p.isUser ? 'border border-f1red/70' : ''} ${isCutoff ? 'opacity-65' : ''}">
+              <div class="flex items-center gap-2">
+                <span class="font-mono-num font-black w-5 ${isCutoff ? 'text-red-400' : 'text-slate-400'}">${idx + 1}</span>
+                <span class="w-2 h-2 rounded-full" style="background:${p.teamColor}"></span>
+                <span class="font-bold text-white">${p.name}</span>
+              </div>
+              <div class="font-mono-num text-[11px]">
+                <span class="text-slate-400 mr-1.5">${p.status === 'pit' ? 'BOX' : 'PISTA'}</span>
+                <span class="text-sky-300 font-bold">${formatLapTime(p.bestLapSec)}</span>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
     </div>
   `;
 }
 
-function renderLiveRacePhase(w, track) {
+// =========================================================
+// STRATEGIA PRE-GARA & LIVE (1, 2 O 3 STINT + DURATE GOMME)
+// =========================================================
+function renderStrategyConfiguratorBlock(track, uDrivers, isLiveOverlay = false) {
+  const strat = ensurePreRaceStrategy(track);
+  const stintsInfo = getEstimatedStints(track, gameState.rules);
+
+  return `
+    <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="text-xs font-extrabold uppercase tracking-wider text-amber-300">
+          ${isLiveOverlay ? '📋 Strategia Live (Gara in Pausa)' : '📋 Strategia Pre-Gara (1, 2 o 3 Stint)'}
+        </div>
+        <span class="text-[10px] font-mono-num text-slate-400">${track.laps} Giri</span>
+      </div>
+
+      <div class="bg-f1bg p-2.5 rounded-xl border border-f1border/80 space-y-1">
+        <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Durata Stimata Mescola su ${track.name} (Degrado ${track.tyreDeg}/3)</div>
+        <div class="grid grid-cols-3 gap-1.5 text-center font-mono-num text-xs">
+          <div class="bg-red-950/40 border border-red-500/40 rounded-lg py-1">
+            <span class="font-black text-red-400">SOFT (S)</span>
+            <div class="text-[11px] text-white font-bold">${stintsInfo.S} giri</div>
+          </div>
+          <div class="bg-amber-950/40 border border-amber-500/40 rounded-lg py-1">
+            <span class="font-black text-amber-300">MEDIUM (M)</span>
+            <div class="text-[11px] text-white font-bold">${stintsInfo.M} giri</div>
+          </div>
+          <div class="bg-slate-800/80 border border-slate-500/40 rounded-lg py-1">
+            <span class="font-black text-slate-200">HARD (H)</span>
+            <div class="text-[11px] text-white font-bold">${stintsInfo.H} giri</div>
+          </div>
+        </div>
+      </div>
+
+      ${uDrivers.map((ud, idx) => {
+        const sk = idx === 0 ? 'd1' : 'd2';
+        const st = strat[sk];
+        const liveCar = isLiveOverlay ? gameState.weekend?.race?.cars?.find(c => c.driverId === ud.id) : null;
+        return `
+          <div class="bg-f1bg p-3 rounded-xl border border-f1border/70 space-y-2.5">
+            <div class="flex justify-between items-center text-xs font-extrabold text-white">
+              <span>${ud.name} (${ud.code})</span>
+              <span class="font-mono-num text-sky-300">
+                ${liveCar ? `Ora: ${liveCar.tyre} (${liveCar.tyreWear}%) • ${st.stints} Stint` : `${st.stints} Stint (${st.stints - 1} Pit)`}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-1.5">
+              ${[1, 2, 3].map(n => `
+                <button onclick="setPreRaceChoice('${sk}', 'stints', ${n})" class="py-1.5 rounded-lg text-[11px] font-black border ${st.stints === n ? 'bg-sky-600 border-sky-300 text-white' : 'bg-f1card border-f1border text-slate-400'}">
+                  ${n} Stint (${n - 1} Pit)
+                </button>
+              `).join('')}
+            </div>
+
+            ${!isLiveOverlay ? `
+              <div class="space-y-1">
+                <div class="text-[10px] text-slate-400 font-bold">Stint 1 — Gomma alla partenza:</div>
+                <div class="grid grid-cols-3 gap-1.5">
+                  ${['S', 'M', 'H'].map(c => `
+                    <button onclick="setPreRaceChoice('${sk}', 'startTyre', '${c}')" class="py-1 rounded-lg text-xs font-black border ${st.startTyre === c ? 'border-white bg-slate-700 text-white' : 'border-f1border bg-f1card text-slate-400'}">${c}</button>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            ${st.stints >= 2 ? `
+              <div class="space-y-1.5 pt-1 border-t border-f1border/60">
+                <div class="flex items-center justify-between text-[11px] font-mono-num text-slate-200">
+                  <span>Pit 1 al Giro <strong>${st.pit1Lap}</strong> → monta <strong>${st.pit1Tyre}</strong></span>
+                  <input type="range" min="4" max="${Math.max(8, track.laps - 4)}" value="${st.pit1Lap}" onchange="setPreRaceChoice('${sk}', 'pit1Lap', this.value)" class="w-28" />
+                </div>
+                <div class="grid grid-cols-4 gap-1">
+                  ${['S', 'M', 'H', 'I'].map(c => `
+                    <button onclick="setPreRaceChoice('${sk}', 'pit1Tyre', '${c}')" class="py-1 rounded-lg text-[10px] font-black border ${st.pit1Tyre === c ? 'border-amber-400 bg-amber-500/20 text-amber-200' : 'border-f1border bg-f1card text-slate-400'}">${c}</button>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            ${st.stints >= 3 ? `
+              <div class="space-y-1.5 pt-1 border-t border-f1border/60">
+                <div class="flex items-center justify-between text-[11px] font-mono-num text-slate-200">
+                  <span>Pit 2 al Giro <strong>${st.pit2Lap}</strong> → monta <strong>${st.pit2Tyre}</strong></span>
+                  <input type="range" min="${Math.min(track.laps - 4, st.pit1Lap + 4)}" max="${Math.max(10, track.laps - 2)}" value="${st.pit2Lap}" onchange="setPreRaceChoice('${sk}', 'pit2Lap', this.value)" class="w-28" />
+                </div>
+                <div class="grid grid-cols-4 gap-1">
+                  ${['S', 'M', 'H', 'I'].map(c => `
+                    <button onclick="setPreRaceChoice('${sk}', 'pit2Tyre', '${c}')" class="py-1 rounded-lg text-[10px] font-black border ${st.pit2Tyre === c ? 'border-emerald-400 bg-emerald-500/20 text-emerald-200' : 'border-f1border bg-f1card text-slate-400'}">${c}</button>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('')}
+
+      ${isLiveOverlay ? `
+        <button onclick="toggleLiveRaceStrategyModal(false)" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-black text-xs text-white">
+          ✅ APPLICA STRATEGIA E RIPRENDI GARA
+        </button>
+      ` : `
+        <button onclick="startLiveRace()" class="w-full py-3 rounded-xl bg-f1red hover:bg-red-600 font-black text-sm text-white shadow-lg shadow-f1red/25">
+          🚦 SEMAFORI VERDI — AL VIA DEL GP!
+        </button>
+      `}
+    </div>
+  `;
+}
+
+function renderPreRaceStrategy(w, track, uDrivers) {
+  return renderStrategyConfiguratorBlock(track, uDrivers, false);
+}
+
+// =========================================================
+// GARA LIVE FLUIDA CON PUNTINI, SPEED x1..x8 E STRATEGIA
+// =========================================================
+function renderLiveRacePhase(w, track, uDrivers) {
   const race = w.race;
   const ordered = [...race.cars].sort((a, b) => a.pos - b.pos);
   const userCars = ordered.filter(c => c.isUser);
 
+  if (race.strategyOpen) {
+    return renderStrategyConfiguratorBlock(track, uDrivers, true);
+  }
+
+  const dots = ordered.filter(c => !c.retired).map(c => ({
+    code: c.code,
+    color: c.teamColor,
+    isUser: c.isUser,
+    inPit: c.inPit,
+    pitProgress: c.inPit ? Math.max(0, Math.min(1, 1 - (c.pitTimer / 21.5))) : 0,
+    trackProgress: c.distanceLaps
+  }));
+
   return `
     <div class="space-y-3">
-      <div class="bg-f1card border border-f1border rounded-2xl p-3.5 flex items-center justify-between">
-        <div>
-          <div class="text-xs font-extrabold text-white">Giro ${race.currentLap} / ${track.laps} • ${race.weather}</div>
-          <div class="text-[10px] text-slate-400 truncate max-w-[230px]">${race.events[0] || ''}</div>
+      <div class="bg-f1card border border-f1border rounded-2xl p-3.5 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-xs font-extrabold text-white">
+              Giro ${race.currentLap} / ${track.laps} • ${race.weather}
+              ${race.safetyCar ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 text-[10px] font-black">SAFETY CAR</span>' : ''}
+            </div>
+            <div class="text-[10px] text-slate-400 truncate max-w-[235px]">${race.events[0] || ''}</div>
+          </div>
+          <button onclick="toggleLiveRaceStrategyModal(true)" class="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shrink-0 shadow">
+            📋 STRATEGIA
+          </button>
         </div>
-        <button onclick="stepRaceOneLap()" class="px-3.5 py-2 rounded-xl bg-f1red hover:bg-red-600 font-black text-xs text-white shrink-0">
-          +1 GIRO →
-        </button>
+
+        ${renderLiveTrackMapSvg(track, dots)}
+
+        <div class="flex items-center justify-between gap-1">
+          <div class="flex gap-1">
+            ${[
+              { s: 0, l: '⏸ Pausa' },
+              { s: 1, l: 'x1' },
+              { s: 2, l: 'x2' },
+              { s: 4, l: 'x4' },
+              { s: 8, l: 'x8' }
+            ].map(btn => {
+              const isAct = (btn.s === 0 && race.paused) || (!race.paused && race.speed === btn.s);
+              return `<button onclick="setLiveRaceSpeed(${btn.s})" class="px-2.5 py-1 rounded-lg text-[11px] font-mono-num font-extrabold ${isAct ? 'bg-f1red text-white' : 'bg-f1bg text-slate-300 border border-f1border'}">${btn.l}</button>`;
+            }).join('')}
+          </div>
+          <span class="text-[10px] font-mono-num text-slate-400">${race.paused ? 'IN PAUSA' : `VELOCITÀ x${race.speed}`}</span>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 gap-2">
@@ -656,33 +992,41 @@ function renderLiveRacePhase(w, track) {
           <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-2">
             <div class="flex items-center justify-between text-xs">
               <span class="font-extrabold text-white">P${uc.pos} • ${uc.name}</span>
-              <span class="font-mono-num text-amber-300">Gomma ${uc.tyre} (${uc.tyreWear}% usura) • Box ${uc.pitStops}</span>
+              <span class="font-mono-num text-amber-300">Gomma ${uc.tyre} (${uc.tyreWear}% usura) • Pit ${uc.pitStops}/${uc.plannedStops}</span>
             </div>
             <div class="grid grid-cols-4 gap-1.5">
               <button onclick="setLiveCarPush('${uc.driverId}', 'conserve')" class="py-1 rounded-lg text-[10px] font-bold ${uc.pushMode === 'conserve' ? 'bg-sky-600 text-white' : 'bg-f1bg text-slate-400'}">Risparmio</button>
               <button onclick="setLiveCarPush('${uc.driverId}', 'balanced')" class="py-1 rounded-lg text-[10px] font-bold ${uc.pushMode === 'balanced' ? 'bg-slate-600 text-white' : 'bg-f1bg text-slate-400'}">Neutro</button>
               <button onclick="setLiveCarPush('${uc.driverId}', 'push')" class="py-1 rounded-lg text-[10px] font-bold ${uc.pushMode === 'push' ? 'bg-f1red text-white' : 'bg-f1bg text-slate-400'}">Spingi</button>
-              <button onclick="pitUserCarNow('${uc.driverId}', 'H')" class="py-1 rounded-lg text-[10px] font-extrabold bg-amber-500/20 border border-amber-400/50 text-amber-200">Box H</button>
+              <button onclick="pitUserCarNow('${uc.driverId}', '${race.isWet ? 'I' : 'H'}')" class="py-1 rounded-lg text-[10px] font-extrabold bg-amber-500/20 border border-amber-400/50 text-amber-200">Box Ora</button>
             </div>
           </div>
         `).join('')}
       </div>
 
       <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-1.5">
-        <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Live Timing</div>
-        ${ordered.slice(0, 12).map(c => `
-          <div class="flex items-center justify-between text-xs bg-f1bg px-2.5 py-1.5 rounded-lg ${c.isUser ? 'border border-f1red/70' : ''}">
-            <div class="flex items-center gap-2">
-              <span class="font-mono-num font-black w-5 text-slate-400">${c.retired ? 'R' : c.pos}</span>
-              <span class="w-2 h-2 rounded-full" style="background:${c.teamColor}"></span>
-              <span class="font-bold text-white">${c.name}</span>
+        <div class="flex justify-between text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+          <span>Live Timing & Distacchi</span>
+          <span>Gomma • Gap</span>
+        </div>
+        ${ordered.map(c => {
+          const gapText = c.retired
+            ? 'RIT'
+            : (c.inPit ? 'IN PIT' : (c.pos === 1 ? 'LEADER' : `+${Number(c.gapToLeader || 0).toFixed(1)}s`));
+          return `
+            <div class="flex items-center justify-between text-xs bg-f1bg px-2.5 py-1.5 rounded-lg ${c.isUser ? 'border border-f1red/70' : ''}">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="font-mono-num font-black w-5 text-slate-400">${c.retired ? 'R' : c.pos}</span>
+                <span class="w-2 h-2 rounded-full shrink-0" style="background:${c.teamColor}"></span>
+                <span class="font-bold text-white truncate">${c.name}</span>
+              </div>
+              <div class="font-mono-num text-[11px] text-slate-300 shrink-0">
+                <span class="font-bold text-amber-300">${c.tyre}</span>
+                <span class="ml-2 text-sky-300">${gapText}</span>
+              </div>
             </div>
-            <div class="font-mono-num text-[11px] text-slate-300">
-              <span>${c.tyre}</span>
-              <span class="ml-2 text-sky-300">${formatLapTime(c.lastLapSec)}</span>
-            </div>
-          </div>
-        `).join('')}
+          `;
+        }).join('')}
       </div>
     </div>
   `;
@@ -723,41 +1067,33 @@ function renderWeekendView() {
   const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
   const uDrivers = getUserDrivers();
 
+  if (w.phase === 'quali' && !w.quali) {
+    initLiveQualifyingSession();
+  }
+
   return `
     <div class="p-4 space-y-3.5 pb-6">
-      <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-2">
-        <div class="flex items-center justify-between">
+      <div class="bg-f1card border border-f1border rounded-2xl p-3.5 flex items-center justify-between">
+        <div>
           <span class="text-[10px] font-extrabold uppercase tracking-wider text-f1red">${getWeekendDayBadge(w)} • GP ${track.round}/24</span>
-          <span class="text-[10px] font-mono-num text-slate-400">${track.laps} Giri • Degrado ${track.tyreDeg}/3</span>
+          <h2 class="text-base font-extrabold text-white">${track.flag} ${track.name} — ${track.circuit}</h2>
         </div>
-        <h2 class="text-lg font-extrabold text-white">${track.flag} ${track.name} — ${track.circuit}</h2>
-        <svg viewBox="0 0 300 160" class="w-full h-24 bg-f1bg rounded-xl border border-f1border/60 p-2">
-          <path d="${track.path}" fill="none" stroke="#334155" stroke-width="8" stroke-linejoin="round" />
-          <path d="${track.path}" fill="none" stroke="#e10600" stroke-width="3" stroke-linejoin="round" stroke-dasharray="14 6" />
-        </svg>
+        <span class="text-[10px] font-mono-num text-slate-400">${track.laps} Giri • Deg ${track.tyreDeg}/3</span>
       </div>
 
-      ${w.phase === 'fp' ? renderFpPhase(w, uDrivers) : ''}
+      ${w.phase === 'fp' ? renderFpPhase(w, track, uDrivers) : ''}
       ${w.phase === 'sprint_quali' || w.phase === 'sprint_race' ? `
         <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-3">
           <div class="text-sm font-extrabold text-white">⚡ Weekend Sprint: Qualifiche & Gara Sprint</div>
-          <p class="text-xs text-slate-400">Simula la sequenza Sprint e assegna i punti Sprint (8-1) prima delle Qualifiche del Gran Premio.</p>
+          <p class="text-xs text-slate-400">Simula la sequenza Sprint e assegna i punti Sprint (8-1) prima delle Qualifiche Q1/Q2/Q3 del Gran Premio.</p>
           <button onclick="simulateSprintWeekendSequence()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs">
             SIMULA QUALIFICHE + GARA SPRINT →
           </button>
         </div>
       ` : ''}
-      ${w.phase === 'quali' ? `
-        <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-3">
-          <div class="text-sm font-extrabold text-white">⏱️ Qualifiche Ufficiali GP ${track.name}</div>
-          <p class="text-xs text-slate-400">Il feeling dell'assetto raccolto nelle prove libere influenza il giro secco in qualifica.</p>
-          <button onclick="simulateQualifying()" class="w-full py-3 rounded-xl bg-f1red hover:bg-red-600 font-black text-xs text-white">
-            SCENDI IN PISTA PER LE QUALIFICHE →
-          </button>
-        </div>
-      ` : ''}
+      ${w.phase === 'quali' ? renderLiveQualiPhase(w, track) : ''}
       ${w.phase === 'strategy' ? renderPreRaceStrategy(w, track, uDrivers) : ''}
-      ${w.phase === 'race' ? renderLiveRacePhase(w, track) : ''}
+      ${w.phase === 'race' ? renderLiveRacePhase(w, track, uDrivers) : ''}
       ${w.phase === 'summary' ? renderRaceSummaryPhase(w) : ''}
     </div>
   `;
