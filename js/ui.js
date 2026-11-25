@@ -656,6 +656,32 @@ function renderFpPhase(w, track, uDrivers) {
           }).join('')}
         </div>
       </div>
+      <div class="bg-f1bg p-2.5 rounded-xl border border-f1border/80 space-y-2">
+        <div class="flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-amber-300">
+          <span>Programma Prove (${uDrivers[slot === 'd1' ? 0 : 1]?.code || 'Pilota'})</span>
+          <span class="text-slate-400">Effetto su Qualifica/Gara</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5">
+          ${[
+            { id: 'quali', icon: '⏱️', label: 'Giro Secco', desc: 'Bonus Qualifica' },
+            { id: 'race', icon: '🏁', label: 'Passo Gara', desc: 'Ritmo Domenica' },
+            { id: 'tyre', icon: '🛞', label: 'Gest. Gomme', desc: '-Usura in Gara' }
+          ].map(pr => {
+            const pct = setup?.programs?.[pr.id] ?? 0;
+            const isSel = (setup?.plan || 'race') === pr.id;
+            return `
+              <button onclick="setFpProgram('${slot}', '${pr.id}')" class="p-2 rounded-xl border text-left transition ${isSel ? 'bg-sky-950/60 border-sky-400 text-white' : 'bg-f1card border-f1border text-slate-400'}">
+                <div class="text-[11px] font-extrabold">${pr.icon} ${pr.label}</div>
+                <div class="text-[9px] text-slate-400">${pr.desc}</div>
+                <div class="mt-1.5 w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                  <div class="h-full bg-emerald-400" style="width:${pct}%"></div>
+                </div>
+                <div class="text-[9px] font-mono-num text-emerald-300 font-bold mt-0.5">${pct}%</div>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      </div>
 
       <div class="space-y-1.5">
         ${uDrivers.map((ud, i) => {
