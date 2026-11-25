@@ -732,6 +732,12 @@ function renderLiveQualiPhase(w, track) {
   const stageObj = QUALI_STAGES[q.stageIndex] || QUALI_STAGES[0];
   const activeDrivers = getSortedQualiActive(q);
   const userParticipants = q.participants.filter(p => p.isUser);
+
+  const grip = Math.round(q.trackGrip ?? (q.isWet ? 45 : 65));
+  const gripPenaltySec = (((100 - grip) / 100) * 1.45).toFixed(2);
+  const gripStatusLabel = grip >= 88 ? 'Gommata (Grip Max)' : (grip >= 68 ? 'In miglioramento' : 'Pista Verde (+Rischio)');
+  const gripColor = grip >= 88 ? 'text-emerald-400' : (grip >= 68 ? 'text-amber-300' : 'text-red-400');
+
   const dots = activeDrivers.map(p => ({
     code: p.code,
     color: p.teamColor,
@@ -750,6 +756,16 @@ function renderLiveQualiPhase(w, track) {
             <span class="text-xs font-extrabold text-white ml-1.5">${q.isWet ? '🌧️ Bagnato' : '☀️ Asciutto'}</span>
           </div>
           <div class="font-mono-num text-base font-black text-amber-300">⏱️ ${clockStr}</div>
+        </div>
+
+        <div class="bg-f1bg p-2.5 rounded-xl border border-f1border/80 space-y-1">
+          <div class="flex items-center justify-between text-[11px] font-mono-num">
+            <span class="text-slate-400">🛣️ Aderenza Pista: <strong class="${gripColor}">${grip}%</strong> (${gripStatusLabel})</span>
+            <span class="text-slate-300">Impatto: <strong>+${gripPenaltySec}s</strong></span>
+          </div>
+          <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+            <div class="h-full transition-all ${grip >= 88 ? 'bg-emerald-400' : (grip >= 68 ? 'bg-amber-400' : 'bg-red-400')}" style="width:${grip}%"></div>
+          </div>
         </div>
 
         ${renderLiveTrackMapSvg(track, dots)}
@@ -787,11 +803,25 @@ function renderLiveQualiPhase(w, track) {
         <div class="space-y-2">
           ${userParticipants.map(up => {
             const isElim = !!up.eliminatedIn;
+            const livePosIdx = activeDrivers.findIndex(x => x.driverId === up.driverId);
+            const livePos = livePosIdx >= 0 ? livePosIdx + 1 : (up.finalGridPos || '-');
+            const isSafeZone = typeof livePos === 'number' && livePos <= stageObj.advanceCount;
+            const posBadgeClass = isElim
+              ? 'bg-slate-800 text-slate-400 border-slate-600'
+              : (isSafeZone
+                ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/50'
+                : 'bg-red-950/80 text-red-300 border-red-500/50');
+
             return `
               <div class="bg-f1card border ${isElim ? 'border-slate-700 opacity-60' : 'border-f1border'} rounded-2xl p-3 space-y-2">
-                <div class="flex items-center justify-between text-xs">
-                  <span class="font-extrabold text-white">${up.name} (${up.code})</span>
-                  <span class="font-mono-num text-amber-300 font-bold">
+                <div class="flex items-center justify-between text-xs gap-2">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="px-2 py-0.5 rounded-lg border font-mono-num text-[11px] font-black shrink-0 ${posBadgeClass}">
+                      P${livePos}
+                    </span>
+                    <span class="font-extrabold text-white truncate">${up.name} (${up.code})</span>
+                  </div>
+                  <span class="font-mono-num text-amber-300 font-bold shrink-0">
                     ${isElim ? `Eliminato (${up.eliminatedIn})` : `${up.status.toUpperCase()} • ${formatLapTime(up.bestLapSec)}`}
                   </span>
                 </div>
