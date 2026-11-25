@@ -931,7 +931,18 @@ function renderStrategyConfiguratorBlock(track, uDrivers, isLiveOverlay = false)
                 ${liveCar ? `Ora: ${liveCar.tyre} (${liveCar.tyreWear}%) • ${st.stints} Stint` : `${st.stints} Stint (${st.stints - 1} Pit)`}
               </span>
             </div>
-
+${!isLiveOverlay && st.recommended ? `
+              <div class="bg-sky-950/35 border border-sky-500/40 rounded-xl p-2.5 space-y-1.5">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-300">💡 Proposta di ${ud.code} (Gest. Gomme ${ud.tyreMgmt ?? 84})</span>
+                  <button onclick="applyPilotRecommendedStrategy('${sk}')" class="px-2 py-0.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-[10px] font-extrabold text-white shrink-0">
+                    Applica Proposta
+                  </button>
+                </div>
+                <div class="text-[11px] text-slate-200 leading-snug">${st.recommended.note}</div>
+              </div>
+            ` : ''}
+            
             <div class="grid grid-cols-3 gap-1.5">
               ${[1, 2, 3].map(n => `
                 <button onclick="setPreRaceChoice('${sk}', 'stints', ${n})" class="py-1.5 rounded-lg text-[11px] font-black border ${st.stints === n ? 'bg-sky-600 border-sky-300 text-white' : 'bg-f1card border-f1border text-slate-400'}">
@@ -1056,20 +1067,29 @@ function renderLiveRacePhase(w, track, uDrivers) {
       </div>
 
       <div class="grid grid-cols-1 gap-2">
-        ${userCars.map(uc => `
-          <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-2">
-            <div class="flex items-center justify-between text-xs">
-              <span class="font-extrabold text-white">P${uc.pos} • ${uc.name}</span>
-              <span class="font-mono-num text-amber-300">Gomma ${uc.tyre} (${uc.tyreWear}% usura) • Pit ${uc.pitStops}/${uc.plannedStops}</span>
+        ${userCars.map(uc => {
+          const wearPct = Math.round(uc.tyreWear || 0);
+          const lifePct = Math.max(0, 100 - wearPct);
+          const wearBarColor = wearPct >= 75 ? 'bg-red-500' : (wearPct >= 48 ? 'bg-amber-400' : 'bg-emerald-400');
+          const wearTextColor = wearPct >= 75 ? 'text-red-400 font-black' : (wearPct >= 48 ? 'text-amber-300' : 'text-emerald-400');
+          return `
+            <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-extrabold text-white">P${uc.pos} • ${uc.name}</span>
+                <span class="font-mono-num ${wearTextColor}">Gomma ${uc.tyre} • Usura ${wearPct}% (Vita ${lifePct}%) • Pit ${uc.pitStops}/${uc.plannedStops}</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                <div class="h-full transition-all ${wearBarColor}" style="width:${lifePct}%"></div>
+              </div>
+              <div class="grid grid-cols-4 gap-1.5">
+                <button onclick="setLiveCarPush('${uc.driverId}', 'conserve')" class="py-1 rounded-lg text-[10px] font-bold ${uc.pushMode === 'conserve' ? 'bg-sky-600 text-white' : 'bg-f1bg text-slate-400'}">Risparmio</button>
+                <button onclick="setLiveCarPush('${uc.driverId}', 'balanced')" class="py-1 rounded-lg text-[10px] font-bold ${uc.pushMode === 'balanced' ? 'bg-slate-600 text-white' : 'bg-f1bg text-slate-400'}">Neutro</button>
+                <button onclick="setLiveCarPush('${uc.driverId}', 'push')" class="py-1 rounded-lg text-[10px] font-bold ${uc.pushMode === 'push' ? 'bg-f1red text-white' : 'bg-f1bg text-slate-400'}">Spingi</button>
+                <button onclick="pitUserCarNow('${uc.driverId}', '${race.isWet ? 'I' : 'H'}')" class="py-1 rounded-lg text-[10px] font-extrabold bg-amber-500/20 border border-amber-400/50 text-amber-200">Box Ora</button>
+              </div>
             </div>
-            <div class="grid grid-cols-4 gap-1.5">
-              <button onclick="setLiveCarPush('${uc.driverId}', 'conserve')" class="py-1 rounded-lg text-[10px] font-bold ${uc.pushMode === 'conserve' ? 'bg-sky-600 text-white' : 'bg-f1bg text-slate-400'}">Risparmio</button>
-              <button onclick="setLiveCarPush('${uc.driverId}', 'balanced')" class="py-1 rounded-lg text-[10px] font-bold ${uc.pushMode === 'balanced' ? 'bg-slate-600 text-white' : 'bg-f1bg text-slate-400'}">Neutro</button>
-              <button onclick="setLiveCarPush('${uc.driverId}', 'push')" class="py-1 rounded-lg text-[10px] font-bold ${uc.pushMode === 'push' ? 'bg-f1red text-white' : 'bg-f1bg text-slate-400'}">Spingi</button>
-              <button onclick="pitUserCarNow('${uc.driverId}', '${race.isWet ? 'I' : 'H'}')" class="py-1 rounded-lg text-[10px] font-extrabold bg-amber-500/20 border border-amber-400/50 text-amber-200">Box Ora</button>
-            </div>
-          </div>
-        `).join('')}
+          `;
+        }).join('')}
       </div>
 
       <div class="bg-f1card border border-f1border rounded-2xl p-3 space-y-1.5">
