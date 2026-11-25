@@ -14,6 +14,57 @@ function formatLapTime(sec) {
   return `${mins}:${String(wholeSecs).padStart(2, '0')}.${String(millis).padStart(3, '0')}`;
 }
 
+const WEEKDAYS_IT = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+const MONTHS_IT = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+
+function parseIsoDateUTC(isoStr) {
+  const [y, m, d] = (isoStr || '2026-02-23').split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+}
+
+function toIsoDateUTC(dateObj) {
+  const y = dateObj.getUTCFullYear();
+  const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(dateObj.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function addDaysToIsoDate(isoStr, days) {
+  const dt = parseIsoDateUTC(isoStr);
+  dt.setUTCDate(dt.getUTCDate() + days);
+  return toIsoDateUTC(dt);
+}
+
+function formatCareerDateIT(isoStr) {
+  const dt = parseIsoDateUTC(isoStr);
+  const wd = WEEKDAYS_IT[dt.getUTCDay()];
+  const day = dt.getUTCDate();
+  const mon = MONTHS_IT[dt.getUTCMonth()];
+  const yr = dt.getUTCFullYear();
+  return `${wd} ${day} ${mon} ${yr}`;
+}
+
+function getRoundWeekendDates(roundNum, seasonYear) {
+  const tr = CALENDAR_2026[roundNum - 1] || CALENDAR_2026[0];
+  // Calcola il venerdì della stessa settimana solare nell'anno corrente della carriera
+  const ref2026 = new Date(Date.UTC(2026, tr.startMonth - 1, tr.startDay));
+  const target = new Date(Date.UTC(seasonYear, tr.startMonth - 1, tr.startDay));
+  const diffToFriday = 5 - target.getUTCDay();
+  target.setUTCDate(target.getUTCDate() + diffToFriday);
+
+  const fri = toIsoDateUTC(target);
+  const sat = addDaysToIsoDate(fri, 1);
+  const sun = addDaysToIsoDate(fri, 2);
+  return { fri, sat, sun };
+}
+
+function isCurrentDateInRaceWeekend() {
+  if (!gameState) return false;
+  const cur = gameState.currentDate || '2026-02-23';
+  const { fri, sun } = getRoundWeekendDates(gameState.round, gameState.season);
+  return cur >= fri && cur <= sun;
+}
+
 function getEstimatedStints(track, rules) {
   const trackDegMult = track.tyreDeg === 3 ? 1.24 : track.tyreDeg === 2 ? 1.0 : 0.84;
   const ruleMult = (rules && rules.extraDegMultiplier) ? rules.extraDegMultiplier : 1.0;
@@ -373,8 +424,10 @@ function createInitialState(selectedTeamId, selectedSponsorId = 'apex_tech') {
     season: 2026,
     maxSeasons: 2026 + BASE_CAREER_YEARS - 1,
     careerDay: 1,
-    weekendStartDay: 8,
+    currentDate: '2026-02-23', // Lunedì 23 Febbraio 2026
+    isRaceWeekendActive: false,
     round: 1,
+    // ... resto dello stato invariato ...,
     userTeamId: selectedTeamId,
     sponsorId: sponsor.id,
     activeTab: 'hub',
