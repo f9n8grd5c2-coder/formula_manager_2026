@@ -1,3 +1,44 @@
+function canAdvanceFromCurrentWeekendDay() {
+  if (!gameState || !gameState.weekend) return { ok: true };
+  const cur = gameState.currentDate || '2026-02-23';
+  const { fri, sat, sun } = getRoundWeekendDates(gameState.round, gameState.season);
+  const w = gameState.weekend;
+
+  if (cur < fri || cur > sun) return { ok: true };
+
+  // VENERDÌ: bisogna completare FP1+FP2 (weekend normale) oppure FP1+Qualifica Sprint (weekend Sprint)
+  if (cur === fri) {
+    if (w.hasSprint) {
+      if (w.phase === 'fp' || w.phase === 'sprint_quali') {
+        return { ok: false, msg: 'Completa prima FP1 e Qualifica Sprint del Venerdì!' };
+      }
+    } else {
+      if (w.phase === 'fp' && (w.fp?.session || 1) <= 2) {
+        return { ok: false, msg: `Completa prima FP${w.fp.session} del Venerdì prima di passare al Sabato!` };
+      }
+    }
+    return { ok: true };
+  }
+
+  // SABATO: bisogna completare FP3 + Qualifiche (o FP2 + Sprint + Qualifiche)
+  if (cur === sat) {
+    if (w.phase === 'fp' || w.phase === 'sprint_race' || w.phase === 'quali') {
+      return { ok: false, msg: 'Completa tutte le sessioni del Sabato (fino alle Qualifiche) prima della Domenica!' };
+    }
+    return { ok: true };
+  }
+
+  // DOMENICA: bisogna completare la Gara
+  if (cur === sun) {
+    if (w.phase !== 'summary') {
+      return { ok: false, msg: 'Devi disputare il Gran Premio della Domenica prima di avanzare!' };
+    }
+    return { ok: true };
+  }
+
+  return { ok: true };
+}
+
 function advanceSingleDay(silent = false) {
   if (!gameState) return;
   if (!gameState.currentDate) gameState.currentDate = '2026-02-23';
@@ -5,14 +46,17 @@ function advanceSingleDay(silent = false) {
   const { fri, sat, sun } = getRoundWeekendDates(gameState.round, gameState.season);
   const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
 
-  // Se siamo già nel weekend di gara e il GP non è ancora finito, blocca l'avanzamento giorni fuori pista
-  if (!silent && gameState.currentDate >= fri && gameState.currentDate <= sun && gameState.weekend?.phase !== 'summary') {
-    gameState.isRaceWeekendActive = true;
-    gameState.activeTab = 'weekend';
-    showToast(`Sei nel weekend del GP ${track.name} (${formatCareerDateIT(gameState.currentDate)}): completa le sessioni in pista!`, 'info');
-    saveGame();
-    renderApp();
-    return;
+  // Controllo blocco sessioni del giorno corrente
+  if (!silent) {
+    const check = canAdvanceFromCurrentWeekendDay();
+    if (!check.ok) {
+      gameState.isRaceWeekendActive = true;
+      gameState.activeTab = 'weekend';
+      showToast(`⛔ ${check.msg}`, 'danger');
+      saveGame();
+      renderApp();
+      return;
+    }
   }
 
   // Avanza di 1 giorno reale sul calendario
@@ -65,15 +109,16 @@ function advanceSingleDay(silent = false) {
     }
   });
 
-  // Verifica se la nuova data coincide con l'inizio del weekend di gara (Venerdì)
-  if (gameState.currentDate === fri) {
+  // Sincronizzazione automatica con l'ingresso in pista nei 3 giorni del weekend
+  if (gameState.currentDate === fri || gameState.currentDate === sat || gameState.currentDate === sun) {
     gameState.isRaceWeekendActive = true;
     if (!silent) {
       gameState.activeTab = 'weekend';
-      showToast(`🏁 È Venerdì ${formatCareerDateIT(gameState.currentDate)}: inizia il GP ${track.name}!`, 'success');
+      const dayLabel = gameState.currentDate === fri ? 'Venerdì (Prove Libere)' : (gameState.currentDate === sat ? 'Sabato (Qualifiche)' : 'Domenica (Gara)');
+      showToast(`🏁 ${formatCareerDateIT(gameState.currentDate)} — ${dayLabel} GP ${track.name}!`, 'success');
     }
   } else {
-    gameState.isRaceWeekendActive = (gameState.currentDate > fri && gameState.currentDate <= sun);
+    gameState.isRaceWeekendActive = false;
     if (!silent) {
       showToast(`📅 ${formatCareerDateIT(gameState.currentDate)}`, 'info');
     }
