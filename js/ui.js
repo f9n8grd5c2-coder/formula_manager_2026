@@ -58,13 +58,14 @@ function renderTopHeader() {
   const dayTag = getWeekendDayBadge(gameState.weekend);
   const remCap = getRemainingBudgetCap();
   const capLimit = getBudgetCapLimit();
+  const dateStr = formatCareerDateIT(gameState.currentDate || '2026-02-23');
   return `
     <header class="sticky top-0 z-30 bg-f1bg/95 backdrop-blur border-b border-f1border px-4 py-2.5 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <span class="w-2.5 h-6 rounded-full" style="background:${team.color}"></span>
         <div>
           <div class="text-xs font-extrabold text-white leading-tight">${team.name} <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 ml-1">${dayTag}</span></div>
-          <div class="text-[10px] text-slate-400 font-mono-num">Anno ${gameState.season}/${gameState.maxSeasons} • G${gameState.careerDay || 1} • GP${gameState.round}/24 ${track.flag}</div>
+          <div class="text-[10px] text-slate-400 font-mono-num">📅 ${dateStr} • GP${gameState.round}/24 ${track.flag}</div>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -181,6 +182,11 @@ function renderHubView() {
           <span class="text-slate-200 font-bold">H: ${stints.H}g</span>
         </div>
 
+        <div class="flex items-center justify-between text-xs bg-f1bg px-3 py-2 rounded-xl border border-f1border">
+          <span class="text-slate-400">Data attuale:</span>
+          <span class="font-mono-num font-extrabold text-white">📅 ${formatCareerDateIT(gameState.currentDate || '2026-02-23')}</span>
+        </div>
+
         <div class="grid grid-cols-2 gap-2">
           <button onclick="advanceSingleDay(false)" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-f1border font-extrabold text-xs text-white">
             ⏭ AVANZA GIORNO
@@ -190,9 +196,15 @@ function renderHubView() {
           </button>
         </div>
 
-        <button onclick="setActiveTab('weekend')" class="w-full py-3 rounded-xl bg-f1red hover:bg-red-600 font-extrabold text-sm text-white shadow-lg shadow-f1red/25">
-          ENTRA IN PISTA (${getWeekendDayBadge(gameState.weekend)}) →
-        </button>
+        ${isCurrentDateInRaceWeekend() ? `
+          <button onclick="setActiveTab('weekend')" class="w-full py-3 rounded-xl bg-f1red hover:bg-red-600 font-extrabold text-sm text-white shadow-lg shadow-f1red/25">
+            ENTRA IN PISTA (${getWeekendDayBadge(gameState.weekend)}) →
+          </button>
+        ` : `
+          <div class="w-full py-2.5 px-3 rounded-xl bg-slate-900/80 border border-f1border text-center text-[11px] font-bold text-slate-400">
+            Prossimo weekend in pista: <span class="text-amber-300 font-mono-num">${formatCareerDateIT(getRoundWeekendDates(gameState.round, gameState.season).fri)}</span>
+          </div>
+        `}
       </div>
 
       <div class="bg-f1card border border-f1border rounded-2xl p-4 space-y-2.5">
