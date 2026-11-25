@@ -20,8 +20,12 @@ function initWeekendState(roundNum, userTeamId, drivers) {
 
   const makeDriverSetup = (initWing = 5, initSusp = 5, initBrake = 5, initRide = 5, initDiff = 5) => ({
     wing: initWing, susp: initSusp, brake: initBrake, ride: initRide, diff: initDiff,
-    confidence: 35, plan: 'race', fpRunsDone: 0, lastError: null,
-    feedback: 'Regola i 5 parametri di assetto ed esegui i run in pista.'
+    confidence: 35,
+    plan: 'race', // 'quali' | 'race' | 'tyre'
+    programs: { quali: 0, race: 0, tyre: 0 }, // 0..100% conoscenza programma
+    fpRunsDone: 0,
+    lastError: null,
+    feedback: 'Scegli un programma di lavoro, regola assetto ed esegui i run.'
   });
 
   return {
@@ -108,6 +112,14 @@ function setFpActiveSlot(slot) {
   renderApp();
 }
 
+function setFpProgram(slot, programId) {
+  const w = gameState.weekend;
+  if (!w || w.phase !== 'fp' || !w.fp[slot]) return;
+  w.fp[slot].plan = programId;
+  saveGame();
+  renderApp();
+}
+
 function evaluateSingleDriverFpRun(w, slotKey, drv) {
   const setup = w.fp[slotKey];
   if (!setup || !drv) return;
@@ -124,6 +136,13 @@ function evaluateSingleDriverFpRun(w, slotKey, drv) {
   setup.fpRunsDone = (setup.fpRunsDone || 0) + 1;
   setup.lastError = totalErr;
 
+  // Avanza conoscenza del programma selezionato (Giro Secco, Passo Gara o Gestione Gomme)
+  setup.programs = setup.programs || { quali: 0, race: 0, tyre: 0 };
+  const progKey = setup.plan || 'race';
+  const progGain = Math.max(20, Math.min(40, 38 - totalErr * 2));
+  setup.programs[progKey] = Math.min(100, (setup.programs[progKey] || 0) + progGain);
+
+  const progLabels = { quali: 'Giro Secco', race: 'Passo Gara', tyre: 'Gestione Gomme' };
   const hints = [];
   if (Math.abs(diffWing) >= 2) hints.push(diffWing > 0 ? 'ala troppo carica' : 'ala troppo scarica');
   if (Math.abs(diffSusp) >= 2) hints.push(diffSusp > 0 ? 'sospensioni troppo rigide' : 'sospensioni troppo morbide');
@@ -132,8 +151,8 @@ function evaluateSingleDriverFpRun(w, slotKey, drv) {
   if (Math.abs(diffDiff) >= 2) hints.push(diffDiff > 0 ? 'differenziale troppo chiuso' : 'differenziale troppo aperto');
 
   setup.feedback = hints.length
-    ? `${drv.code}: feeling ${setup.confidence}% — segnalato: ${hints.slice(0, 2).join(' e ')}.`
-    : `${drv.code}: assetto ottimale (${setup.confidence}% feeling)!`;
+    ? `${drv.code} [${progLabels[progKey]} ${setup.programs[progKey]}%]: feeling ${setup.confidence}% — ${hints.slice(0, 2).join(', ')}.`
+    : `${drv.code} [${progLabels[progKey]} ${setup.programs[progKey]}%]: assetto perfetto (${setup.confidence}%)!`;
 }
 
 function runFpStint() {
@@ -159,22 +178,32 @@ function advanceFpSession() {
   const w = gameState.weekend;
   if (!w || w.phase !== 'fp') return;
   const maxSessions = w.hasSprint ? 2 : 3;
+  const { sat } = getRoundWeekendDates(gameState.round, gameState.season);
+
   if (w.fp.session < maxSessions) {
     w.fp.session += 1;
     w.fp.runsLeftInSession = 3;
-    showToast(`Passati a FP${w.fp.session}!`, 'info');
+
+    // Weekend normale: dopo FP2 si passa al Sabato (FP3)
+    if (!w.hasSprint && w.fp.session === 3 && gameState.currentDate < sat) {
+      advanceSingleDay(true); // Porta al Sabato e aggiorna fatica/R&D
+      showToast(`📅 Sabato ${formatCareerDateIT(gameState.currentDate)}: si passa alle FP3!`, 'info');
+    } else {
+      showToast(`Passati a FP${w.fp.session}!`, 'info');
+    }
   } else if (w.hasSprint) {
     w.phase = 'sprint_quali';
-    showToast('Venerdi sera: Qualifiche Sprint!', 'info');
+    showToast('Venerdì pomeriggio: Qualifiche Sprint!', 'info');
   } else {
+    if (gameState.currentDate < sat) advanceSingleDay(true);
     initLiveQualifyingSession();
-    showToast('Sabato: Qualifiche ufficiali Q1!', 'info');
+    showToast(`Sabato ${formatCareerDateIT(gameState.currentDate)}: Qualifiche ufficiali Q1!`, 'info');
   }
   saveGame();
   renderApp();
 }
 
-function computeCarPaceScore(driver, team, track, setupConf = 65, isWet = false) {
+function computeCarPaceScore(driver, team, track, setupConf = 65, isWet = false, sessionMode = 'race') {
   const mood = getMoodMeta(driver.mood);
   const baseCar = (team.aero * 0.36 + team.pu * 0.34 + team.chassis * 0.30);
   const trackDnaBonus = (
@@ -183,9 +212,22 @@ function computeCarPaceScore(driver, team, track, setupConf = 65, isWet = false)
   );
   const driverSkill = (driver.pace * 0.45 + driver.cons * 0.35 + driver.tyreMgmt * 0.20);
   const confBonus = ((setupConf - 50) / 50) * 1.4;
+
+  // Bonus dai Programmi Prove Libere per i piloti utente
+  let fpProgramBonus = 0;
+  const uDrivers = getUserDrivers();
+  const fpSlot = driver.id === uDrivers[0]?.id ? gameState.weekend?.fp?.d1 : (driver.id === uDrivers[1]?.id ? gameState.weekend?.fp?.d2 : null);
+  if (fpSlot?.programs) {
+    if (sessionMode === 'quali') {
+      fpProgramBonus = ((fpSlot.programs.quali || 0) / 100) * 1.65;
+    } else {
+      fpProgramBonus = ((fpSlot.programs.race || 0) / 100) * 1.50;
+    }
+  }
+
   const wetBonus = isWet && driver.trait === 'wet_ace' ? 2.4 : 0;
   const fatiguePen = Math.max(0, ((driver.fatigue ?? 15) - 55) * 0.05);
-  return baseCar * 0.58 + driverSkill * 0.42 + trackDnaBonus + confBonus + wetBonus - (mood.paceDelta * 2.2) - fatiguePen;
+  return baseCar * 0.58 + driverSkill * 0.42 + trackDnaBonus + confBonus + fpProgramBonus + wetBonus - (mood.paceDelta * 2.2) - fatiguePen;
 }
 
 function buildGridFromQuali(track, isWet) {
