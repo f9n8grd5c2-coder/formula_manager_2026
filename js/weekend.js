@@ -960,14 +960,17 @@ function finalizeRaceResults() {
 }
 
 function continueAfterRaceSummary() {
+  const { sun } = getRoundWeekendDates(gameState.round, gameState.season);
+  // Dopo la gara della domenica si passa al lunedì successivo
+  gameState.currentDate = addDaysToIsoDate(sun, 1);
+  gameState.isRaceWeekendActive = false;
+
   if (gameState.round < CALENDAR_2026.length) {
     gameState.round += 1;
-    gameState.careerDay = (gameState.careerDay || 1) + 14;
-    gameState.weekendStartDay = gameState.careerDay + 7;
     gameState.weekend = initWeekendState(gameState.round, gameState.userTeamId, gameState.drivers);
     generatePaddockPressForRound(gameState.round);
     gameState.activeTab = 'hub';
-    showToast(`Avanzati al GP ${gameState.round}: ${CALENDAR_2026[gameState.round - 1].name}!`, 'info');
+    showToast(`📅 ${formatCareerDateIT(gameState.currentDate)} — Verso il GP ${gameState.round}: ${CALENDAR_2026[gameState.round - 1].name}!`, 'info');
   } else {
     applyEndOfSeasonPrizesAndReset();
   }
@@ -989,6 +992,13 @@ function applyEndOfSeasonPrizesAndReset() {
   if (gameState.season < gameState.maxSeasons) {
     gameState.season += 1;
     gameState.round = 1;
+    // Primo lunedì utile di fine febbraio del nuovo anno
+    const feb22 = new Date(Date.UTC(gameState.season, 1, 22));
+    const offsetToMonday = (8 - feb22.getUTCDay()) % 7;
+    feb22.setUTCDate(feb22.getUTCDate() + offsetToMonday);
+    gameState.currentDate = toIsoDateUTC(feb22);
+    gameState.isRaceWeekendActive = false;
+
     gameState.capSpent = 0.0;
     gameState.completedRounds = [];
     gameState.teams.forEach(t => {
@@ -1007,7 +1017,7 @@ function applyEndOfSeasonPrizesAndReset() {
     gameState.weekend = initWeekendState(1, gameState.userTeamId, gameState.drivers);
     generatePaddockPressForRound(1);
     gameState.activeTab = 'hub';
-    showToast(`Benvenuti nella stagione ${gameState.season}! Budget Cap FIA azzerato a €${getBudgetCapLimit().toFixed(0)}M.`, 'success');
+    showToast(`Benvenuti nella stagione ${gameState.season} (${formatCareerDateIT(gameState.currentDate)})!`, 'success');
   } else {
     showToast('Ciclo di 7 stagioni completato! Puoi avviare una nuova carriera dal tasto Reset.', 'info');
   }
