@@ -51,29 +51,85 @@ function initWeekendState(roundNum, userTeamId, drivers) {
   };
 }
 
-function createDefaultPreRaceStrategy(track) {
+function buildPilotRecommendedStrategy(track, driver, gridPos = 10, isWet = false) {
   const laps = track.laps || 56;
-  const p1 = Math.max(8, Math.round(laps * 0.34));
-  const p2 = Math.max(p1 + 10, Math.round(laps * 0.68));
-  return {
-    d1: {
+  const tyreSkill = driver?.tyreMgmt ?? 84;
+  const isHighDeg = track.tyreDeg === 3;
+  const isLowDeg = track.tyreDeg === 1;
+
+  if (isWet) {
+    const p1 = Math.round(laps * 0.50);
+    return {
       stints: 2,
-      startTyre: 'M',
-      pit1Lap: Math.round(laps * 0.44),
+      startTyre: 'I',
+      pit1Lap: p1,
+      pit1Tyre: 'I',
+      pit2Lap: Math.min(laps - 3, p1 + 14),
+      pit2Tyre: 'M',
+      push: 'balanced',
+      note: `${driver?.code || 'Pilota'}: "Pista bagnata, partiamo su Intermedie e valutiamo cambio intorno al giro ${p1}."`
+    };
+  }
+
+  // Circuito ad alto degrado o pilota che consuma molto -> 2 soste (3 stint)
+  if (isHighDeg && tyreSkill < 89) {
+    const p1 = Math.max(8, Math.round(laps * 0.30));
+    const p2 = Math.max(p1 + 10, Math.round(laps * 0.64));
+    return {
+      stints: 3,
+      startTyre: gridPos <= 6 ? 'S' : 'M',
+      pit1Lap: p1,
       pit1Tyre: 'H',
       pit2Lap: p2,
       pit2Tyre: 'M',
-      push: 'balanced'
-    },
-    d2: {
+      push: 'balanced',
+      note: `${driver?.code || 'Pilota'}: "Degrado alto qui: consiglio 3 stint (${gridPos <= 6 ? 'S' : 'M'} → H → M) con pit ai giri ${p1} e ${p2}."`
+    };
+  }
+
+  // Circuito a basso degrado o pilota molto gentile sulle gomme -> 1 sosta aggressiva (2 stint)
+  if (isLowDeg || tyreSkill >= 88) {
+    const p1 = Math.round(laps * (gridPos <= 8 ? 0.38 : 0.55));
+    const s1 = gridPos <= 8 ? 'M' : 'H';
+    const s2 = gridPos <= 8 ? 'H' : 'M';
+    return {
       stints: 2,
-      startTyre: 'H',
-      pit1Lap: Math.round(laps * 0.54),
-      pit1Tyre: 'M',
-      pit2Lap: p2,
+      startTyre: s1,
+      pit1Lap: p1,
+      pit1Tyre: s2,
+      pit2Lap: Math.min(laps - 3, p1 + 14),
       pit2Tyre: 'S',
-      push: 'balanced'
-    }
+      push: 'balanced',
+      note: `${driver?.code || 'Pilota'}: "Gestisco bene le gomme: 1 sola sosta al giro ${p1} (${s1} → ${s2}) è la scelta più veloce."`
+    };
+  }
+
+  // Strategia bilanciata standard a 2 stint (1 pit)
+  const p1 = Math.round(laps * 0.44);
+  return {
+    stints: 2,
+    startTyre: 'M',
+    pit1Lap: p1,
+    pit1Tyre: 'H',
+    pit2Lap: Math.min(laps - 3, p1 + 14),
+    pit2Tyre: 'S',
+    push: 'balanced',
+    note: `${driver?.code || 'Pilota'}: "Partenza su Medium e passaggio su Hard al giro ${p1} per arrivare in fondo senza cali."`
+  };
+}
+
+function createDefaultPreRaceStrategy(track) {
+  const uDrivers = typeof getUserDrivers === 'function' ? getUserDrivers() : [];
+  const grid = gameState?.weekend?.quali?.grid || [];
+  const isWet = !!gameState?.weekend?.quali?.isWet;
+
+  const getPos = (drv) => grid.find(g => g.driverId === drv?.id)?.gridPos || 10;
+  const rec1 = buildPilotRecommendedStrategy(track, uDrivers[0], getPos(uDrivers[0]), isWet);
+  const rec2 = buildPilotRecommendedStrategy(track, uDrivers[1], getPos(uDrivers[1]), isWet);
+
+  return {
+    d1: { ...rec1, recommended: { ...rec1 } },
+    d2: { ...rec2, recommended: { ...rec2 } }
   };
 }
 
@@ -83,7 +139,29 @@ function ensurePreRaceStrategy(track) {
   if (!w.preRaceStrategy || !w.preRaceStrategy.d1 || typeof w.preRaceStrategy.d1.stints !== 'number') {
     w.preRaceStrategy = createDefaultPreRaceStrategy(track);
   }
+  if (!w.preRaceStrategy.d1.recommended) {
+    const fresh = createDefaultPreRaceStrategy(track);
+    w.preRaceStrategy.d1.recommended = fresh.d1.recommended;
+    w.preRaceStrategy.d2.recommended = fresh.d2.recommended;
+  }
   return w.preRaceStrategy;
+}
+
+function applyPilotRecommendedStrategy(slotKey) {
+  const w = gameState.weekend;
+  const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
+  if (!w) return;
+  const strat = ensurePreRaceStrategy(track);
+  const cur = strat[slotKey];
+  if (!cur?.recommended) return;
+  const rec = cur.recommended;
+  strat[slotKey] = {
+    ...rec,
+    recommended: { ...rec }
+  };
+  showToast('Strategia consigliata dal pilota applicata!', 'success');
+  saveGame();
+  renderApp();
 }
 
 function getDriverTargetSetup(weekend, slotKey) {
@@ -794,12 +872,48 @@ function pitUserCarNow(driverId, compound = 'H') {
   renderApp();
 }
 
+function computeTyreWearPerLap(car, track, race) {
+  const drv = gameState.drivers.find(d => d.id === car.driverId);
+  const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
+  const degTrackMult = track.tyreDeg === 3 ? 1.24 : (track.tyreDeg === 2 ? 1.0 : 0.84);
+  const ruleDegMult = gameState.rules?.extraDegMultiplier || 1.0;
+
+  // Fattore abilità pilota nel preservare le gomme (tyreMgmt 75..96 -> +12% fino a -16% consumo)
+  const tyreSkill = drv?.tyreMgmt ?? 84;
+  const driverSkillMult = Math.max(0.80, Math.min(1.18, 1.0 - ((tyreSkill - 84) * 0.013)));
+
+  // Fattore tratto pilota (Tattico risparmia gomma, Attaccante consuma un po' di più)
+  const traitMult = drv?.trait === 'tactician' ? 0.94 : (drv?.trait === 'attacker' ? 1.05 : 1.0);
+
+  // Bonus dal programma "Gestione Gomme" svolto nelle Prove Libere (fino a -18% usura)
+  let fpTyreProgMult = 1.0;
+  if (car.isUser) {
+    const uDrivers = getUserDrivers();
+    const fpSlot = car.driverId === uDrivers[0]?.id ? gameState.weekend?.fp?.d1 : gameState.weekend?.fp?.d2;
+    const tyreProgPct = fpSlot?.programs?.tyre ?? 0;
+    fpTyreProgMult = 1.0 - (tyreProgPct / 100) * 0.18;
+  }
+
+  // Modalità di spinta e Safety Car
+  const pushMult = car.pushMode === 'push' ? 1.28 : (car.pushMode === 'conserve' ? 0.74 : 1.0);
+  const scMult = race.safetyCar ? 0.42 : 1.0;
+
+  // Se si usa gomma da bagnato su pista asciutta si surriscalda e si distrugge subito
+  const overheatingMult = (!race.isWet && comp.wet > 0) ? 2.1 : 1.0;
+
+  return comp.degRate * degTrackMult * ruleDegMult * driverSkillMult * traitMult * fpTyreProgMult * pushMult * scMult * overheatingMult;
+}
+
 function computeDynamicLapDuration(car, track, race) {
   const drv = gameState.drivers.find(d => d.id === car.driverId);
   const tm = getTeam(car.teamId);
   const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
   const pushFactor = car.pushMode === 'push' ? -0.55 : (car.pushMode === 'conserve' ? 0.45 : 0.0);
-  const wearPenalty = Math.max(0, (car.tyreWear - 45) * 0.048);
+  const wearPenalty = car.tyreWear <= 35
+    ? car.tyreWear * 0.008
+    : (car.tyreWear <= 75
+      ? 0.28 + (car.tyreWear - 35) * 0.036
+      : 1.72 + (car.tyreWear - 75) * 0.115);
   const wetMismatch = (race.isWet && comp.wet === 0) ? 7.5 : ((!race.isWet && comp.wet > 0) ? 4.8 : 0);
   const paceScore = computeCarPaceScore(drv, tm, track, 65, race.isWet);
   const scFactor = race.safetyCar ? 1.24 : 1.0;
@@ -843,7 +957,7 @@ function tickLiveRace(dtSec) {
     car.totalTime += simSec;
 
     const comp = TYRE_COMPOUNDS[car.tyre] || TYRE_COMPOUNDS.M;
-    const wearPerLap = comp.degRate * degTrackMult * ruleDegMult * (car.pushMode === 'push' ? 1.26 : (car.pushMode === 'conserve' ? 0.78 : 1.0)) * (race.safetyCar ? 0.45 : 1.0);
+    const wearPerLap = computeTyreWearPerLap(car, track, race);
     car.tyreWear = Math.min(100, Number((car.tyreWear + wearPerLap * deltaLaps).toFixed(1)));
 
     const completedLapNow = Math.max(0, Math.floor(car.distanceLaps));
