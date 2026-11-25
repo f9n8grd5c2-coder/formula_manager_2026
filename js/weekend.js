@@ -298,6 +298,7 @@ function initLiveQualifyingSession() {
   const w = gameState.weekend;
   const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
   const isWet = Math.random() < track.rainChance;
+  const initialGrip = isWet ? 42 : 54;
   const defaultTyre = isWet ? 'I' : 'S';
 
   const participants = gameState.drivers.filter(d => d.teamId).map((d, idx) => {
@@ -332,12 +333,13 @@ function initLiveQualifyingSession() {
     stageLabel: 'Q1',
     timeLeftSec: QUALI_STAGES[0].durationSec,
     isWet,
+    trackGrip: initialGrip,
     speed: 2,
     paused: false,
     stageFinished: false,
     allFinished: false,
     participants,
-    events: [`Via al Q1 (${track.name}) — 18 minuti sul cronometro!`]
+    events: [`Via al Q1 (${track.name}) — Aderenza pista iniziale ${initialGrip}%!`]
   };
   w.phase = 'quali';
   startSessionAnimationLoop();
@@ -401,6 +403,7 @@ function abortQualiDriverToPit(driverId) {
 
 function computeQualiHotLapResult(p, track, isWet) {
   const w = gameState.weekend;
+  const q = w?.quali;
   const drv = gameState.drivers.find(d => d.id === p.driverId);
   const tm = getTeam(p.teamId);
   const uDrivers = getUserDrivers();
@@ -408,13 +411,19 @@ function computeQualiHotLapResult(p, track, isWet) {
   if (p.driverId === uDrivers[0]?.id) conf = w.fp?.d1?.confidence ?? 55;
   if (p.driverId === uDrivers[1]?.id) conf = w.fp?.d2?.confidence ?? 55;
 
+  const grip = q?.trackGrip ?? (isWet ? 45 : 75);
+  // Conseguenza 1: pista poco gommata penalizza il tempo sul giro (fino a +0.95s al 40% di grip, 0.00s al 100%)
+  const gripTimePenalty = Number((((100 - grip) / 100) * 1.45).toFixed(3));
+  // Conseguenza 2: bassa aderenza aumenta il rischio di sbavature se il pilota spinge
+  const lowGripErrorBonus = grip < 70 ? ((70 - grip) / 100) * 0.22 : 0;
+
   const comp = TYRE_COMPOUNDS[p.tyre] || TYRE_COMPOUNDS.S;
   const weatherMismatchPen = (isWet && comp.wet === 0) ? 9.5 : ((!isWet && comp.wet > 0) ? 5.5 : 0);
 
   const riskCfg = {
     safe: { paceGain: 0.35, errorChance: 0.03 },
     balanced: { paceGain: 0.0, errorChance: 0.11 },
-    push: { paceGain: -0.48, errorChance: 0.26 }
+    push: { paceGain: -0.48, errorChance: 0.25 }
   }[p.risk || 'balanced'];
 
   const traitMod = drv?.trait === 'attacker' ? -0.05 : (drv?.trait === 'hothead' ? 0.07 : 0);
@@ -422,18 +431,20 @@ function computeQualiHotLapResult(p, track, isWet) {
   let errorPenalty = 0;
   let errorMsg = '';
 
-  if (errorRoll < (riskCfg.errorChance + traitMod)) {
+  if (errorRoll < (riskCfg.errorChance + traitMod + lowGripErrorBonus)) {
     if (Math.random() < 0.25 && p.risk === 'push') {
       errorPenalty = 4.2;
-      errorMsg = '⚠️ Testacoda/Lungo! Giro rovinato';
+      errorMsg = grip < 68 ? '⚠️ Testacoda su asfalto poco gommato!' : '⚠️ Testacoda/Lungo! Giro rovinato';
     } else {
       errorPenalty = 0.85 + Math.random() * 0.9;
-      errorMsg = '⚠️ Bloccaggio/Track limits (+' + errorPenalty.toFixed(2) + 's)';
+      errorMsg = grip < 68
+        ? `⚠️ Poco grip (${Math.round(grip)}%): bloccaggio (+${errorPenalty.toFixed(2)}s)`
+        : `⚠️ Bloccaggio/Track limits (+${errorPenalty.toFixed(2)}s)`;
     }
   }
 
-  const score = computeCarPaceScore(drv, tm, track, conf, isWet);
-  const rawLap = track.baseLap - (score - 82) * 0.14 + (comp.paceBonus * 0.65) + riskCfg.paceGain + weatherMismatchPen + errorPenalty + (Math.random() * 0.28 - 0.14);
+  const score = computeCarPaceScore(drv, tm, track, conf, isWet, 'quali');
+  const rawLap = track.baseLap - (score - 82) * 0.14 + (comp.paceBonus * 0.65) + riskCfg.paceGain + gripTimePenalty + weatherMismatchPen + errorPenalty + (Math.random() * 0.28 - 0.14);
   return {
     lapSec: Math.max(58.0, Number(rawLap.toFixed(3))),
     errorMsg
@@ -452,7 +463,13 @@ function tickLiveQualifying(dtSec) {
   const activeList = q.participants.filter(p => !p.eliminatedIn);
   const stageObj = QUALI_STAGES[q.stageIndex];
   const elapsedInStage = stageObj.durationSec - q.timeLeftSec;
-
+const carsOnTrack = activeList.filter(p => p.status !== 'pit').length;
+  const maxGripForConditions = q.isWet ? 64 : 100;
+  if (carsOnTrack > 0 && (q.trackGrip || 50) < maxGripForConditions) {
+    const gripGain = simDelta * (0.012 + carsOnTrack * 0.0022);
+    q.trackGrip = Math.min(maxGripForConditions, Number(((q.trackGrip || 50) + gripGain).toFixed(1)));
+  }
+  
   activeList.forEach((p, idx) => {
     if (!p.isUser && p.status === 'pit' && q.timeLeftSec > 130 && elapsedInStage >= p.nextAiReleaseSec && p.runsDone < 2) {
       p.tyre = q.isWet ? 'I' : 'S';
@@ -513,7 +530,7 @@ function skipToEndOfCurrentQualiStage() {
   const q = gameState.weekend?.quali;
   const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
   if (!q || q.stageFinished) return;
-
+  q.trackGrip = Math.min(q.isWet ? 64 : 100, Number(((q.trackGrip || 54) + 14).toFixed(1)));
   q.participants.filter(p => !p.eliminatedIn).forEach(p => {
     if (p.bestLapSec >= 900 || p.status !== 'pit') {
       if (!p.isUser) {
