@@ -1,7 +1,25 @@
 function advanceSingleDay(silent = false) {
   if (!gameState) return;
-  gameState.careerDay = (gameState.careerDay || 1) + 1;
+  if (!gameState.currentDate) gameState.currentDate = '2026-02-23';
 
+  const { fri, sat, sun } = getRoundWeekendDates(gameState.round, gameState.season);
+  const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
+
+  // Se siamo già nel weekend di gara e il GP non è ancora finito, blocca l'avanzamento giorni fuori pista
+  if (!silent && gameState.currentDate >= fri && gameState.currentDate <= sun && gameState.weekend?.phase !== 'summary') {
+    gameState.isRaceWeekendActive = true;
+    gameState.activeTab = 'weekend';
+    showToast(`Sei nel weekend del GP ${track.name} (${formatCareerDateIT(gameState.currentDate)}): completa le sessioni in pista!`, 'info');
+    saveGame();
+    renderApp();
+    return;
+  }
+
+  // Avanza di 1 giorno reale sul calendario
+  gameState.careerDay = (gameState.careerDay || 1) + 1;
+  gameState.currentDate = addDaysToIsoDate(gameState.currentDate, 1);
+
+  // Controllo completamento sviluppi R&D
   const remainingUpgrades = [];
   (gameState.pendingUpgrades || []).forEach(upg => {
     upg.daysLeft = (upg.daysLeft ?? 4) - 1;
@@ -26,6 +44,7 @@ function advanceSingleDay(silent = false) {
   });
   gameState.pendingUpgrades = remainingUpgrades;
 
+  // Recupero fatica e crescita/calo piloti
   gameState.drivers.forEach(d => {
     d.fatigue = Math.max(0, Math.min(100, (d.fatigue ?? 15) - 4));
     const boostMult = (d.trainingBoost || 0) > 0 ? 1.65 : 1.0;
@@ -46,6 +65,20 @@ function advanceSingleDay(silent = false) {
     }
   });
 
+  // Verifica se la nuova data coincide con l'inizio del weekend di gara (Venerdì)
+  if (gameState.currentDate === fri) {
+    gameState.isRaceWeekendActive = true;
+    if (!silent) {
+      gameState.activeTab = 'weekend';
+      showToast(`🏁 È Venerdì ${formatCareerDateIT(gameState.currentDate)}: inizia il GP ${track.name}!`, 'success');
+    }
+  } else {
+    gameState.isRaceWeekendActive = (gameState.currentDate > fri && gameState.currentDate <= sun);
+    if (!silent) {
+      showToast(`📅 ${formatCareerDateIT(gameState.currentDate)}`, 'info');
+    }
+  }
+
   if (!silent) {
     saveGame();
     renderApp();
@@ -54,13 +87,29 @@ function advanceSingleDay(silent = false) {
 
 function advanceToNextWeekend() {
   if (!gameState) return;
-  const startDay = gameState.weekendStartDay || 8;
-  const daysToJump = Math.max(1, startDay - (gameState.careerDay || 1));
-  for (let i = 0; i < daysToJump; i++) {
-    advanceSingleDay(true);
+  if (!gameState.currentDate) gameState.currentDate = '2026-02-23';
+
+  const { fri, sun } = getRoundWeekendDates(gameState.round, gameState.season);
+  const track = CALENDAR_2026[gameState.round - 1] || CALENDAR_2026[0];
+
+  if (gameState.currentDate >= fri && gameState.currentDate <= sun) {
+    gameState.isRaceWeekendActive = true;
+    gameState.activeTab = 'weekend';
+    showToast(`Sei già nel weekend del GP ${track.name}!`, 'info');
+    saveGame();
+    renderApp();
+    return;
   }
+
+  let safetyCounter = 0;
+  while (gameState.currentDate < fri && safetyCounter < 120) {
+    advanceSingleDay(true);
+    safetyCounter++;
+  }
+
+  gameState.isRaceWeekendActive = true;
   gameState.activeTab = 'weekend';
-  showToast(`Arrivati al weekend del GP ${gameState.round}!`, 'info');
+  showToast(`🏁 Arrivati a ${formatCareerDateIT(gameState.currentDate)} — GP ${track.name}!`, 'success');
   saveGame();
   renderApp();
 }
