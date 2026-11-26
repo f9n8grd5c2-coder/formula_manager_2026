@@ -1,4 +1,6 @@
 const STORAGE_KEY = 'formula_manager_2026_save_v10';
+const ACTIVE_SLOT_KEY = 'formula_manager_2026_active_slot';
+const SAVE_SLOTS = ['slot_1', 'slot_2', 'slot_3'];
 const BASE_CAREER_YEARS = 7;
 const BUDGET_CAP_2026 = 200.0;
 const FOM_PRIZE_POOL = [135.0, 122.0, 112.0, 102.0, 94.0, 86.0, 79.0, 73.0, 68.0, 64.0, 60.0];
@@ -122,7 +124,7 @@ const TYRE_COMPOUNDS = {
   S: { id: 'S', name: 'Soft', short: 'S', color: '#ff3b30', text: '#ffffff', paceBonus: -1.15, degRate: 4.35, wet: 0 },
   M: { id: 'M', name: 'Medium', short: 'M', color: '#ffcc00', text: '#000000', paceBonus: -0.45, degRate: 2.75, wet: 0 },
   H: { id: 'H', name: 'Hard', short: 'H', color: '#f2f2f7', text: '#000000', paceBonus: 0.10, degRate: 1.85, wet: 0 },
-  I: { id: 'I', name: 'Inter', short: 'I', color: '#34c759', text: '#ffffff', paceBonus: 1.75, degRate: 2.25, wet: 1 },
+  I: { id: 'I', name: 'Inter', short: 'I', color: '#34c759', text: '#041f0e', paceBonus: 1.75, degRate: 2.25, wet: 1 },
   W: { id: 'W', name: 'Wet', short: 'W', color: '#007aff', text: '#ffffff', paceBonus: 3.30, degRate: 1.75, wet: 2 }
 };
 
@@ -131,3 +133,16 @@ const RND_TIERS = {
   standard: { id: 'standard', label: 'Standard', cost: 9.0, days: 8, gain: 2.8, desc: 'Pacchetto bilanciato (8 gg)' },
   major: { id: 'major', label: 'Evoluzione', cost: 15.5, days: 13, gain: 4.6, desc: 'Grande sviluppo (13 gg)' }
 };
+
+const ACADEMY_ROOKIES_POOL = [
+  { id: 'fornaroli', name: 'Leonardo Fornaroli', code: 'FOR', number: 28, ovr: 79, potential: 91, pace: 81, cons: 79, tyreMgmt: 78, age: 21, contract: 2, salary: 1.8, trait: 'tactician', preferredDna: 'balanced', acceptsSupport: true },
+  { id: 'lindblad', name: 'Arvid Lindbladi', code: 'LIN', number: 36, ovr: 78, potential: 92, pace: 81, cons: 77, tyreMgmt: 77, age: 19, contract: 2, salary: 1.6, trait: 'attacker', preferredDna: 'downforce', acceptsSupport: true },
+  { id: 'mini', name: 'Gabriele Minini', code: 'MIN', number: 48, ovr: 78, potential: 89, pace: 80, cons: 78, tyreMgmt: 78, age: 21, contract: 2, salary: 1.5, trait: 'wet_ace', preferredDna: 'balanced', acceptsSupport: true },
+  { id: 'browning', name: 'Luke Browningo', code: 'BRO', number: 45, ovr: 77, potential: 87, pace: 78, cons: 78, tyreMgmt: 77, age: 23, contract: 2, salary: 1.5, trait: 'team_player', preferredDna: 'topSpeed', acceptsSupport: true },
+  { id: 'camara', name: 'Rafael Camarini', code: 'CAM', number: 39, ovr: 77, potential: 90, pace: 80, cons: 76, tyreMgmt: 76, age: 20, contract: 2, salary: 1.4, trait: 'attacker', preferredDna: 'downforce', acceptsSupport: true },
+  { id: 'dunne', name: 'Alex Dunnetti', code: 'DUN', number: 89, ovr: 76, potential: 88, pace: 79, cons: 74, tyreMgmt: 75, age: 20, contract: 2, salary: 1.4, trait: 'hothead', preferredDna: 'topSpeed', acceptsSupport: true }
+];
+
+const ROOKIE_FIRST_NAMES = ['Matteo', 'Luca', 'Enzo', 'Noah', 'Elias', 'Liam', 'Hugo', 'Sacha', 'Kenji', 'Thiago', 'Marco', 'Callum'];
+const ROOKIE_LAST_NAMES = ['Bellini', 'Moretti', 'Vandenberg', 'Sorensen', 'Kowalski', 'Takahashi', 'Mendes', 'Richter', 'Ferreira', 'De Vriesi', 'Lindqvist', 'Navarro'];
+

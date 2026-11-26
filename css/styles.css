@@ -6,7 +6,7 @@
 body {
   background-color: #0b0e14;
   color: #f1f5f9;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   overscroll-behavior-y: none;
 }
 
@@ -29,4 +29,11 @@ input[type="range"] {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
